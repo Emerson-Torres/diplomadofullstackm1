@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 0 — Fundamentos de JavaScript</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #1e293b; }
+
+    /* SIDEBAR */
+    #sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 270px; height: 100vh;
+      background: #0f172a; color: #e2e8f0;
+      overflow-y: auto; z-index: 1000;
+      padding-bottom: 2rem;
+      border-right: 1px solid #1e293b;
+    }
+    #sidebar .brand {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    #sidebar .brand .badge-mod {
+      background: #f59e0b; color: #1e293b;
+      font-size: .7rem; padding: .25rem .6rem;
+      border-radius: 20px; letter-spacing: .05em;
+      font-weight: 700;
+    }
+    #sidebar .brand h6 { color: #f8fafc; font-weight: 700; margin-top: .5rem; font-size: 1rem; }
+    #sidebar nav a {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .55rem 1.25rem; color: #94a3b8;
+      text-decoration: none; font-size: .83rem;
+      border-left: 3px solid transparent; transition: all .15s;
+    }
+    #sidebar nav a:hover, #sidebar nav a.active {
+      color: #f8fafc; background: #1e293b; border-left-color: #f59e0b;
+    }
+    #sidebar .section-label {
+      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+      color: #475569; padding: 1.1rem 1.25rem .35rem; font-weight: 700;
+    }
+    #sidebar .progress-wrap { padding: .5rem 1.25rem 0; }
+    #sidebar .progress { height: 4px; background: #1e293b; }
+    #sidebar .progress-bar { background: #f59e0b; }
+
+    /* MAIN */
+    #main { margin-left: 270px; min-height: 100vh; }
+
+    /* TOPBAR */
+    .topbar {
+      background: #fff; border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 2rem; position: sticky; top: 0; z-index: 900;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .topbar .breadcrumb { margin: 0; font-size: .8rem; }
+
+    /* SECTIONS */
+    .content-section { display: none; padding: 2rem; animation: fadeIn .25s ease; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* HERO */
+    .hero-card {
+      background: linear-gradient(135deg, #1e293b 0%, #92400e 100%);
+      color: #fff; border-radius: 16px; padding: 2.5rem 3rem; margin-bottom: 2rem;
+    }
+    .hero-card .clase-badge {
+      background: rgba(245,158,11,.25); border: 1px solid rgba(245,158,11,.5);
+      color: #fcd34d; font-size: .75rem; padding: .3rem .8rem;
+      border-radius: 20px; display: inline-block; margin-bottom: 1rem;
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+    .hero-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .hero-card p  { color: #cbd5e1; font-size: 1rem; }
+    .hero-meta span {
+      background: rgba(255,255,255,.1); border-radius: 8px;
+      padding: .4rem .9rem; font-size: .82rem; margin-right: .5rem; color: #e2e8f0;
+    }
+
+    /* CARDS */
+    .info-card {
+      background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+      padding: 1.5rem; height: 100%;
+    }
+    .info-card .ic-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1rem;
+    }
+    .info-card h5 { font-weight: 700; font-size: .95rem; margin-bottom: .5rem; }
+    .info-card p  { font-size: .85rem; color: #64748b; margin: 0; }
+
+    /* THEORY */
+    .theory-block {
+      background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+      padding: 1.75rem; margin-bottom: 1.5rem;
+    }
+    .theory-block h4 {
+      font-weight: 700; font-size: 1.05rem; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .theory-block p, .theory-block li { font-size: .9rem; color: #374151; line-height: 1.75; }
+    .theory-block ul, .theory-block ol { padding-left: 1.4rem; }
+
+    /* CALLOUTS */
+    .callout {
+      border-left: 4px solid; border-radius: 0 8px 8px 0;
+      padding: .9rem 1.2rem; margin: 1rem 0; font-size: .88rem;
+    }
+    .callout-blue  { border-color: #3b82f6; background: #eff6ff; color: #1e40af; }
+    .callout-green { border-color: #10b981; background: #f0fdf4; color: #065f46; }
+    .callout-amber { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .callout-red   { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+    .callout-purple{ border-color: #8b5cf6; background: #f5f3ff; color: #4c1d95; }
+
+    /* CODE */
+    .code-block { background: #0f172a; border-radius: 10px; overflow: hidden; margin: 1rem 0; font-family: 'JetBrains Mono', monospace; }
+    .code-block .code-header {
+      background: #1e293b; padding: .5rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .code-block .code-header span { font-size: .75rem; color: #64748b; font-family: 'Inter', sans-serif; }
+    .code-block pre {
+      margin: 0; padding: 1.25rem; color: #e2e8f0;
+      font-size: .82rem; line-height: 1.75; overflow-x: auto;
+    }
+    .kw   { color: #93c5fd; }
+    .fn   { color: #86efac; }
+    .str  { color: #fca5a5; }
+    .cm   { color: #475569; font-style: italic; }
+    .num  { color: #fdba74; }
+    .prop { color: #c4b5fd; }
+    .bool { color: #f9a8d4; }
+
+    /* SANDBOX */
+    .sandbox {
+      background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;
+      overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .sandbox-header {
+      background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 1.25rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sandbox-header .title { font-weight: 600; font-size: .9rem; display: flex; align-items: center; gap: .5rem; }
+    .sandbox-body { padding: 1.5rem; }
+    .run-btn {
+      background: #f59e0b; color: #1e293b; border: none; border-radius: 8px;
+      padding: .45rem 1.1rem; font-size: .82rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: .4rem; transition: background .15s;
+    }
+    .run-btn:hover { background: #d97706; }
+    .run-btn.blue { background: #3b82f6; color: #fff; }
+    .run-btn.blue:hover { background: #2563eb; }
+    .run-btn.green { background: #10b981; color: #fff; }
+    .run-btn.green:hover { background: #059669; }
+    .output-area {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 1rem; min-height: 60px; font-size: .83rem; margin-top: 1rem;
+      font-family: 'JetBrains Mono', monospace; color: #1e293b; line-height: 1.7;
+    }
+    .output-area .ok  { color: #10b981; }
+    .output-area .err { color: #ef4444; }
+    .output-area .info{ color: #3b82f6; }
+
+    /* TYPE BADGES */
+    .type-badge {
+      display: inline-block; border-radius: 20px; padding: .15rem .65rem;
+      font-size: .75rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+    }
+    .t-string  { background: #fef3c7; color: #92400e; }
+    .t-number  { background: #d1fae5; color: #065f46; }
+    .t-boolean { background: #fce7f3; color: #9d174d; }
+    .t-null    { background: #f3f4f6; color: #374151; }
+    .t-object  { background: #ede9fe; color: #4c1d95; }
+    .t-array   { background: #dbeafe; color: #1e40af; }
+    .t-undef   { background: #fee2e2; color: #991b1b; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content:''; position:absolute; left:.55rem; top:0; bottom:0; width:2px; background:#e2e8f0; }
+    .timeline-item { position: relative; margin-bottom: 1.25rem; }
+    .timeline-item::before {
+      content:''; position:absolute; left:-1.5rem; top:.35rem;
+      width:10px; height:10px; border-radius:50%;
+      background:#f59e0b; border:2px solid #fff; box-shadow:0 0 0 2px #f59e0b;
+    }
+    .timeline-item .t-time { font-size:.72rem; font-weight:700; color:#f59e0b; text-transform:uppercase; letter-spacing:.06em; }
+    .timeline-item .t-title { font-weight:600; font-size:.95rem; color:#1e293b; }
+    .timeline-item .t-desc  { font-size:.85rem; color:#64748b; }
+
+    /* DOM VISUAL */
+    .dom-tree {
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+      background: #0f172a; border-radius: 10px; padding: 1.25rem;
+      color: #e2e8f0; line-height: 2;
+    }
+    .dom-tree .node-html  { color: #93c5fd; }
+    .dom-tree .node-head  { color: #c4b5fd; }
+    .dom-tree .node-body  { color: #86efac; }
+    .dom-tree .node-elem  { color: #fca5a5; }
+    .dom-tree .node-text  { color: #fdba74; font-style:italic; }
+    .dom-tree .node-attr  { color: #6ee7b7; font-size:.75rem; }
+
+    /* EVENT TABLE */
+    .event-demo-box {
+      border: 2px dashed #e2e8f0; border-radius: 10px;
+      padding: 1.25rem; text-align: center;
+      font-size: .9rem; color: #64748b;
+      transition: all .2s;
+    }
+    .event-demo-box:hover { border-color: #f59e0b; color: #1e293b; }
+
+    /* STEP PILLS */
+    .step-pills { display:flex; flex-wrap:wrap; gap:.75rem; margin:1rem 0; }
+    .step-pill {
+      background:#fffbeb; border:1px solid #fde68a; color:#92400e;
+      border-radius:30px; padding:.4rem 1rem; font-size:.82rem; font-weight:600;
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .step-pill .num {
+      background:#f59e0b; color:#fff; width:20px; height:20px;
+      border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.7rem;
+    }
+
+    /* CONNECT CARD */
+    .connect-card {
+      background: linear-gradient(135deg, #0f172a, #1e3a5f);
+      border-radius: 12px; padding: 1.75rem; color: #fff;
+    }
+    .connect-card h5 { font-weight: 700; margin-bottom: 1rem; color: #fcd34d; }
+
+    @media(max-width:768px){ #sidebar{transform:translateX(-100%);} #main{margin-left:0;} }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav id="sidebar">
+  <div class="brand">
+    <div class="badge-mod">Clase 0 · Prerrequisito</div>
+    <h6>Fundamentos de JavaScript</h6>
+    <small style="color:#475569;font-size:.75rem">Módulo 1 — Frontend con Angular</small>
+  </div>
+  <div class="progress-wrap">
+    <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+      <span>Progreso de la clase</span><span id="progress-pct">8%</span>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="section-label">Contenido</div>
+  <nav id="sidenav">
+    <a href="#" class="active" data-section="agenda"    onclick="showSection('agenda',this)"><i class="bi bi-calendar3"></i> Agenda</a>
+    <a href="#" data-section="que-es-js"  onclick="showSection('que-es-js',this)"><i class="bi bi-lightning-charge"></i> ¿Qué es JavaScript?</a>
+    <a href="#" data-section="variables"  onclick="showSection('variables',this)"><i class="bi bi-box"></i> Variables y Tipos de Datos</a>
+    <a href="#" data-section="flujo"      onclick="showSection('flujo',this)"><i class="bi bi-signpost-split"></i> Estructuras de Flujo</a>
+    <a href="#" data-section="funciones"  onclick="showSection('funciones',this)"><i class="bi bi-braces-asterisk"></i> Funciones</a>
+    <a href="#" data-section="arreglos"   onclick="showSection('arreglos',this)"><i class="bi bi-list-ol"></i> Arreglos</a>
+    <a href="#" data-section="objetos"    onclick="showSection('objetos',this)"><i class="bi bi-diagram-2"></i> Objetos</a>
+    <a href="#" data-section="dom"        onclick="showSection('dom',this)"><i class="bi bi-file-earmark-code"></i> El DOM</a>
+    <a href="#" data-section="obj-pred"   onclick="showSection('obj-pred',this)"><i class="bi bi-window"></i> Objetos Predefinidos</a>
+    <a href="#" data-section="eventos"    onclick="showSection('eventos',this)"><i class="bi bi-cursor-fill"></i> Modelo de Eventos</a>
+    <a href="#" data-section="localstorage" onclick="showSection('localstorage',this)"><i class="bi bi-hdd"></i> localStorage</a>
+    <a href="#" data-section="conexion"   onclick="showSection('conexion',this)"><i class="bi bi-arrow-right-circle"></i> Conexión con Clase 1</a>
+  </nav>
+
+  <div class="section-label">Navegación</div>
+  <nav>
+    <a href="clase0.html" style="color:#475569;cursor:default"><i class="bi bi-arrow-left-circle"></i> Clase anterior</a>
+    <a href="clase1.html"><i class="bi bi-arrow-right-circle"></i> Clase 1 →</a>
+  </nav>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div id="main">
+  <div class="topbar">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item text-muted">Módulo 1</li>
+        <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+        <li class="breadcrumb-item active fw-semibold">Clase 0 — Fundamentos de JavaScript</li>
+      </ol>
+    </nav>
+    <span class="ms-auto badge bg-warning-subtle text-warning border border-warning-subtle">
+      <i class="bi bi-clock me-1"></i>2h — Clase introductoria
+    </span>
+  </div>
+
+  <!-- ══════ AGENDA ══════ -->
+  <section id="agenda" class="content-section active">
+    <div class="hero-card">
+      <div class="clase-badge"><i class="bi bi-0-circle me-1"></i>Clase 0 · Prerrequisito</div>
+      <h1>Fundamentos de JavaScript</h1>
+      <p>Todo lo que necesitas saber antes de empezar con APIs, Angular y el mundo FullStack. Desde cero, sin supuestos.</p>
+      <div class="hero-meta mt-3">
+        <span><i class="bi bi-clock me-1"></i>~2 horas</span>
+        <span><i class="bi bi-person-check me-1"></i>Para principiantes</span>
+        <span><i class="bi bi-arrow-right me-1"></i>Conecta con Clase 1</span>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-warning-subtle text-warning"><i class="bi bi-bullseye"></i></div>
+          <h5>¿Para quién es esta clase?</h5>
+          <p>Para quienes conocen HTML y CSS básico pero nunca han programado en JavaScript, o quieren reforzar los fundamentos antes de entrar a temas avanzados.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-success-subtle text-success"><i class="bi bi-check2-all"></i></div>
+          <h5>Al finalizar podrás…</h5>
+          <p>Crear scripts, manipular el DOM, manejar eventos, usar localStorage y entender cómo JS se comunica con el navegador — la base para consumir APIs.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-primary-subtle text-primary"><i class="bi bi-tools"></i></div>
+          <h5>Solo necesitas</h5>
+          <p>Un navegador (Chrome recomendado) y un editor de texto. Abre la consola del navegador con <kbd>F12</kbd> → pestaña <strong>Console</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-list-ol text-warning"></i> Temas de la Clase</h4>
+      <div class="timeline mt-3">
+        <div class="timeline-item">
+          <div class="t-time">Tema 1</div>
+          <div class="t-title">¿Qué es JavaScript y cómo se incluye en una página?</div>
+          <div class="t-desc">Inline, archivo externo, etiqueta script. La consola del navegador.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 2</div>
+          <div class="t-title">Variables y Tipos de Datos</div>
+          <div class="t-desc">var, let, const. String, Number, Boolean, null, undefined, Object.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 3</div>
+          <div class="t-title">Estructuras de Flujo</div>
+          <div class="t-desc">if/else, switch, for, while, for...of, for...in.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 4</div>
+          <div class="t-title">Funciones</div>
+          <div class="t-desc">Declaración, expresión, arrow functions, parámetros y retorno.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 5</div>
+          <div class="t-title">Arreglos</div>
+          <div class="t-desc">Crear, recorrer, push/pop, map, filter, find.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 6</div>
+          <div class="t-title">Objetos</div>
+          <div class="t-desc">Propiedades, métodos, acceso por punto y corchete.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 7</div>
+          <div class="t-title">El DOM — Document Object Model</div>
+          <div class="t-desc">Qué es, cómo seleccionar elementos, leer y modificar el HTML desde JS.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 8</div>
+          <div class="t-title">Objetos predefinidos: document, window, Date</div>
+          <div class="t-desc">Manipulación del DOM, redirección y fechas del lado del cliente.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 9</div>
+          <div class="t-title">Modelo de Eventos</div>
+          <div class="t-desc">click, keyup, input, change. addEventListener.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Tema 10</div>
+          <div class="t-title">localStorage</div>
+          <div class="t-desc">Guardar strings, números, JSON. setItem, getItem, removeItem.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">Conexión →</div>
+          <div class="t-title">Puente hacia la Clase 1</div>
+          <div class="t-desc">Cómo todo esto se usa para consumir APIs con fetch().</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ QUÉ ES JS ══════ -->
+  <section id="que-es-js" class="content-section">
+    <h2 class="fw-bold mb-1">¿Qué es JavaScript?</h2>
+    <p class="text-muted mb-4">El lenguaje que le da vida a las páginas web.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-lightning-charge text-warning"></i> La trinidad del Frontend</h4>
+      <p>Toda página web está construida con tres tecnologías que trabajan juntas:</p>
+      <div class="row g-3 mt-1">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#fff7ed;border:1px solid #fed7aa">
+            <div class="fw-bold mb-2">🧱 HTML</div>
+            <p class="small mb-0" style="color:#374151"><strong>Estructura.</strong> Define qué elementos existen: títulos, párrafos, botones, imágenes.</p>
+            <div class="mt-2" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#9a3412">&lt;button id="btn"&gt;Clic&lt;/button&gt;</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold mb-2">🎨 CSS</div>
+            <p class="small mb-0" style="color:#374151"><strong>Estilo.</strong> Define cómo se ven los elementos: colores, tamaños, posición.</p>
+            <div class="mt-2" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#1e40af">button { color: blue; }</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#fffbeb;border:1px solid #fde68a">
+            <div class="fw-bold mb-2">⚡ JavaScript</div>
+            <p class="small mb-0" style="color:#374151"><strong>Comportamiento.</strong> Define qué pasa cuando el usuario interactúa.</p>
+            <div class="mt-2" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#92400e">btn.onclick = () => alert("¡Hola!");</div>
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-amber mt-3">
+        <strong>Analogía:</strong> HTML es el esqueleto, CSS es la ropa y el maquillaje, JavaScript es los músculos que hacen que el cuerpo se mueva.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-code text-warning"></i> ¿Cómo se incluye JavaScript en una página?</h4>
+      <p>Hay tres formas. Conocerlas todas te ayuda a entender el código que encuentres en proyectos reales.</p>
+
+      <p class="fw-semibold mt-3">① Inline — directamente en el atributo HTML <span class="badge bg-danger-subtle text-danger">No recomendado</span></p>
+      <div class="code-block">
+        <div class="code-header"><span>inline.html</span></div>
+        <pre><span class="cm">&lt;!-- El JS va dentro del atributo del elemento --&gt;</span>
+<span class="kw">&lt;button</span> <span class="prop">onclick</span>=<span class="str">"alert('Hola!')"</span><span class="kw">&gt;</span>Clic aquí<span class="kw">&lt;/button&gt;</span>
+
+<span class="cm">&lt;!-- Problema: mezcla HTML con JS, difícil de mantener --&gt;</span></pre>
+      </div>
+
+      <p class="fw-semibold mt-3">② Etiqueta &lt;script&gt; — dentro del HTML <span class="badge bg-warning-subtle text-warning">Para aprender/prototipos</span></p>
+      <div class="code-block">
+        <div class="code-header"><span>script-interno.html</span></div>
+        <pre><span class="kw">&lt;body&gt;</span>
+  <span class="kw">&lt;h1&gt;</span>Mi página<span class="kw">&lt;/h1&gt;</span>
+
+  <span class="cm">&lt;!-- El script va al FINAL del body para que el HTML ya esté cargado --&gt;</span>
+  <span class="kw">&lt;script&gt;</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"¡Hola desde JavaScript!"</span>);
+    <span class="fn">alert</span>(<span class="str">"La página cargó"</span>);
+  <span class="kw">&lt;/script&gt;</span>
+<span class="kw">&lt;/body&gt;</span></pre>
+      </div>
+
+      <p class="fw-semibold mt-3">③ Archivo externo .js — la forma profesional <span class="badge bg-success-subtle text-success">Recomendado</span></p>
+      <div class="code-block">
+        <div class="code-header"><span>index.html + app.js</span></div>
+        <pre><span class="cm">&lt;!-- En el HTML, antes de cerrar &lt;/body&gt; --&gt;</span>
+<span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="cm">/* En app.js (archivo separado) */</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Código limpio y separado del HTML"</span>);</pre>
+      </div>
+
+      <div class="callout callout-blue mt-2">
+        <strong>La consola del navegador</strong> es tu mejor amiga para aprender. Abre con <kbd>F12</kbd> → pestaña <strong>Console</strong>. Puedes escribir JavaScript directamente ahí y ver el resultado inmediato.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-terminal text-warning"></i> Demo: console.log y alert</div>
+        <div class="d-flex gap-2">
+          <button class="run-btn" onclick="demoConsole()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div class="code-block mb-3">
+          <div class="code-header"><span>demo-basico.js</span></div>
+          <pre><span class="cm">// console.log → imprime en la consola del navegador</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hola Mundo"</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">2024</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="bool">true</span>);
+
+<span class="cm">// Operaciones matemáticas básicas</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">10</span> + <span class="num">5</span>);   <span class="cm">// 15</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">10</span> * <span class="num">3</span>);   <span class="cm">// 30</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">10</span> / <span class="num">4</span>);   <span class="cm">// 2.5</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="num">10</span> % <span class="num">3</span>);   <span class="cm">// 1 (resto de la división)</span></pre>
+        </div>
+        <div id="out-console" class="output-area">Haz clic en Ejecutar...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ VARIABLES ══════ -->
+  <section id="variables" class="content-section">
+    <h2 class="fw-bold mb-1">Variables y Tipos de Datos</h2>
+    <p class="text-muted mb-4">Las variables son cajas donde guardamos información para usarla después.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-box text-warning"></i> var, let y const — ¿cuál usar?</h4>
+      <p>JavaScript tiene tres formas de declarar variables. Hoy en día se usan <code>let</code> y <code>const</code>:</p>
+      <div class="code-block">
+        <div class="code-header"><span>variables.js</span></div>
+        <pre><span class="cm">// const → valor que NO cambia (la mayoría de los casos)</span>
+<span class="kw">const</span> nombre = <span class="str">"Ana"</span>;
+<span class="kw">const</span> PI     = <span class="num">3.14159</span>;
+
+<span class="cm">// let → valor que SÍ puede cambiar</span>
+<span class="kw">let</span> edad   = <span class="num">25</span>;
+<span class="kw">let</span> activo = <span class="bool">true</span>;
+edad = <span class="num">26</span>;  <span class="cm">// ✓ Válido con let</span>
+
+<span class="cm">// var → la forma antigua, evitarla</span>
+<span class="kw">var</span> viejo = <span class="str">"no usar"</span>;  <span class="cm">// Tiene comportamientos confusos</span>
+
+<span class="cm">// Regla práctica:</span>
+<span class="cm">// → Siempre usa const. Si necesitas reasignar, cambia a let.</span></pre>
+      </div>
+      <div class="callout callout-green">
+        <strong>Regla de oro:</strong> Empieza siempre con <code>const</code>. Si en algún momento necesitas cambiar el valor, entonces cambia a <code>let</code>. Nunca uses <code>var</code> en código nuevo.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-tags text-warning"></i> Tipos de Datos</h4>
+      <p>JavaScript es un lenguaje de tipado dinámico: no declaras el tipo, JS lo infiere solo.</p>
+      <div class="code-block">
+        <div class="code-header"><span>tipos.js</span></div>
+        <pre><span class="cm">// STRING — texto, siempre entre comillas</span>
+<span class="kw">const</span> nombre   = <span class="str">"JavaScript"</span>;
+<span class="kw">const</span> saludo   = <span class="str">'Hola mundo'</span>;
+<span class="kw">const</span> template = <span class="str">`Hola, soy </span>${nombre}<span class="str">`</span>;  <span class="cm">// Template literal</span>
+
+<span class="cm">// NUMBER — números enteros y decimales</span>
+<span class="kw">const</span> entero  = <span class="num">42</span>;
+<span class="kw">const</span> decimal = <span class="num">19.99</span>;
+<span class="kw">const</span> negativo = <span class="num">-8</span>;
+
+<span class="cm">// BOOLEAN — solo true o false</span>
+<span class="kw">const</span> esMayor = <span class="bool">true</span>;
+<span class="kw">const</span> logueado = <span class="bool">false</span>;
+
+<span class="cm">// NULL — ausencia intencional de valor</span>
+<span class="kw">let</span> usuarioActual = <span class="bool">null</span>;  <span class="cm">// Aún no hay usuario</span>
+
+<span class="cm">// UNDEFINED — variable declarada sin valor</span>
+<span class="kw">let</span> resultado;
+<span class="fn">console</span>.<span class="fn">log</span>(resultado);  <span class="cm">// undefined</span>
+
+<span class="cm">// OBJECT — colección de propiedades (lo veremos más)</span>
+<span class="kw">const</span> persona = { <span class="prop">nombre</span>: <span class="str">"Luis"</span>, <span class="prop">edad</span>: <span class="num">30</span> };
+
+<span class="cm">// ARRAY — lista ordenada (también es un objeto)</span>
+<span class="kw">const</span> frutas = [<span class="str">"manzana"</span>, <span class="str">"pera"</span>, <span class="str">"uva"</span>];
+
+<span class="cm">// typeof → ver el tipo de cualquier valor</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> nombre);   <span class="cm">// "string"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> entero);   <span class="cm">// "number"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> esMayor);  <span class="cm">// "boolean"</span></pre>
+      </div>
+
+      <div class="row g-3 mt-2">
+        <div class="col-6 col-md-3 text-center"><span class="type-badge t-string">string</span><div class="small text-muted mt-1">Texto</div></div>
+        <div class="col-6 col-md-3 text-center"><span class="type-badge t-number">number</span><div class="small text-muted mt-1">Números</div></div>
+        <div class="col-6 col-md-3 text-center"><span class="type-badge t-boolean">boolean</span><div class="small text-muted mt-1">true / false</div></div>
+        <div class="col-6 col-md-3 text-center"><span class="type-badge t-null">null</span><div class="small text-muted mt-1">Sin valor</div></div>
+        <div class="col-6 col-md-3 text-center"><span class="type-badge t-undef">undefined</span><div class="small text-muted mt-1">No asignado</div></div>
+        <div class="col-6 col-md-3 text-center"><span class="type-badge t-object">object</span><div class="small text-muted mt-1">{ clave: valor }</div></div>
+        <div class="col-6 col-md-3 text-center"><span class="type-badge t-array">array</span><div class="small text-muted mt-1">[lista]</div></div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-scissors text-warning"></i> Operaciones con Strings útiles</h4>
+      <div class="code-block">
+        <div class="code-header"><span>strings.js</span></div>
+        <pre><span class="kw">const</span> nombre = <span class="str">"JavaScript"</span>;
+
+nombre.<span class="fn">length</span>          <span class="cm">// 10 — cantidad de caracteres</span>
+nombre.<span class="fn">toUpperCase</span>()   <span class="cm">// "JAVASCRIPT"</span>
+nombre.<span class="fn">toLowerCase</span>()   <span class="cm">// "javascript"</span>
+nombre.<span class="fn">includes</span>(<span class="str">"Script"</span>) <span class="cm">// true</span>
+nombre.<span class="fn">slice</span>(<span class="num">0</span>, <span class="num">4</span>)      <span class="cm">// "Java"</span>
+nombre.<span class="fn">replace</span>(<span class="str">"Java"</span>, <span class="str">"Type"</span>) <span class="cm">// "TypeScript"</span>
+
+<span class="cm">// Concatenar (unir strings)</span>
+<span class="kw">const</span> apellido = <span class="str">"Developer"</span>;
+<span class="kw">const</span> completo = nombre + <span class="str">" "</span> + apellido; <span class="cm">// "JavaScript Developer"</span>
+
+<span class="cm">// Template literals — la forma moderna (recomendada)</span>
+<span class="kw">const</span> precio = <span class="num">99.5</span>;
+<span class="kw">const</span> msg = <span class="str">`El precio es: $</span>${precio}<span class="str">`</span>;  <span class="cm">// "El precio es: $99.5"</span></pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-warning"></i> Demo interactivo: Variables y tipos</div>
+        <button class="run-btn" onclick="demoVariables()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+      </div>
+      <div class="sandbox-body">
+        <div id="out-vars" class="output-area">Haz clic en Ejecutar...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ FLUJO ══════ -->
+  <section id="flujo" class="content-section">
+    <h2 class="fw-bold mb-1">Estructuras de Flujo</h2>
+    <p class="text-muted mb-4">Controlan qué código se ejecuta y cuántas veces.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-signpost-2 text-warning"></i> if / else — Tomar decisiones</h4>
+      <div class="code-block">
+        <div class="code-header"><span>if-else.js</span></div>
+        <pre><span class="kw">const</span> edad = <span class="num">20</span>;
+
+<span class="kw">if</span> (edad >= <span class="num">18</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Mayor de edad ✓"</span>);
+} <span class="kw">else if</span> (edad >= <span class="num">13</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Adolescente"</span>);
+} <span class="kw">else</span> {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Menor de edad"</span>);
+}
+
+<span class="cm">// Operadores de comparación</span>
+<span class="cm">// ==  igualdad de valor (evitar)</span>
+<span class="cm">// === igualdad de valor Y tipo (usar este siempre)</span>
+<span class="cm">// !=  diferente valor</span>
+<span class="cm">// !   negación (NOT)</span>
+<span class="cm">// &&  Y lógico (AND)</span>
+<span class="cm">// ||  O lógico (OR)</span>
+
+<span class="kw">const</span> usuario = <span class="str">"admin"</span>;
+<span class="kw">const</span> pass    = <span class="str">"1234"</span>;
+
+<span class="kw">if</span> (usuario === <span class="str">"admin"</span> && pass === <span class="str">"1234"</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Bienvenido 🎉"</span>);
+} <span class="kw">else</span> {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Credenciales incorrectas ✗"</span>);
+}</pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-arrow-repeat text-warning"></i> Bucles — Repetir código</h4>
+      <div class="code-block">
+        <div class="code-header"><span>bucles.js</span></div>
+        <pre><span class="cm">// FOR clásico — cuando sabes cuántas veces repetir</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < <span class="num">3</span>; i++) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Vuelta número:"</span>, i);
+}
+<span class="cm">// Imprime: 0, 1, 2</span>
+
+<span class="cm">// FOR...OF — recorrer arrays (el más usado en la práctica)</span>
+<span class="kw">const</span> frutas = [<span class="str">"🍎 Manzana"</span>, <span class="str">"🍐 Pera"</span>, <span class="str">"🍇 Uva"</span>];
+
+<span class="kw">for</span> (<span class="kw">const</span> fruta <span class="kw">of</span> frutas) {
+  <span class="fn">console</span>.<span class="fn">log</span>(fruta);
+}
+
+<span class="cm">// WHILE — mientras se cumpla la condición</span>
+<span class="kw">let</span> contador = <span class="num">0</span>;
+<span class="kw">while</span> (contador < <span class="num">3</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Contador:"</span>, contador);
+  contador++;
+}
+
+<span class="cm">// forEach — forma funcional de recorrer arrays</span>
+frutas.<span class="fn">forEach</span>(<span class="kw">function</span>(fruta, indice) {
+  <span class="fn">console</span>.<span class="fn">log</span>(indice, fruta);
+});</pre>
+      </div>
+      <div class="callout callout-blue">
+        <strong>¿Cuál usar?</strong> En proyectos modernos con arrays usarás casi siempre <code>forEach</code> o <code>for...of</code>. El <code>for</code> clásico se usa cuando necesitas el índice o hacer algo más complejo.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-warning"></i> Demo: Flujo de control</div>
+        <button class="run-btn" onclick="demoFlujo()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+      </div>
+      <div class="sandbox-body">
+        <div id="out-flujo" class="output-area">Haz clic en Ejecutar...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ FUNCIONES ══════ -->
+  <section id="funciones" class="content-section">
+    <h2 class="fw-bold mb-1">Funciones</h2>
+    <p class="text-muted mb-4">Bloques de código reutilizables. La base de cualquier programa.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-braces-asterisk text-warning"></i> Tres formas de declarar funciones</h4>
+      <div class="code-block">
+        <div class="code-header"><span>funciones.js</span></div>
+        <pre><span class="cm">// ① Función declarada — la forma clásica</span>
+<span class="kw">function</span> <span class="fn">saludar</span>(nombre) {
+  <span class="kw">return</span> <span class="str">`Hola, </span>${nombre}<span class="str">!`</span>;
+}
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">saludar</span>(<span class="str">"Ana"</span>));  <span class="cm">// "Hola, Ana!"</span>
+
+<span class="cm">// ② Función expresión — guardada en una variable</span>
+<span class="kw">const</span> <span class="fn">sumar</span> = <span class="kw">function</span>(a, b) {
+  <span class="kw">return</span> a + b;
+};
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">sumar</span>(<span class="num">3</span>, <span class="num">7</span>));  <span class="cm">// 10</span>
+
+<span class="cm">// ③ Arrow function — sintaxis moderna y compacta</span>
+<span class="kw">const</span> <span class="fn">multiplicar</span> = (a, b) => a * b;
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">multiplicar</span>(<span class="num">4</span>, <span class="num">5</span>));  <span class="cm">// 20</span>
+
+<span class="cm">// Con varias líneas necesita llaves y return explícito</span>
+<span class="kw">const</span> <span class="fn">calcularPrecio</span> = (precio, descuento) => {
+  <span class="kw">const</span> descuentoAmt = precio * (descuento / <span class="num">100</span>);
+  <span class="kw">return</span> precio - descuentoAmt;
+};
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">calcularPrecio</span>(<span class="num">100</span>, <span class="num">20</span>));  <span class="cm">// 80</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-gear text-warning"></i> Parámetros y valores por defecto</h4>
+      <div class="code-block">
+        <div class="code-header"><span>parametros.js</span></div>
+        <pre><span class="cm">// Parámetro con valor por defecto</span>
+<span class="kw">function</span> <span class="fn">saludar</span>(nombre = <span class="str">"Visitante"</span>) {
+  <span class="kw">return</span> <span class="str">`Bienvenido, </span>${nombre}<span class="str">!`</span>;
+}
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">saludar</span>(<span class="str">"Carlos"</span>)); <span class="cm">// "Bienvenido, Carlos!"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">saludar</span>());         <span class="cm">// "Bienvenido, Visitante!"</span>
+
+<span class="cm">// Función que puede retornar distintos tipos</span>
+<span class="kw">function</span> <span class="fn">dividir</span>(a, b) {
+  <span class="kw">if</span> (b === <span class="num">0</span>) {
+    <span class="kw">return</span> <span class="str">"Error: no se puede dividir entre 0"</span>;
+  }
+  <span class="kw">return</span> a / b;
+}
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">dividir</span>(<span class="num">10</span>, <span class="num">2</span>));  <span class="cm">// 5</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">dividir</span>(<span class="num">10</span>, <span class="num">0</span>));  <span class="cm">// "Error: no se puede dividir entre 0"</span></pre>
+      </div>
+      <div class="callout callout-purple">
+        <strong>¿Cuándo usar Arrow Functions?</strong> Son perfectas para funciones cortas, callbacks y métodos de arrays como <code>map</code>, <code>filter</code>, <code>forEach</code>. Para funciones principales y métodos de clase, usa la declaración clásica.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-warning"></i> Demo: Funciones en acción</div>
+        <button class="run-btn" onclick="demoFunciones()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+      </div>
+      <div class="sandbox-body">
+        <div id="out-func" class="output-area">Haz clic en Ejecutar...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ ARREGLOS ══════ -->
+  <section id="arreglos" class="content-section">
+    <h2 class="fw-bold mb-1">Arreglos (Arrays)</h2>
+    <p class="text-muted mb-4">Listas ordenadas de elementos. Son fundamentales para manejar datos de APIs.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-list-ol text-warning"></i> Crear y acceder a arreglos</h4>
+      <div class="code-block">
+        <div class="code-header"><span>arrays-basico.js</span></div>
+        <pre><span class="cm">// Crear un array</span>
+<span class="kw">const</span> colores  = [<span class="str">"rojo"</span>, <span class="str">"verde"</span>, <span class="str">"azul"</span>];
+<span class="kw">const</span> numeros  = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>];
+<span class="kw">const</span> mixto    = [<span class="str">"Laptop"</span>, <span class="num">999</span>, <span class="bool">true</span>];  <span class="cm">// Puede tener tipos distintos</span>
+
+<span class="cm">// Acceder por índice (empieza en 0)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(colores[<span class="num">0</span>]);   <span class="cm">// "rojo"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(colores[<span class="num">2</span>]);   <span class="cm">// "azul"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(colores.<span class="fn">length</span>); <span class="cm">// 3 — cantidad de elementos</span>
+
+<span class="cm">// Modificar un elemento</span>
+colores[<span class="num">1</span>] = <span class="str">"amarillo"</span>;   <span class="cm">// ["rojo", "amarillo", "azul"]</span>
+
+<span class="cm">// Agregar y quitar elementos</span>
+colores.<span class="fn">push</span>(<span class="str">"negro"</span>);    <span class="cm">// agrega al final</span>
+colores.<span class="fn">pop</span>();            <span class="cm">// quita el último</span>
+colores.<span class="fn">unshift</span>(<span class="str">"blanco"</span>); <span class="cm">// agrega al inicio</span>
+colores.<span class="fn">shift</span>();          <span class="cm">// quita el primero</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-funnel text-warning"></i> Métodos funcionales — los más importantes</h4>
+      <p>Estos métodos son los que más vas a usar cuando recibas datos de una API:</p>
+      <div class="code-block">
+        <div class="code-header"><span>array-metodos.js</span></div>
+        <pre><span class="kw">const</span> productos = [
+  { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">nombre</span>: <span class="str">"Laptop"</span>,   <span class="prop">precio</span>: <span class="num">999</span>,  <span class="prop">stock</span>: <span class="bool">true</span>  },
+  { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">nombre</span>: <span class="str">"Mouse"</span>,    <span class="prop">precio</span>: <span class="num">29</span>,   <span class="prop">stock</span>: <span class="bool">false</span> },
+  { <span class="prop">id</span>: <span class="num">3</span>, <span class="prop">nombre</span>: <span class="str">"Monitor"</span>,  <span class="prop">precio</span>: <span class="num">350</span>,  <span class="prop">stock</span>: <span class="bool">true</span>  },
+  { <span class="prop">id</span>: <span class="num">4</span>, <span class="prop">nombre</span>: <span class="str">"Teclado"</span>,  <span class="prop">precio</span>: <span class="num">45</span>,   <span class="prop">stock</span>: <span class="bool">true</span>  },
+];
+
+<span class="cm">// MAP → transforma cada elemento, devuelve nuevo array</span>
+<span class="kw">const</span> nombres = productos.<span class="fn">map</span>(p => p.nombre);
+<span class="cm">// ["Laptop", "Mouse", "Monitor", "Teclado"]</span>
+
+<span class="kw">const</span> conIva = productos.<span class="fn">map</span>(p => ({
+  ...p,
+  <span class="prop">precioConIva</span>: (p.precio * <span class="num">1.13</span>).<span class="fn">toFixed</span>(<span class="num">2</span>)
+}));
+
+<span class="cm">// FILTER → filtra elementos, devuelve nuevo array</span>
+<span class="kw">const</span> disponibles = productos.<span class="fn">filter</span>(p => p.stock === <span class="bool">true</span>);
+<span class="cm">// [Laptop, Monitor, Teclado]</span>
+
+<span class="kw">const</span> caros = productos.<span class="fn">filter</span>(p => p.precio > <span class="num">100</span>);
+<span class="cm">// [Laptop, Monitor]</span>
+
+<span class="cm">// FIND → devuelve el PRIMER elemento que cumple la condición</span>
+<span class="kw">const</span> laptop = productos.<span class="fn">find</span>(p => p.id === <span class="num">1</span>);
+<span class="cm">// { id:1, nombre:"Laptop", ... }</span>
+
+<span class="cm">// SOME → ¿algún elemento cumple la condición? (boolean)</span>
+<span class="kw">const</span> hayStock = productos.<span class="fn">some</span>(p => p.stock);  <span class="cm">// true</span>
+
+<span class="cm">// EVERY → ¿todos cumplen la condición? (boolean)</span>
+<span class="kw">const</span> todosConStock = productos.<span class="fn">every</span>(p => p.stock); <span class="cm">// false</span></pre>
+      </div>
+      <div class="callout callout-green">
+        <strong>¡Muy importante!</strong> Cuando en la Clase 1 recibas un array de productos de la API, usarás exactamente estos métodos: <code>map</code> para renderizar tarjetas, <code>filter</code> para buscar, <code>find</code> para obtener uno por id.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-warning"></i> Demo: map, filter, find</div>
+        <button class="run-btn" onclick="demoArrays()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+      </div>
+      <div class="sandbox-body">
+        <div id="out-arrays" class="output-area">Haz clic en Ejecutar...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ OBJETOS ══════ -->
+  <section id="objetos" class="content-section">
+    <h2 class="fw-bold mb-1">Objetos</h2>
+    <p class="text-muted mb-4">Estructuras que agrupan datos relacionados bajo un mismo nombre. Así vienen los datos de las APIs.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-2 text-warning"></i> Crear y usar objetos</h4>
+      <div class="code-block">
+        <div class="code-header"><span>objetos.js</span></div>
+        <pre><span class="cm">// Un objeto es una colección de pares clave: valor</span>
+<span class="kw">const</span> producto = {
+  <span class="prop">id</span>:          <span class="num">1</span>,
+  <span class="prop">nombre</span>:      <span class="str">"Laptop Pro"</span>,
+  <span class="prop">precio</span>:      <span class="num">1299.99</span>,
+  <span class="prop">disponible</span>:  <span class="bool">true</span>,
+  <span class="prop">categorias</span>:  [<span class="str">"electrónica"</span>, <span class="str">"computadoras"</span>],
+  <span class="prop">especificaciones</span>: {           <span class="cm">// Objeto anidado</span>
+    <span class="prop">ram</span>:  <span class="str">"16GB"</span>,
+    <span class="prop">disco</span>: <span class="str">"512GB SSD"</span>
+  }
+};
+
+<span class="cm">// Acceder a propiedades — dos formas</span>
+<span class="fn">console</span>.<span class="fn">log</span>(producto.<span class="prop">nombre</span>);          <span class="cm">// "Laptop Pro" — notación punto</span>
+<span class="fn">console</span>.<span class="fn">log</span>(producto[<span class="str">"precio"</span>]);       <span class="cm">// 1299.99 — notación corchete</span>
+<span class="fn">console</span>.<span class="fn">log</span>(producto.<span class="prop">especificaciones</span>.<span class="prop">ram</span>);  <span class="cm">// "16GB"</span>
+
+<span class="cm">// Modificar y agregar propiedades</span>
+producto.<span class="prop">precio</span> = <span class="num">1099.99</span>;          <span class="cm">// Modificar</span>
+producto.<span class="prop">descuento</span> = <span class="num">15</span>;             <span class="cm">// Agregar nueva propiedad</span>
+
+<span class="cm">// Verificar si una propiedad existe</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"nombre"</span> <span class="kw">in</span> producto);   <span class="cm">// true</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"color"</span>  <span class="kw">in</span> producto);   <span class="cm">// false</span>
+
+<span class="cm">// Obtener todas las claves o valores</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Object.<span class="fn">keys</span>(producto));   <span class="cm">// ["id", "nombre", "precio"...]</span>
+<span class="fn">console</span>.<span class="fn">log</span>(Object.<span class="fn">values</span>(producto)); <span class="cm">// [1, "Laptop Pro", 1099.99...]</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-person-badge text-warning"></i> Desestructuración — forma moderna de extraer datos</h4>
+      <div class="code-block">
+        <div class="code-header"><span>destructuring.js</span></div>
+        <pre><span class="kw">const</span> usuario = {
+  <span class="prop">nombre</span>: <span class="str">"María"</span>,
+  <span class="prop">email</span>:  <span class="str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e38e82918a82a38689868e938f8ccd808c8e">[email&#160;protected]</a>"</span>,
+  <span class="prop">edad</span>:   <span class="num">28</span>,
+  <span class="prop">rol</span>:    <span class="str">"admin"</span>
+};
+
+<span class="cm">// Sin desestructuración — repetitivo</span>
+<span class="kw">const</span> nombre = usuario.nombre;
+<span class="kw">const</span> email  = usuario.email;
+
+<span class="cm">// Con desestructuración — limpio y moderno</span>
+<span class="kw">const</span> { nombre, email, edad } = usuario;
+<span class="fn">console</span>.<span class="fn">log</span>(nombre);  <span class="cm">// "María"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(email);   <span class="cm">// "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cba6aab9a2aa8baea1aea6bba7a4e5a8a4a6">[email&#160;protected]</a>"</span>
+
+<span class="cm">// Muy usado en funciones que reciben objetos</span>
+<span class="kw">function</span> <span class="fn">mostrarUsuario</span>({ nombre, rol }) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`</span>${nombre}<span class="str"> es </span>${rol}<span class="str">`</span>);
+}
+<span class="fn">mostrarUsuario</span>(usuario);  <span class="cm">// "María es admin"</span>
+
+<span class="cm">// Spread operator — copiar o combinar objetos</span>
+<span class="kw">const</span> actualizado = { ...usuario, <span class="prop">edad</span>: <span class="num">29</span> };
+<span class="cm">// Crea nuevo objeto con todos los datos + edad modificada</span></pre>
+      </div>
+      <div class="callout callout-amber">
+        <strong>¿Para qué sirve esto en la práctica?</strong> Cuando recibas un objeto de una API, usarás desestructuración constantemente para extraer solo los campos que necesitas mostrar.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-warning"></i> Demo: Objetos y desestructuración</div>
+        <button class="run-btn" onclick="demoObjetos()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+      </div>
+      <div class="sandbox-body">
+        <div id="out-obj" class="output-area">Haz clic en Ejecutar...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ DOM ══════ -->
+  <section id="dom" class="content-section">
+    <h2 class="fw-bold mb-1">El DOM — Document Object Model</h2>
+    <p class="text-muted mb-4">Cómo JavaScript "ve" y puede modificar la página HTML.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-3 text-warning"></i> ¿Qué es el DOM?</h4>
+      <p>Cuando el navegador carga un archivo HTML, lo transforma en un <strong>árbol de objetos</strong> que JavaScript puede leer y modificar. A ese árbol se le llama DOM.</p>
+      <p class="mt-2">Piénsalo así: el HTML es el <em>plano de la casa</em>, el DOM es la <em>casa construida</em> que puedes modificar en tiempo real.</p>
+      <div class="dom-tree mt-3">
+        <div><span class="node-html">▼ &lt;html&gt;</span></div>
+        <div>&nbsp;&nbsp;<span class="node-head">▼ &lt;head&gt;</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="node-elem">&lt;title&gt;</span> <span class="node-text">"Mi Página"</span></div>
+        <div>&nbsp;&nbsp;<span class="node-body">▼ &lt;body&gt;</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="node-elem">▼ &lt;div</span> <span class="node-attr">id="app"</span><span class="node-elem">&gt;</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="node-elem">&lt;h1&gt;</span> <span class="node-text">"Tienda"</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="node-elem">▼ &lt;ul</span> <span class="node-attr">id="lista"</span><span class="node-elem">&gt;</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="node-elem">&lt;li&gt;</span> <span class="node-text">"Producto 1"</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="node-elem">&lt;li&gt;</span> <span class="node-text">"Producto 2"</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="node-elem">&lt;button</span> <span class="node-attr">id="btn"</span><span class="node-elem">&gt;</span> <span class="node-text">"Cargar"</span></div>
+      </div>
+      <p class="small text-muted mt-2">Cada elemento HTML se convierte en un <strong>nodo</strong> del árbol. JS puede seleccionar, crear, modificar y eliminar cualquier nodo.</p>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-cursor text-warning"></i> Seleccionar elementos del DOM</h4>
+      <div class="code-block">
+        <div class="code-header"><span>seleccionar-dom.js</span></div>
+        <pre><span class="cm">// getElementById — el más directo, por id único</span>
+<span class="kw">const</span> titulo   = document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>);
+<span class="kw">const</span> boton    = document.<span class="fn">getElementById</span>(<span class="str">"btn-cargar"</span>);
+
+<span class="cm">// querySelector — selecciona con CSS selector, el primero que encuentre</span>
+<span class="kw">const</span> parrafo  = document.<span class="fn">querySelector</span>(<span class="str">"p"</span>);
+<span class="kw">const</span> card     = document.<span class="fn">querySelector</span>(<span class="str">".card"</span>);
+<span class="kw">const</span> inputNom = document.<span class="fn">querySelector</span>(<span class="str">"#nombre"</span>);
+
+<span class="cm">// querySelectorAll — devuelve TODOS los que coinciden (NodeList)</span>
+<span class="kw">const</span> tarjetas = document.<span class="fn">querySelectorAll</span>(<span class="str">".tarjeta"</span>);
+<span class="kw">const</span> inputs   = document.<span class="fn">querySelectorAll</span>(<span class="str">"input"</span>);
+
+<span class="cm">// Recorrer el resultado de querySelectorAll</span>
+tarjetas.<span class="fn">forEach</span>(<span class="kw">function</span>(tarjeta) {
+  <span class="fn">console</span>.<span class="fn">log</span>(tarjeta.textContent);
+});</pre>
+      </div>
+
+      <h4 class="mt-4"><i class="bi bi-pencil-square text-warning"></i> Modificar elementos del DOM</h4>
+      <div class="code-block">
+        <div class="code-header"><span>modificar-dom.js</span></div>
+        <pre><span class="kw">const</span> titulo = document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>);
+
+<span class="cm">// Cambiar texto</span>
+titulo.<span class="prop">textContent</span> = <span class="str">"Nuevo título"</span>;
+
+<span class="cm">// Cambiar HTML interno (puede incluir etiquetas)</span>
+titulo.<span class="prop">innerHTML</span> = <span class="str">"&lt;strong&gt;Título&lt;/strong&gt; modificado"</span>;
+
+<span class="cm">// Cambiar estilos CSS directamente</span>
+titulo.<span class="prop">style</span>.<span class="prop">color</span>      = <span class="str">"red"</span>;
+titulo.<span class="prop">style</span>.<span class="prop">fontSize</span>   = <span class="str">"2rem"</span>;
+titulo.<span class="prop">style</span>.<span class="prop">display</span>    = <span class="str">"none"</span>;   <span class="cm">// Ocultar</span>
+
+<span class="cm">// Agregar y quitar clases CSS</span>
+titulo.<span class="prop">classList</span>.<span class="fn">add</span>(<span class="str">"activo"</span>);
+titulo.<span class="prop">classList</span>.<span class="fn">remove</span>(<span class="str">"oculto"</span>);
+titulo.<span class="prop">classList</span>.<span class="fn">toggle</span>(<span class="str">"resaltado"</span>);  <span class="cm">// Agrega si no tiene, quita si tiene</span>
+titulo.<span class="prop">classList</span>.<span class="fn">contains</span>(<span class="str">"activo"</span>);   <span class="cm">// true/false</span>
+
+<span class="cm">// Leer el valor de un input</span>
+<span class="kw">const</span> input = document.<span class="fn">getElementById</span>(<span class="str">"busqueda"</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(input.<span class="prop">value</span>);  <span class="cm">// Lo que el usuario escribió</span>
+
+<span class="cm">// Agregar HTML nuevo al contenedor</span>
+<span class="kw">const</span> lista = document.<span class="fn">getElementById</span>(<span class="str">"lista"</span>);
+lista.<span class="prop">innerHTML</span> += <span class="str">`&lt;li&gt;Nuevo elemento&lt;/li&gt;`</span>;</pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-warning"></i> Demo interactivo: Manipular el DOM</div>
+      </div>
+      <div class="sandbox-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Escribe un texto:</label>
+              <input type="text" id="dom-input" class="form-control" placeholder="Escribe algo..." />
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="run-btn" onclick="domCambiarTexto()"><i class="bi bi-pencil"></i> Cambiar texto</button>
+              <button class="run-btn blue" onclick="domCambiarColor()"><i class="bi bi-palette"></i> Cambiar color</button>
+              <button class="run-btn green" onclick="domAgregarItem()"><i class="bi bi-plus"></i> Agregar a lista</button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div id="dom-resultado" style="padding:1rem;border:2px solid #e2e8f0;border-radius:8px;min-height:80px">
+              <span id="dom-texto" style="font-weight:600;font-size:1.1rem">Texto original</span>
+            </div>
+            <ul id="dom-lista" class="mt-2 ps-3" style="font-size:.9rem"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ OBJETOS PREDEFINIDOS ══════ -->
+  <section id="obj-pred" class="content-section">
+    <h2 class="fw-bold mb-1">Objetos Predefinidos de JavaScript</h2>
+    <p class="text-muted mb-4">JavaScript incluye objetos globales listos para usar. Los más importantes para el desarrollo web.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-earmark-text text-warning"></i> document — El objeto del DOM</h4>
+      <p><code>document</code> representa toda la página HTML. Es el punto de entrada para cualquier manipulación del DOM.</p>
+      <div class="code-block">
+        <div class="code-header"><span>document-ejemplos.js</span></div>
+        <pre><span class="cm">// Información de la página</span>
+<span class="fn">console</span>.<span class="fn">log</span>(document.<span class="prop">title</span>);      <span class="cm">// Título de la pestaña</span>
+<span class="fn">console</span>.<span class="fn">log</span>(document.<span class="prop">URL</span>);        <span class="cm">// URL actual</span>
+<span class="fn">console</span>.<span class="fn">log</span>(document.<span class="prop">body</span>);       <span class="cm">// Todo el &lt;body&gt;</span>
+
+<span class="cm">// Crear un elemento nuevo desde JS</span>
+<span class="kw">const</span> nuevoParrafo = document.<span class="fn">createElement</span>(<span class="str">"p"</span>);
+nuevoParrafo.<span class="prop">textContent</span> = <span class="str">"Párrafo creado con JavaScript"</span>;
+nuevoParrafo.<span class="prop">className</span>   = <span class="str">"text-success"</span>;
+
+<span class="cm">// Insertar en el DOM</span>
+<span class="kw">const</span> contenedor = document.<span class="fn">getElementById</span>(<span class="str">"app"</span>);
+contenedor.<span class="fn">appendChild</span>(nuevoParrafo);
+
+<span class="cm">// Eliminar un elemento</span>
+<span class="kw">const</span> elemento = document.<span class="fn">getElementById</span>(<span class="str">"viejo"</span>);
+elemento.<span class="fn">remove</span>();   <span class="cm">// Borra del DOM</span></pre>
+      </div>
+
+      <div class="sandbox mt-3">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-file-earmark text-warning"></i> Ejemplo: document en acción</div>
+          <button class="run-btn" onclick="demoDocument()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+        </div>
+        <div class="sandbox-body">
+          <div id="doc-zone" style="border:2px dashed #e2e8f0;border-radius:8px;padding:1rem;min-height:60px;font-size:.85rem;color:#64748b">
+            Los elementos creados aparecerán aquí...
+          </div>
+          <div id="out-doc" class="output-area mt-2">Resultado de la consola...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-window text-warning"></i> window — El objeto del navegador</h4>
+      <p><code>window</code> representa la ventana del navegador. Contiene todo: el DOM, el historial, la URL, y más. Es el objeto global, por eso <code>console</code>, <code>alert</code>, <code>fetch</code> son en realidad <code>window.console</code>, <code>window.alert</code>, etc.</p>
+      <div class="code-block">
+        <div class="code-header"><span>window-ejemplos.js</span></div>
+        <pre><span class="cm">// Información del navegador y pantalla</span>
+<span class="fn">console</span>.<span class="fn">log</span>(window.<span class="prop">innerWidth</span>);   <span class="cm">// Ancho de la ventana en px</span>
+<span class="fn">console</span>.<span class="fn">log</span>(window.<span class="prop">innerHeight</span>);  <span class="cm">// Alto de la ventana en px</span>
+
+<span class="cm">// window.location — todo sobre la URL actual</span>
+<span class="fn">console</span>.<span class="fn">log</span>(window.<span class="prop">location</span>.<span class="prop">href</span>);      <span class="cm">// URL completa</span>
+<span class="fn">console</span>.<span class="fn">log</span>(window.<span class="prop">location</span>.<span class="prop">pathname</span>);  <span class="cm">// Solo la ruta: "/productos"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(window.<span class="prop">location</span>.<span class="prop">hostname</span>);  <span class="cm">// Solo el dominio: "miapp.com"</span>
+
+<span class="cm">// REDIRECCIÓN — llevar al usuario a otra página</span>
+window.<span class="prop">location</span>.<span class="prop">href</span> = <span class="str">"https://google.com"</span>;      <span class="cm">// Redirección externa</span>
+window.<span class="prop">location</span>.<span class="prop">href</span> = <span class="str">"/login"</span>;                   <span class="cm">// Redirección interna</span>
+window.<span class="prop">location</span>.<span class="fn">replace</span>(<span class="str">"/dashboard"</span>);             <span class="cm">// Sin historial (no puede volver)</span>
+window.<span class="prop">location</span>.<span class="fn">reload</span>();                           <span class="cm">// Recargar la página</span>
+
+<span class="cm">// Caso de uso real: redirigir si no hay sesión</span>
+<span class="kw">const</span> token = localStorage.<span class="fn">getItem</span>(<span class="str">"token"</span>);
+<span class="kw">if</span> (!token) {
+  window.<span class="prop">location</span>.<span class="prop">href</span> = <span class="str">"/login"</span>;  <span class="cm">// Sin token → ir al login</span>
+}</pre>
+      </div>
+
+      <div class="sandbox mt-3">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-window text-warning"></i> Ejemplo: window.location</div>
+          <button class="run-btn" onclick="demoWindow()"><i class="bi bi-play-fill"></i> Ver datos</button>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-window" class="output-area">Haz clic para ver los datos de window...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-calendar3 text-warning"></i> Date — Fechas y tiempo en el cliente</h4>
+      <div class="code-block">
+        <div class="code-header"><span>date-ejemplos.js</span></div>
+        <pre><span class="cm">// Fecha y hora actual</span>
+<span class="kw">const</span> ahora = <span class="kw">new</span> <span class="fn">Date</span>();
+<span class="fn">console</span>.<span class="fn">log</span>(ahora);                    <span class="cm">// Thu Jan 09 2025 14:30:00...</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">toLocaleDateString</span>(<span class="str">"es-ES"</span>));  <span class="cm">// "9/1/2025"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">toLocaleTimeString</span>());          <span class="cm">// "2:30:00 PM"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">toISOString</span>());                  <span class="cm">// "2025-01-09T14:30:00.000Z"</span>
+
+<span class="cm">// Extraer partes de la fecha</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">getFullYear</span>());  <span class="cm">// 2025</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">getMonth</span>() + <span class="num">1</span>); <span class="cm">// Mes (0-11, por eso +1)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">getDate</span>());     <span class="cm">// Día del mes</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">getDay</span>());      <span class="cm">// Día semana (0=Dom, 6=Sáb)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(ahora.<span class="fn">getHours</span>());    <span class="cm">// Hora (0-23)</span>
+
+<span class="cm">// Crear una fecha específica</span>
+<span class="kw">const</span> navidad = <span class="kw">new</span> <span class="fn">Date</span>(<span class="str">"2025-12-25"</span>);
+
+<span class="cm">// Calcular diferencia en días</span>
+<span class="kw">const</span> hoy       = <span class="kw">new</span> <span class="fn">Date</span>();
+<span class="kw">const</span> diferencia = navidad - hoy;           <span class="cm">// Diferencia en milisegundos</span>
+<span class="kw">const</span> diasFaltan = Math.<span class="fn">ceil</span>(diferencia / (<span class="num">1000</span> * <span class="num">60</span> * <span class="num">60</span> * <span class="num">24</span>));
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`Faltan </span>${diasFaltan}<span class="str"> días para Navidad`</span>);</pre>
+      </div>
+
+      <div class="sandbox mt-3">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-calendar-event text-warning"></i> Ejemplo: Fecha actual formateada</div>
+          <button class="run-btn" onclick="demoDate()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-date" class="output-area">Haz clic para ver la fecha...</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ EVENTOS ══════ -->
+  <section id="eventos" class="content-section">
+    <h2 class="fw-bold mb-1">Modelo de Gestión de Eventos</h2>
+    <p class="text-muted mb-4">Los eventos permiten que tu código responda a las acciones del usuario.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-cursor-fill text-warning"></i> ¿Qué es un evento?</h4>
+      <p>Un evento es cualquier cosa que sucede en la página: el usuario hace clic, escribe, mueve el mouse, carga la página, etc. JavaScript puede "escuchar" esos eventos y ejecutar código cuando ocurren.</p>
+      <p class="mt-2">La forma correcta de manejar eventos es con <code>addEventListener</code>:</p>
+      <div class="code-block">
+        <div class="code-header"><span>eventos-basico.js</span></div>
+        <pre><span class="cm">// Sintaxis: elemento.addEventListener("evento", función)</span>
+
+<span class="kw">const</span> boton = document.<span class="fn">getElementById</span>(<span class="str">"mi-boton"</span>);
+
+<span class="cm">// Con función clásica</span>
+boton.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="kw">function</span>() {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"¡El botón fue clickeado!"</span>);
+});
+
+<span class="cm">// Con arrow function (más compacto)</span>
+boton.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, () => {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"También funciona así"</span>);
+});
+
+<span class="cm">// El parámetro "event" tiene info sobre lo que pasó</span>
+boton.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, (<span class="prop">event</span>) => {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Elemento clickeado:"</span>, event.<span class="prop">target</span>);
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Tipo de evento:"</span>,    event.<span class="prop">type</span>);
+});</pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-lightning text-warning"></i> Los eventos más usados</h4>
+
+      <p class="fw-semibold mt-2">① click — El usuario hace clic</p>
+      <div class="code-block">
+        <div class="code-header"><span>evento-click.js</span></div>
+        <pre><span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">"btn-guardar"</span>);
+
+btn.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, () => {
+  <span class="kw">const</span> nombre = document.<span class="fn">getElementById</span>(<span class="str">"input-nombre"</span>).<span class="prop">value</span>;
+
+  <span class="kw">if</span> (nombre === <span class="str">""</span>) {
+    <span class="fn">alert</span>(<span class="str">"El nombre no puede estar vacío"</span>);
+    <span class="kw">return</span>;
+  }
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Guardando:"</span>, nombre);
+});</pre>
+      </div>
+
+      <p class="fw-semibold mt-3">② input — Mientras el usuario escribe (en tiempo real)</p>
+      <div class="code-block">
+        <div class="code-header"><span>evento-input.js</span></div>
+        <pre><span class="kw">const</span> campo = document.<span class="fn">getElementById</span>(<span class="str">"busqueda"</span>);
+<span class="kw">const</span> resultado = document.<span class="fn">getElementById</span>(<span class="str">"resultado"</span>);
+
+campo.<span class="fn">addEventListener</span>(<span class="str">"input"</span>, () => {
+  <span class="cm">// Se ejecuta con CADA tecla que el usuario presiona</span>
+  <span class="kw">const</span> texto = campo.<span class="prop">value</span>;
+  resultado.<span class="prop">textContent</span> = <span class="str">`Buscando: "</span>${texto}<span class="str">"`</span>;
+
+  <span class="cm">// Ideal para búsqueda en tiempo real</span>
+  <span class="kw">const</span> filtrados = productos.<span class="fn">filter</span>(p =>
+    p.nombre.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(texto.<span class="fn">toLowerCase</span>())
+  );
+});</pre>
+      </div>
+
+      <p class="fw-semibold mt-3">③ keyup — Cuando se suelta una tecla</p>
+      <div class="code-block">
+        <div class="code-header"><span>evento-keyup.js</span></div>
+        <pre><span class="kw">const</span> input = document.<span class="fn">getElementById</span>(<span class="str">"mi-input"</span>);
+
+input.<span class="fn">addEventListener</span>(<span class="str">"keyup"</span>, (event) => {
+  <span class="cm">// Detectar tecla específica</span>
+  <span class="kw">if</span> (event.<span class="prop">key</span> === <span class="str">"Enter"</span>) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Enter presionado, buscando..."</span>);
+    <span class="fn">buscar</span>(input.<span class="prop">value</span>);
+  }
+  <span class="kw">if</span> (event.<span class="prop">key</span> === <span class="str">"Escape"</span>) {
+    input.<span class="prop">value</span> = <span class="str">""</span>;  <span class="cm">// Limpiar con Escape</span>
+  }
+});</pre>
+      </div>
+
+      <p class="fw-semibold mt-3">④ change — Cuando cambia el valor (al salir del campo)</p>
+      <div class="code-block">
+        <div class="code-header"><span>evento-change.js</span></div>
+        <pre><span class="cm">// Se dispara cuando el usuario termina de modificar el campo</span>
+<span class="cm">// (al hacer clic fuera o presionar Tab)</span>
+<span class="kw">const</span> select = document.<span class="fn">getElementById</span>(<span class="str">"categoria"</span>);
+
+select.<span class="fn">addEventListener</span>(<span class="str">"change"</span>, () => {
+  <span class="kw">const</span> categoriaSeleccionada = select.<span class="prop">value</span>;
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Categoría:"</span>, categoriaSeleccionada);
+  <span class="fn">filtrarPorCategoria</span>(categoriaSeleccionada);
+});
+
+<span class="cm">// También útil en checkbox</span>
+<span class="kw">const</span> chk = document.<span class="fn">getElementById</span>(<span class="str">"acepto-terminos"</span>);
+chk.<span class="fn">addEventListener</span>(<span class="str">"change"</span>, () => {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"¿Aceptó términos?"</span>, chk.<span class="prop">checked</span>);
+});</pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-warning"></i> Demo interactivo: Los 4 eventos en acción</div>
+      </div>
+      <div class="sandbox-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">① click</label><br>
+              <button id="ev-btn" class="btn btn-warning btn-sm fw-bold">Haz clic aquí</button>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">② input (tiempo real)</label>
+              <input id="ev-input" type="text" class="form-control form-control-sm" placeholder="Escribe algo..." />
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">③ keyup (detecta tecla)</label>
+              <input id="ev-keyup" type="text" class="form-control form-control-sm" placeholder="Prueba Enter o Escape..." />
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">④ change (al salir del campo)</label>
+              <select id="ev-change" class="form-select form-select-sm">
+                <option value="">Selecciona...</option>
+                <option value="electronica">Electrónica</option>
+                <option value="ropa">Ropa</option>
+                <option value="joyeria">Joyería</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="fw-semibold small mb-2">📋 Log de eventos:</div>
+            <div id="ev-log" style="background:#0f172a;color:#86efac;padding:1rem;border-radius:8px;min-height:180px;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.8;overflow-y:auto;max-height:220px">
+              Esperando eventos...<br>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary mt-2" onclick="document.getElementById('ev-log').innerHTML='Log limpiado...<br>'">Limpiar log</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ LOCALSTORAGE ══════ -->
+  <section id="localstorage" class="content-section">
+    <h2 class="fw-bold mb-1">localStorage</h2>
+    <p class="text-muted mb-4">Guardar datos en el navegador del usuario de forma permanente (hasta que se borren).</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-hdd text-warning"></i> ¿Qué es localStorage?</h4>
+      <p><code>localStorage</code> es un espacio de almacenamiento en el navegador. Funciona como una mini base de datos de pares <strong>clave → valor</strong>. Los datos <strong>persisten</strong> aunque cierres y vuelvas a abrir el navegador.</p>
+      <div class="row g-3 mt-2">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 text-center" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <i class="bi bi-plus-circle text-success fs-4"></i>
+            <div class="fw-bold small mt-1"><code>setItem()</code></div>
+            <div class="text-muted" style="font-size:.8rem">Guardar</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 text-center" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <i class="bi bi-download text-primary fs-4"></i>
+            <div class="fw-bold small mt-1"><code>getItem()</code></div>
+            <div class="text-muted" style="font-size:.8rem">Leer</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 text-center" style="background:#fef2f2;border:1px solid #fecaca">
+            <i class="bi bi-trash text-danger fs-4"></i>
+            <div class="fw-bold small mt-1"><code>removeItem()</code></div>
+            <div class="text-muted" style="font-size:.8rem">Eliminar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-code-slash text-warning"></i> Guardar y leer datos</h4>
+      <p><strong>Importante:</strong> localStorage solo guarda <em>strings</em> (texto). Para guardar objetos o arrays hay que convertirlos a JSON.</p>
+      <div class="code-block">
+        <div class="code-header"><span>localstorage-tipos.js</span></div>
+        <pre><span class="cm">// ── STRINGS ──────────────────────────────</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">"nombre"</span>, <span class="str">"Carlos"</span>);
+<span class="kw">const</span> nombre = localStorage.<span class="fn">getItem</span>(<span class="str">"nombre"</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(nombre);  <span class="cm">// "Carlos"</span>
+
+<span class="cm">// ── NÚMEROS ──────────────────────────────</span>
+<span class="cm">// Se guardan como string, hay que convertirlos al leer</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">"edad"</span>, <span class="num">25</span>);
+<span class="kw">const</span> edadStr = localStorage.<span class="fn">getItem</span>(<span class="str">"edad"</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> edadStr);           <span class="cm">// "string" ← ojo!</span>
+<span class="kw">const</span> edadNum = <span class="fn">Number</span>(edadStr);        <span class="cm">// Convertir de vuelta a número</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">typeof</span> edadNum);           <span class="cm">// "number" ✓</span>
+
+<span class="cm">// ── OBJETOS / JSON ───────────────────────</span>
+<span class="kw">const</span> usuario = { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">nombre</span>: <span class="str">"Ana"</span>, <span class="prop">rol</span>: <span class="str">"admin"</span> };
+
+<span class="cm">// Guardar: convertir objeto → string JSON</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">"usuario"</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(usuario));
+
+<span class="cm">// Leer: convertir string JSON → objeto</span>
+<span class="kw">const</span> guardado  = localStorage.<span class="fn">getItem</span>(<span class="str">"usuario"</span>);
+<span class="kw">const</span> usuarioObj = <span class="fn">JSON</span>.<span class="fn">parse</span>(guardado);
+<span class="fn">console</span>.<span class="fn">log</span>(usuarioObj.nombre);  <span class="cm">// "Ana"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(usuarioObj.rol);     <span class="cm">// "admin"</span>
+
+<span class="cm">// ── ARRAYS ───────────────────────────────</span>
+<span class="kw">const</span> carrito = [
+  { <span class="prop">id</span>: <span class="num">1</span>, <span class="prop">producto</span>: <span class="str">"Laptop"</span>, <span class="prop">cantidad</span>: <span class="num">1</span> },
+  { <span class="prop">id</span>: <span class="num">2</span>, <span class="prop">producto</span>: <span class="str">"Mouse"</span>,  <span class="prop">cantidad</span>: <span class="num">2</span> }
+];
+localStorage.<span class="fn">setItem</span>(<span class="str">"carrito"</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(carrito));
+
+<span class="kw">const</span> carritoGuardado = <span class="fn">JSON</span>.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">"carrito"</span>));
+<span class="fn">console</span>.<span class="fn">log</span>(carritoGuardado[<span class="num">0</span>].producto);  <span class="cm">// "Laptop"</span>
+
+<span class="cm">// ── ELIMINAR ────────────────────────────</span>
+localStorage.<span class="fn">removeItem</span>(<span class="str">"nombre"</span>);  <span class="cm">// Borra una clave</span>
+localStorage.<span class="fn">clear</span>();              <span class="cm">// Borra todo (¡cuidado!)</span></pre>
+      </div>
+
+      <div class="callout callout-amber">
+        <strong>Patrón seguro para leer:</strong> Siempre verifica que el dato existe antes de parsear, porque <code>getItem</code> devuelve <code>null</code> si la clave no existe, y <code>JSON.parse(null)</code> da error.
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span>patron-seguro.js</span></div>
+        <pre><span class="cm">// ✓ Forma segura de leer un objeto/array</span>
+<span class="kw">function</span> <span class="fn">leerDelStorage</span>(clave) {
+  <span class="kw">const</span> dato = localStorage.<span class="fn">getItem</span>(clave);
+  <span class="kw">return</span> dato ? <span class="fn">JSON</span>.<span class="fn">parse</span>(dato) : <span class="bool">null</span>;
+}
+
+<span class="kw">const</span> carrito = <span class="fn">leerDelStorage</span>(<span class="str">"carrito"</span>) || [];
+<span class="cm">// Si no existe, usa array vacío como valor por defecto</span></pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-hdd text-warning"></i> Demo interactivo: localStorage en vivo</div>
+      </div>
+      <div class="sandbox-body">
+        <div class="row g-4">
+          <!-- Strings -->
+          <div class="col-md-6">
+            <div class="fw-semibold small mb-2">💬 Guardar un string</div>
+            <div class="input-group input-group-sm mb-2">
+              <input id="ls-key-str" type="text" class="form-control" placeholder="clave" value="nombre" />
+              <input id="ls-val-str" type="text" class="form-control" placeholder="valor" value="Carlos" />
+              <button class="btn btn-warning btn-sm fw-bold" onclick="lsGuardarStr()">Guardar</button>
+            </div>
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="lsLeerStr()">Leer</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="lsBorrarStr()">Borrar</button>
+            <div id="out-ls-str" class="output-area mt-2" style="min-height:40px"></div>
+          </div>
+          <!-- JSON -->
+          <div class="col-md-6">
+            <div class="fw-semibold small mb-2">📦 Guardar un objeto JSON</div>
+            <button class="run-btn mb-2" onclick="lsGuardarJSON()"><i class="bi bi-save"></i> Guardar objeto</button>
+            <button class="run-btn blue mb-2" onclick="lsLeerJSON()"><i class="bi bi-eye"></i> Leer objeto</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="lsBorrarJSON()">Borrar</button>
+            <div id="out-ls-json" class="output-area mt-2" style="min-height:40px"></div>
+          </div>
+          <!-- Carrito -->
+          <div class="col-12">
+            <div class="fw-semibold small mb-2">🛒 Mini carrito persistente</div>
+            <div class="d-flex gap-2 flex-wrap mb-2">
+              <button class="run-btn" onclick="lsAgregarProducto('Laptop', 999)">+ Laptop $999</button>
+              <button class="run-btn" onclick="lsAgregarProducto('Mouse', 29)">+ Mouse $29</button>
+              <button class="run-btn" onclick="lsAgregarProducto('Teclado', 45)">+ Teclado $45</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="lsLimpiarCarrito()">🗑️ Limpiar</button>
+            </div>
+            <div id="out-ls-carrito" class="output-area" style="min-height:60px">Carrito vacío</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ CONEXIÓN CON CLASE 1 ══════ -->
+  <section id="conexion" class="content-section">
+    <h2 class="fw-bold mb-1">Conexión con la Clase 1</h2>
+    <p class="text-muted mb-4">Todo lo que aprendiste hoy es exactamente lo que necesitas para consumir APIs.</p>
+
+    <div class="connect-card mb-4">
+      <h5><i class="bi bi-link-45deg me-2"></i>¿Cómo se conecta todo?</h5>
+      <p style="color:#cbd5e1;font-size:.9rem">La Clase 1 introduce <code>fetch()</code> para hacer peticiones HTTP a APIs. Mira cómo cada tema de hoy aparece en ese contexto:</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="info-card">
+          <div class="ic-icon bg-warning-subtle text-warning"><i class="bi bi-arrow-down-circle"></i></div>
+          <h5>fetch() usa async/await</h5>
+          <p>Que son funciones especiales. Hoy aprendiste funciones → en Clase 1 las verás como <code>async function cargar()</code>.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <div class="ic-icon bg-success-subtle text-success"><i class="bi bi-braces"></i></div>
+          <h5>La API devuelve JSON → Objetos y Arrays</h5>
+          <p>Los datos que llegan de la API son exactamente los objetos y arrays que practicaste hoy. Los recorrerás con <code>forEach</code> y <code>map</code>.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <div class="ic-icon bg-primary-subtle text-primary"><i class="bi bi-display"></i></div>
+          <h5>Mostrar datos → DOM</h5>
+          <p>Una vez que tienes los productos, usas <code>innerHTML</code> y <code>document.getElementById</code> para insertarlos en la página.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="info-card">
+          <div class="ic-icon bg-danger-subtle text-danger"><i class="bi bi-cursor-fill"></i></div>
+          <h5>Botones → Eventos</h5>
+          <p>El botón "Cargar productos" usa <code>addEventListener("click", ...)</code>. Los filtros usan <code>"input"</code> y <code>"change"</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block mt-4">
+      <h4><i class="bi bi-eye text-warning"></i> Así se verá el código de la Clase 1</h4>
+      <p>Reconocerás todo:</p>
+      <div class="code-block">
+        <div class="code-header"><span>preview-clase1.js — Esto lo harás mañana</span></div>
+        <pre><span class="cm">// ① EVENTO: esperar el clic del botón</span>
+<span class="kw">const</span> boton = document.<span class="fn">getElementById</span>(<span class="str">"btn-cargar"</span>);   <span class="cm">// DOM ✓</span>
+
+boton.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="kw">async function</span>() {   <span class="cm">// Evento + función async ✓</span>
+
+  <span class="cm">// ② FETCH: pedir datos a la API</span>
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products"</span>);
+  <span class="kw">const</span> productos  = <span class="kw">await</span> response.<span class="fn">json</span>();  <span class="cm">// Devuelve un array de objetos ✓</span>
+
+  <span class="cm">// ③ ARRAY: recorrer los productos</span>
+  <span class="kw">const</span> contenedor = document.<span class="fn">getElementById</span>(<span class="str">"contenedor"</span>);  <span class="cm">// DOM ✓</span>
+  contenedor.<span class="prop">innerHTML</span> = <span class="str">""</span>;  <span class="cm">// Limpiar antes de renderizar</span>
+
+  productos.<span class="fn">forEach</span>(<span class="kw">function</span>(producto) {                   <span class="cm">// forEach ✓</span>
+    <span class="cm">// ④ OBJETO: acceder a propiedades del producto</span>
+    <span class="kw">const</span> { title, price, image } = producto;              <span class="cm">// Desestructuración ✓</span>
+
+    <span class="cm">// ⑤ DOM: insertar tarjeta en la página</span>
+    contenedor.<span class="prop">innerHTML</span> += <span class="str">`                              </span><span class="cm">// Template literal ✓</span>
+<span class="str">      &lt;div class="tarjeta"&gt;
+        &lt;img src="</span>${image}<span class="str">"&gt;
+        &lt;h3&gt;</span>${title}<span class="str">&lt;/h3&gt;
+        &lt;p&gt;$</span>${price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;    </span><span class="cm">// Número ✓</span>
+<span class="str">      &lt;/div&gt;
+    `</span>;
+  });
+
+  <span class="cm">// ⑥ localStorage: guardar para no volver a pedir</span>
+  localStorage.<span class="fn">setItem</span>(<span class="str">"productos"</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(productos)); <span class="cm">// localStorage ✓</span>
+});</pre>
+      </div>
+      <div class="callout callout-green mt-3">
+        <strong>¿Ves?</strong> Cada línea de ese código usa algo que practicaste hoy. <code>getElementById</code>, <code>addEventListener</code>, funciones, <code>forEach</code>, desestructuración, template literals, <code>toFixed</code>, <code>localStorage</code>. ¡Ya tienes todas las piezas!
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check2-all text-success"></i> Checklist de conocimientos — ¿Estás listo para la Clase 1?</h4>
+      <div id="checklist">
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch1"><label class="form-check-label small" for="ch1">Puedo declarar variables con <code>const</code> y <code>let</code></label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch2"><label class="form-check-label small" for="ch2">Conozco los tipos de datos: string, number, boolean, object, array</label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch3"><label class="form-check-label small" for="ch3">Puedo usar <code>if/else</code> y <code>forEach</code></label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch4"><label class="form-check-label small" for="ch4">Sé crear funciones y arrow functions</label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch5"><label class="form-check-label small" for="ch5">Puedo usar <code>map</code>, <code>filter</code>, <code>find</code> en arrays</label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch6"><label class="form-check-label small" for="ch6">Entiendo qué es el DOM y puedo seleccionar elementos</label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch7"><label class="form-check-label small" for="ch7">Puedo modificar <code>innerHTML</code> y estilos desde JS</label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch8"><label class="form-check-label small" for="ch8">Sé usar <code>addEventListener</code> con click, input, keyup, change</label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch9"><label class="form-check-label small" for="ch9">Puedo guardar y leer strings y objetos JSON en <code>localStorage</code></label></div>
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="ch10"><label class="form-check-label small" for="ch10">Entiendo <code>JSON.stringify</code> y <code>JSON.parse</code></label></div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+      <a href="clase1-fundamentos-web.html" class="btn btn-warning text-dark fw-bold">
+        Siguiente: Clase 1 — Fundamentos Web & APIs <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ════════════════════════════════════════
+   NAVEGACIÓN
+════════════════════════════════════════ */
+const sections0 = [
+  'agenda', 'que-es-js', 'variables', 'flujo', 'funciones',
+  'arreglos', 'objetos', 'dom', 'obj-pred', 'eventos', 'localstorage', 'conexion'
+];
+
+function showSection(id, el) {
+  event.preventDefault();
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  updateProgress(id);
+  window.scrollTo(0, 0);
+}
+
+function updateProgress(currentId) {
+  const index = sections0.indexOf(currentId);
+  const pct   = Math.round(((index + 1) / sections0.length) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+updateProgress('agenda'); // sección inicial al cargar
+
+/* ════════════════════════════════════════
+   DEMOS
+════════════════════════════════════════ */
+function log(outId, lines) {
+  const el = document.getElementById(outId);
+  el.innerHTML = lines.map(l => `<div>${l}</div>`).join('');
+}
+function ok(t)   { return `<span class="ok">✓</span> ${t}`; }
+function info(t) { return `<span class="info">→</span> ${t}`; }
+function err(t)  { return `<span class="err">✗</span> ${t}`; }
+
+// ── Qué es JS ──
+function demoConsole() {
+  log('out-console', [
+    ok(`console.log("Hola Mundo")  → <strong>Hola Mundo</strong>`),
+    ok(`console.log(2024)          → <strong>2024</strong>`),
+    ok(`console.log(true)          → <strong>true</strong>`),
+    info(`10 + 5  = <strong>15</strong>`),
+    info(`10 * 3  = <strong>30</strong>`),
+    info(`10 / 4  = <strong>2.5</strong>`),
+    info(`10 % 3  = <strong>1</strong>  ← resto de la división`),
+  ]);
+}
+
+// ── Variables ──
+function demoVariables() {
+  const nombre = "JavaScript";
+  const precio = 99.5;
+  const activo = true;
+  const nulo   = null;
+  let sinValor;
+  const msg = `El precio es: $${precio}`;
+  log('out-vars', [
+    ok(`typeof "${nombre}"  → <strong>"${typeof nombre}"</strong>`),
+    ok(`typeof ${precio}    → <strong>"${typeof precio}"</strong>`),
+    ok(`typeof ${activo}    → <strong>"${typeof activo}"</strong>`),
+    ok(`typeof null         → <strong>"${typeof nulo}"</strong>  ← peculiaridad histórica de JS`),
+    ok(`typeof sinValor     → <strong>"${typeof sinValor}"</strong>`),
+    info(`Template literal: <strong>"${msg}"</strong>`),
+    info(`"${nombre}".toUpperCase() → <strong>"${nombre.toUpperCase()}"</strong>`),
+    info(`"${nombre}".slice(0,4)    → <strong>"${nombre.slice(0,4)}"</strong>`),
+    info(`${precio}.toFixed(0)      → <strong>"${precio.toFixed(0)}"</strong>`),
+  ]);
+}
+
+// ── Flujo ──
+function demoFlujo() {
+  const lines = [];
+  const edad = 20;
+  if (edad >= 18)       lines.push(ok(`edad=${edad} → <strong>Mayor de edad ✓</strong>`));
+  else if (edad >= 13)  lines.push(ok(`edad=${edad} → <strong>Adolescente</strong>`));
+  else                  lines.push(ok(`edad=${edad} → <strong>Menor de edad</strong>`));
+
+  lines.push(info(`for clásico (i de 0 a 2):`));
+  for (let i = 0; i < 3; i++) lines.push(`&nbsp;&nbsp;&nbsp;i = <strong>${i}</strong>`);
+
+  const frutas = ["🍎 Manzana", "🍐 Pera", "🍇 Uva"];
+  lines.push(info(`for...of frutas:`));
+  for (const f of frutas) lines.push(`&nbsp;&nbsp;&nbsp;<strong>${f}</strong>`);
+
+  lines.push(info(`forEach con índice:`));
+  frutas.forEach((f, i) => lines.push(`&nbsp;&nbsp;&nbsp;[${i}] <strong>${f}</strong>`));
+  log('out-flujo', lines);
+}
+
+// ── Funciones ──
+function demoFunciones() {
+  const saludar  = (n = "Visitante") => `Hola, ${n}!`;
+  const sumar    = (a, b) => a + b;
+  const multi    = (a, b) => a * b;
+  const calc     = (p, d) => { const dc = p * (d/100); return p - dc; };
+  const dividir  = (a, b) => b === 0 ? "Error: división entre 0" : a / b;
+  log('out-func', [
+    ok(`saludar("Ana")      → <strong>"${saludar("Ana")}"</strong>`),
+    ok(`saludar()           → <strong>"${saludar()}"</strong>  ← valor por defecto`),
+    ok(`sumar(3, 7)         → <strong>${sumar(3,7)}</strong>`),
+    ok(`multiplicar(4, 5)   → <strong>${multi(4,5)}</strong>`),
+    ok(`calcularPrecio(100, 20) → <strong>${calc(100,20)}</strong>  ← precio con 20% descuento`),
+    ok(`dividir(10, 2)      → <strong>${dividir(10,2)}</strong>`),
+    err(`dividir(10, 0)      → <strong>"${dividir(10,0)}"</strong>`),
+  ]);
+}
+
+// ── Arrays ──
+function demoArrays() {
+  const productos = [
+    { id:1, nombre:"Laptop",  precio:999, stock:true  },
+    { id:2, nombre:"Mouse",   precio:29,  stock:false },
+    { id:3, nombre:"Monitor", precio:350, stock:true  },
+    { id:4, nombre:"Teclado", precio:45,  stock:true  },
+  ];
+  const nombres      = productos.map(p => p.nombre);
+  const disponibles  = productos.filter(p => p.stock);
+  const caros        = productos.filter(p => p.precio > 100);
+  const laptop       = productos.find(p => p.id === 1);
+  const hayStock     = productos.some(p => p.stock);
+  const todosStock   = productos.every(p => p.stock);
+  log('out-arrays', [
+    ok(`map → nombres: <strong>[${nombres.join(', ')}]</strong>`),
+    ok(`filter(stock=true) → <strong>[${disponibles.map(p=>p.nombre).join(', ')}]</strong>`),
+    ok(`filter(precio>100) → <strong>[${caros.map(p=>p.nombre).join(', ')}]</strong>`),
+    ok(`find(id===1) → <strong>{ nombre:"${laptop.nombre}", precio:${laptop.precio} }</strong>`),
+    ok(`some(stock)  → <strong>${hayStock}</strong>  ← ¿alguno tiene stock?`),
+    ok(`every(stock) → <strong>${todosStock}</strong> ← ¿todos tienen stock?`),
+  ]);
+}
+
+// ── Objetos ──
+function demoObjetos() {
+  const producto = { id:1, nombre:"Laptop Pro", precio:1299.99, disponible:true,
+    spec:{ ram:"16GB", disco:"512GB SSD" } };
+  const { nombre, precio, spec } = producto;
+  const actualizado = { ...producto, precio: 1099.99, descuento: 15 };
+  log('out-obj', [
+    ok(`producto.nombre         → <strong>"${producto.nombre}"</strong>`),
+    ok(`producto["precio"]      → <strong>${producto.precio}</strong>`),
+    ok(`producto.spec.ram       → <strong>"${producto.spec.ram}"</strong>`),
+    ok(`"nombre" in producto    → <strong>${"nombre" in producto}</strong>`),
+    ok(`"color"  in producto    → <strong>${"color" in producto}</strong>`),
+    info(`Desestructuración: { nombre, precio, spec } = producto`),
+    ok(`nombre → <strong>"${nombre}"</strong>  |  precio → <strong>${precio}</strong>  |  spec.disco → <strong>"${spec.disco}"</strong>`),
+    info(`Spread: { ...producto, precio:1099.99 }`),
+    ok(`actualizado.precio    → <strong>${actualizado.precio}</strong>`),
+    ok(`actualizado.descuento → <strong>${actualizado.descuento}</strong>  ← propiedad nueva`),
+  ]);
+}
+
+// ── DOM ──
+function domCambiarTexto() {
+  const val = document.getElementById('dom-input').value || "Texto de ejemplo";
+  document.getElementById('dom-texto').textContent = val;
+}
+function domCambiarColor() {
+  const colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'];
+  document.getElementById('dom-texto').style.color = colors[Math.floor(Math.random()*colors.length)];
+}
+function domAgregarItem() {
+  const val = document.getElementById('dom-input').value;
+  if (!val) return;
+  const li = document.createElement('li');
+  li.textContent = val;
+  document.getElementById('dom-lista').appendChild(li);
+}
+
+// ── document ──
+function demoDocument() {
+  const zone = document.getElementById('doc-zone');
+  zone.innerHTML = '';
+  const p = document.createElement('p');
+  p.textContent = '¡Párrafo creado con document.createElement("p")!';
+  p.className = 'text-success fw-semibold mb-1';
+  const span = document.createElement('span');
+  span.innerHTML = '<span class="badge bg-primary">badge creado con JS</span>';
+  zone.appendChild(p);
+  zone.appendChild(span);
+  log('out-doc', [
+    ok(`document.title   → <strong>"${document.title}"</strong>`),
+    ok(`document.URL     → <strong>"${document.URL}"</strong>`),
+    ok(`createElement("p") + appendChild() → <strong>elemento insertado arriba ↑</strong>`),
+  ]);
+}
+
+// ── window ──
+function demoWindow() {
+  log('out-window', [
+    ok(`window.innerWidth    → <strong>${window.innerWidth}px</strong>`),
+    ok(`window.innerHeight   → <strong>${window.innerHeight}px</strong>`),
+    ok(`location.href        → <strong>"${window.location.href}"</strong>`),
+    ok(`location.pathname    → <strong>"${window.location.pathname}"</strong>`),
+    ok(`location.hostname    → <strong>"${window.location.hostname || 'localhost'}"</strong>`),
+    info(`location.href = "/login"  → <strong>Redirigiría al login</strong> (no ejecutado)`),
+    info(`location.reload()         → <strong>Recargaría la página</strong> (no ejecutado)`),
+  ]);
+}
+
+// ── Date ──
+function demoDate() {
+  const ahora   = new Date();
+  const navidad = new Date(`${ahora.getFullYear()}-12-25`);
+  const diff    = navidad - ahora;
+  const dias    = diff > 0 ? Math.ceil(diff / (1000*60*60*24)) : 0;
+  const dias_semana = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  log('out-date', [
+    ok(`new Date()                      → <strong>${ahora.toLocaleString('es-ES')}</strong>`),
+    ok(`toLocaleDateString("es-ES")     → <strong>${ahora.toLocaleDateString('es-ES')}</strong>`),
+    ok(`toLocaleTimeString()            → <strong>${ahora.toLocaleTimeString()}</strong>`),
+    ok(`toISOString()                   → <strong>${ahora.toISOString()}</strong>`),
+    ok(`getFullYear()                   → <strong>${ahora.getFullYear()}</strong>`),
+    ok(`getMonth()+1                    → <strong>${ahora.getMonth()+1}</strong>  ← mes actual`),
+    ok(`getDate()                       → <strong>${ahora.getDate()}</strong>  ← día del mes`),
+    ok(`getDay()                        → <strong>${ahora.getDay()}</strong> = ${dias_semana[ahora.getDay()]}`),
+    info(dias > 0 ? `Días para Navidad ${ahora.getFullYear()}: <strong>${dias} días</strong>` : `<strong>¡Ya pasó la Navidad!</strong>`),
+  ]);
+}
+
+// ── Eventos demo ──
+(function initEventos() {
+  const evLog = document.getElementById('ev-log');
+  function addLog(txt) {
+    const d = document.createElement('div');
+    d.innerHTML = txt;
+    evLog.appendChild(d);
+    evLog.scrollTop = evLog.scrollHeight;
+  }
+
+  document.getElementById('ev-btn').addEventListener('click', () => {
+    addLog(`<span style="color:#f59e0b">[click]</span> Botón presionado ✓`);
+  });
+
+  document.getElementById('ev-input').addEventListener('input', (e) => {
+    addLog(`<span style="color:#86efac">[input]</span> Valor actual: "<strong>${e.target.value}</strong>"`);
+  });
+
+  document.getElementById('ev-keyup').addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+      addLog(`<span style="color:#93c5fd">[keyup]</span> <strong>Enter</strong> → buscaría: "${e.target.value}"`);
+      e.target.value = '';
+    } else if (e.key === 'Escape') {
+      addLog(`<span style="color:#fca5a5">[keyup]</span> <strong>Escape</strong> → campo limpiado`);
+      e.target.value = '';
+    } else {
+      addLog(`<span style="color:#93c5fd">[keyup]</span> Tecla: <strong>"${e.key}"</strong>`);
+    }
+  });
+
+  document.getElementById('ev-change').addEventListener('change', (e) => {
+    addLog(`<span style="color:#c4b5fd">[change]</span> Seleccionó: <strong>"${e.target.value}"</strong>`);
+  });
+})();
+
+// ── localStorage demos ──
+function lsGuardarStr() {
+  const k = document.getElementById('ls-key-str').value;
+  const v = document.getElementById('ls-val-str').value;
+  localStorage.setItem(k, v);
+  document.getElementById('out-ls-str').innerHTML = ok(`Guardado: localStorage.setItem("<strong>${k}</strong>", "<strong>${v}</strong>")`);
+}
+function lsLeerStr() {
+  const k = document.getElementById('ls-key-str').value;
+  const v = localStorage.getItem(k);
+  const out = document.getElementById('out-ls-str');
+  out.innerHTML = v !== null
+    ? ok(`Leído: localStorage.getItem("<strong>${k}</strong>") → "<strong>${v}</strong>"`)
+    : err(`Clave "<strong>${k}</strong>" no existe en localStorage`);
+}
+function lsBorrarStr() {
+  const k = document.getElementById('ls-key-str').value;
+  localStorage.removeItem(k);
+  document.getElementById('out-ls-str').innerHTML = ok(`Borrado: localStorage.removeItem("<strong>${k}</strong>")`);
+}
+
+function lsGuardarJSON() {
+  const obj = { id: 1, nombre: "Ana García", rol: "admin", activo: true };
+  localStorage.setItem('usuario_demo', JSON.stringify(obj));
+  document.getElementById('out-ls-json').innerHTML =
+    ok(`Guardado con JSON.stringify():<br><strong>${JSON.stringify(obj)}</strong>`);
+}
+function lsLeerJSON() {
+  const raw = localStorage.getItem('usuario_demo');
+  const out = document.getElementById('out-ls-json');
+  if (!raw) { out.innerHTML = err('Primero guarda el objeto'); return; }
+  const obj = JSON.parse(raw);
+  out.innerHTML = [
+    ok(`Raw (string): <strong>${raw}</strong>`),
+    ok(`JSON.parse() → objeto JS:`),
+    info(`nombre: <strong>"${obj.nombre}"</strong>`),
+    info(`rol:    <strong>"${obj.rol}"</strong>`),
+    info(`activo: <strong>${obj.activo}</strong>`),
+  ].join('<br>');
+}
+function lsBorrarJSON() {
+  localStorage.removeItem('usuario_demo');
+  document.getElementById('out-ls-json').innerHTML = ok('Objeto eliminado de localStorage');
+}
+
+function lsAgregarProducto(nombre, precio) {
+  const raw      = localStorage.getItem('carrito_demo');
+  const carrito  = raw ? JSON.parse(raw) : [];
+  const existe   = carrito.find(p => p.nombre === nombre);
+  if (existe) { existe.cantidad++; }
+  else { carrito.push({ nombre, precio, cantidad: 1 }); }
+  localStorage.setItem('carrito_demo', JSON.stringify(carrito));
+  renderCarrito(carrito);
+}
+function lsLimpiarCarrito() {
+  localStorage.removeItem('carrito_demo');
+  document.getElementById('out-ls-carrito').textContent = 'Carrito vacío (borrado de localStorage)';
+}
+function renderCarrito(carrito) {
+  const total = carrito.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+  document.getElementById('out-ls-carrito').innerHTML =
+    carrito.map(p => ok(`${p.nombre} x${p.cantidad} → $${(p.precio * p.cantidad).toFixed(2)}`)).join('<br>')
+    + `<br><span class="info">→</span> <strong>Total: $${total.toFixed(2)}</strong>  |  Guardado en localStorage ✓`;
+}
+// Cargar carrito al inicio si existe
+(function() {
+  const raw = localStorage.getItem('carrito_demo');
+  if (raw) renderCarrito(JSON.parse(raw));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 1 — Fundamentos Web & APIs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      color: #1e293b;
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 270px; height: 100vh;
+      background: #0f172a; color: #e2e8f0;
+      overflow-y: auto; z-index: 1000;
+      padding-bottom: 2rem;
+      border-right: 1px solid #1e293b;
+    }
+    #sidebar .brand {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    #sidebar .brand .badge-mod {
+      background: #3b82f6; color: #fff;
+      font-size: .7rem; padding: .25rem .6rem;
+      border-radius: 20px; letter-spacing: .05em;
+      font-weight: 700;
+    }
+    #sidebar .brand h6 { color: #f8fafc; font-weight: 700; margin-top: .5rem; font-size: 1rem; }
+    #sidebar nav a {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .55rem 1.25rem; color: #94a3b8;
+      text-decoration: none; font-size: .83rem;
+      border-left: 3px solid transparent; transition: all .15s;
+    }
+    #sidebar nav a:hover, #sidebar nav a.active {
+      color: #f8fafc; background: #1e293b; border-left-color: #3b82f6;
+    }
+    #sidebar .section-label {
+      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+      color: #475569; padding: 1.1rem 1.25rem .35rem; font-weight: 700;
+    }
+    #sidebar .progress-wrap { padding: .5rem 1.25rem 0; }
+    #sidebar .progress { height: 4px; background: #1e293b; }
+    #sidebar .progress-bar { background: #3b82f6; }
+
+    /* ── MAIN ── */
+    #main {
+      margin-left: 270px;
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .topbar .breadcrumb { margin: 0; font-size: .8rem; }
+
+    /* ── SECTIONS ── */
+    .content-section {
+      display: none;
+      padding: 2rem;
+      animation: fadeIn .25s ease;
+    }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── HERO ── */
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: 2.5rem 3rem;
+      margin-bottom: 2rem;
+    }
+    .hero-card .clase-badge {
+      background: rgba(59,130,246,.3);
+      border: 1px solid rgba(59,130,246,.5);
+      color: #93c5fd;
+      font-size: .75rem;
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .hero-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .hero-card p  { color: #94a3b8; font-size: 1rem; }
+    .hero-meta span {
+      background: rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: .4rem .9rem;
+      font-size: .82rem;
+      margin-right: .5rem;
+      color: #cbd5e1;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: .55rem; top: 0; bottom: 0;
+      width: 2px;
+      background: #e2e8f0;
+    }
+    .timeline-item { position: relative; margin-bottom: 1.25rem; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: .35rem;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #3b82f6;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #3b82f6;
+    }
+    .timeline-item .t-time {
+      font-size: .72rem;
+      font-weight: 700;
+      color: #3b82f6;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .timeline-item .t-title { font-weight: 600; font-size: .95rem; color: #1e293b; }
+    .timeline-item .t-desc  { font-size: .85rem; color: #64748b; }
+
+    /* ── CARDS ── */
+    .info-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem;
+      height: 100%;
+    }
+    .info-card .ic-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+    .info-card h5 { font-weight: 700; font-size: .95rem; margin-bottom: .5rem; }
+    .info-card p  { font-size: .85rem; color: #64748b; margin: 0; }
+
+    /* ── THEORY BLOCK ── */
+    .theory-block {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .theory-block h4 {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .theory-block p, .theory-block li {
+      font-size: .9rem;
+      color: #374151;
+      line-height: 1.7;
+    }
+
+    /* ── CALLOUT ── */
+    .callout {
+      border-left: 4px solid;
+      border-radius: 0 8px 8px 0;
+      padding: .9rem 1.2rem;
+      margin: 1rem 0;
+      font-size: .88rem;
+    }
+    .callout-blue  { border-color: #3b82f6; background: #eff6ff; color: #1e40af; }
+    .callout-green { border-color: #10b981; background: #f0fdf4; color: #065f46; }
+    .callout-amber { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+
+    /* ── CODE ── */
+    .code-block {
+      background: #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .code-block .code-header {
+      background: #1e293b;
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .code-block .code-header span {
+      font-size: .75rem;
+      color: #64748b;
+      font-family: 'Inter', sans-serif;
+    }
+    .code-block pre {
+      margin: 0;
+      padding: 1.25rem;
+      color: #e2e8f0;
+      font-size: .82rem;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+    .kw  { color: #93c5fd; }   /* keywords */
+    .fn  { color: #86efac; }   /* functions */
+    .str { color: #fca5a5; }   /* strings */
+    .cm  { color: #475569; font-style: italic; } /* comments */
+    .num { color: #fdba74; }   /* numbers */
+    .prop{ color: #c4b5fd; }   /* properties */
+
+    /* ── DEMO SANDBOX ── */
+    .sandbox {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .sandbox-header {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sandbox-header .title {
+      font-weight: 600;
+      font-size: .9rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .sandbox-body { padding: 1.5rem; }
+    .run-btn {
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .45rem 1.1rem;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      transition: background .15s;
+    }
+    .run-btn:hover { background: #2563eb; }
+    .output-area {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 60px;
+      font-size: .85rem;
+      margin-top: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #1e293b;
+    }
+
+    /* ── COMPARISON TABLE ── */
+    .compare-table th { background: #0f172a; color: #e2e8f0; font-weight: 600; }
+    .compare-table td { font-size: .88rem; vertical-align: top; }
+    .tag-good { background: #d1fae5; color: #065f46; border-radius: 20px; padding: .1rem .6rem; font-size: .75rem; font-weight: 600; }
+    .tag-warn { background: #fef3c7; color: #92400e; border-radius: 20px; padding: .1rem .6rem; font-size: .75rem; font-weight: 600; }
+
+    /* ── PILL STEPS ── */
+    .step-pills { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+    .step-pill {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      border-radius: 30px;
+      padding: .4rem 1rem;
+      font-size: .82rem;
+      font-weight: 600;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .step-pill .num {
+      background: #3b82f6;
+      color: #fff;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem;
+    }
+
+    /* ── PRODUCT CARD demo ── */
+    .product-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1rem;
+      transition: box-shadow .15s;
+    }
+    .product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    .product-card img { width: 100%; height: 120px; object-fit: contain; }
+    .product-card .p-title { font-size: .82rem; font-weight: 600; margin: .5rem 0 .25rem; line-height: 1.3; }
+    .product-card .p-price { color: #3b82f6; font-weight: 700; }
+
+    /* responsive */
+    @media(max-width:768px){
+      #sidebar { transform: translateX(-100%); }
+      #main { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav id="sidebar">
+  <div class="brand">
+    <div class="badge-mod">Módulo 1 · Clase 1</div>
+    <h6>Frontend con Angular</h6>
+    <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+      <span>Progreso de la clase</span><span id="progress-pct">14%</span>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:14%"></div></div>
+    <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">
+      Clase 1 de 8 · Módulo 1
+    </div>
+  </div>
+
+  <div class="section-label">Contenido</div>
+  <nav id="sidenav">
+    <a href="#" class="active" data-section="agenda" onclick="showSection('agenda',this)">
+      <i class="bi bi-calendar3"></i> Agenda de la Clase
+    </a>
+    <a href="#" data-section="intro" onclick="showSection('intro',this)">
+      <i class="bi bi-globe2"></i> ¿Qué es FullStack?
+    </a>
+    <a href="#" data-section="json-xml" onclick="showSection('json-xml',this)">
+      <i class="bi bi-braces"></i> JSON vs XML
+    </a>
+    <a href="#" data-section="api-rest" onclick="showSection('api-rest',this)">
+      <i class="bi bi-diagram-3"></i> APIs REST
+    </a>
+    <a href="#" data-section="fetch" onclick="showSection('fetch',this)">
+      <i class="bi bi-arrow-down-circle"></i> fetch() en JavaScript
+    </a>
+    <a href="#" data-section="practica" onclick="showSection('practica',this)">
+      <i class="bi bi-code-slash"></i> Práctica Guiada
+    </a>
+    <a href="#" data-section="setup" onclick="showSection('setup',this)">
+      <i class="bi bi-tools"></i> Setup del Entorno
+    </a>
+  </nav>
+
+  <div class="section-label">Navegación</div>
+  <nav>
+    <a href="clase0.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 0</a>
+    <a href="clase1.html"><i class="bi bi-arrow-right-circle"></i> Clase 2 →</a>
+  </nav>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div id="main">
+
+  <div class="topbar">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item text-muted">Módulo 1</li>
+        <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+        <li class="breadcrumb-item active fw-semibold">Clase 1 — Fundamentos Web</li>
+      </ol>
+    </nav>
+    <span class="ms-auto badge bg-primary-subtle text-primary border border-primary-subtle">
+      <i class="bi bi-clock me-1"></i>1.5h efectivas
+    </span>
+  </div>
+
+  <!-- ════════ AGENDA ════════ -->
+  <section id="agenda" class="content-section active">
+    <div class="hero-card">
+      <div class="clase-badge"><i class="bi bi-mortarboard me-1"></i>Clase 1 de 7</div>
+      <h1>Fundamentos Web & Primera API</h1>
+      <p>Introducción al ecosistema FullStack, estructura de datos en la web y tu primera petición a una API real.</p>
+      <div class="hero-meta mt-3">
+        <span><i class="bi bi-clock me-1"></i>1.5h efectivas</span>
+        <span><i class="bi bi-layers me-1"></i>Teoría + Práctica</span>
+        <span><i class="bi bi-globe me-1"></i>fakestoreapi.com</span>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-primary-subtle text-primary"><i class="bi bi-bullseye"></i></div>
+          <h5>Objetivos de la Clase</h5>
+          <p>Entender qué hace un desarrollador FullStack, diferenciar JSON de XML, y hacer tu primera petición GET a una API real.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-success-subtle text-success"><i class="bi bi-code-square"></i></div>
+          <h5>Lo que vas a construir</h5>
+          <p>Una página HTML que consume la FakeStore API y muestra productos en pantalla usando <code>fetch()</code>.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-warning-subtle text-warning"><i class="bi bi-tools"></i></div>
+          <h5>Herramientas</h5>
+          <p>Solo el navegador y un editor de texto. Sin instalaciones. Para la siguiente clase: Node.js, Postman, VS Code.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-list-ol text-primary"></i> Distribución del Tiempo</h4>
+      <div class="timeline mt-3">
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Presentaciones e introducción</div>
+          <div class="t-desc">Alumnos se presentan, expectativas, metodología del diplomado.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Teoría: FullStack, Frontend, Backend y Microservicios</div>
+          <div class="t-desc">Vista panorámica del ecosistema que vamos a aprender.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">20 min</div>
+          <div class="t-title">Práctica: JSON vs XML + Explorar FakeStore API</div>
+          <div class="t-desc">Abrir <code>https://fakestoreapi.com/products</code> en el navegador y analizar la respuesta.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">20 min</div>
+          <div class="t-title">Práctica: Primera petición con fetch()</div>
+          <div class="t-desc">Consumir la API y mostrar datos en la consola del navegador.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Práctica: Mostrar productos en HTML</div>
+          <div class="t-desc">Renderizar los productos usando <code>innerHTML</code>.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Setup para casa</div>
+          <div class="t-desc">Instrucciones de instalación: Node.js, Postman, VS Code.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Q&A</div>
+          <div class="t-desc">Preguntas y cierre de la sesión.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ INTRO FULLSTACK ════════ -->
+  <section id="intro" class="content-section">
+    <h2 class="fw-bold mb-1">¿Qué es el Desarrollo FullStack?</h2>
+    <p class="text-muted mb-4">Entendiendo el panorama completo antes de empezar a codear.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-2 text-primary"></i> Las tres capas de una aplicación web</h4>
+      <p>Cuando abres una aplicación como Amazon o Spotify, hay tres piezas trabajando juntas que no ves:</p>
+
+      <div class="row g-3 mt-2">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold text-primary mb-2"><i class="bi bi-display me-2"></i>Frontend</div>
+            <p class="small mb-2">Lo que el usuario ve e interactúa. Vive en el <strong>navegador</strong>.</p>
+            <ul class="small ps-3" style="color:#374151">
+              <li>HTML → estructura</li>
+              <li>CSS → estilos</li>
+              <li>JavaScript → comportamiento</li>
+              <li><strong>Angular</strong> → framework que organiza todo esto</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <div class="fw-bold text-success mb-2"><i class="bi bi-server me-2"></i>Backend</div>
+            <p class="small mb-2">La lógica de negocio. Vive en un <strong>servidor</strong>.</p>
+            <ul class="small ps-3" style="color:#374151">
+              <li>Procesa peticiones HTTP</li>
+              <li>Aplica reglas de negocio</li>
+              <li>Se comunica con la base de datos</li>
+              <li><strong>Spring Boot</strong> → lo que usaremos</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#faf5ff;border:1px solid #e9d5ff">
+            <div class="fw-bold text-purple mb-2" style="color:#7c3aed"><i class="bi bi-database me-2"></i>Base de Datos</div>
+            <p class="small mb-2">Donde persiste la información. Puede ser relacional o no relacional.</p>
+            <ul class="small ps-3" style="color:#374151">
+              <li>MySQL, PostgreSQL (relacionales)</li>
+              <li>MongoDB (no relacional)</li>
+              <li><strong>MySQL</strong> → lo que usaremos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-blue mt-3">
+        <strong>Desarrollador FullStack</strong> es quien puede trabajar en las tres capas. No necesariamente es experto en todo, pero entiende cómo se comunican y puede construir funcionalidades de punta a punta.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-boxes text-primary"></i> ¿Qué son los Microservicios?</h4>
+      <p>Imagina que Amazon es un solo programa gigante vs. que está dividido en servicios independientes: uno para pagos, otro para catálogo, otro para envíos…</p>
+
+      <div class="row g-3 mt-2">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+            <div class="fw-bold text-danger mb-1">🏚️ Monolito</div>
+            <p class="small" style="color:#374151">Todo el código en una sola aplicación. Fácil al inicio, difícil de escalar. Si falla una parte, puede fallar todo.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <div class="fw-bold text-success mb-1">🏙️ Microservicios</div>
+            <p class="small" style="color:#374151">Servicios pequeños e independientes, cada uno con su propio backend y base de datos. Más complejo pero escalable. Lo veremos en el Módulo 4.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-amber mt-3">
+        <strong>Por ahora:</strong> vamos a construir una aplicación bien estructurada. En el Módulo 4 aprenderemos a convertirla en microservicios.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-arrow-left-right text-primary"></i> ¿Cómo se comunican Frontend y Backend?</h4>
+      <p>A través de <strong>peticiones HTTP</strong>. El frontend hace una pregunta (request) y el backend responde (response).</p>
+
+      <div class="step-pills mt-2">
+        <div class="step-pill"><div class="num">1</div> Usuario hace clic en "Ver productos"</div>
+        <div class="step-pill"><div class="num">2</div> Frontend envía GET /api/products</div>
+        <div class="step-pill"><div class="num">3</div> Backend busca en la BD</div>
+        <div class="step-pill"><div class="num">4</div> Backend responde con JSON</div>
+        <div class="step-pill"><div class="num">5</div> Frontend muestra los datos</div>
+      </div>
+
+      <p class="mt-3">Los <strong>verbos HTTP</strong> más usados en REST:</p>
+      <table class="table table-bordered table-sm mt-2">
+        <thead><tr><th>Verbo</th><th>Acción</th><th>Ejemplo</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge bg-success">GET</span></td><td>Obtener datos</td><td>Listar productos</td></tr>
+          <tr><td><span class="badge bg-primary">POST</span></td><td>Crear un recurso</td><td>Agregar producto</td></tr>
+          <tr><td><span class="badge bg-warning text-dark">PUT</span></td><td>Actualizar (completo)</td><td>Editar producto</td></tr>
+          <tr><td><span class="badge bg-info text-dark">PATCH</span></td><td>Actualizar (parcial)</td><td>Cambiar solo el precio</td></tr>
+          <tr><td><span class="badge bg-danger">DELETE</span></td><td>Eliminar</td><td>Borrar producto</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════ JSON vs XML ════════ -->
+  <section id="json-xml" class="content-section">
+    <h2 class="fw-bold mb-1">JSON vs XML</h2>
+    <p class="text-muted mb-4">Los dos formatos más comunes para intercambiar datos en la web. Hoy casi todo usa JSON.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-code text-primary"></i> ¿Qué es JSON?</h4>
+      <p><strong>JSON</strong> (JavaScript Object Notation) es un formato de texto ligero para representar datos estructurados. Es fácil de leer para humanos y fácil de procesar para máquinas.</p>
+
+      <div class="callout callout-green">
+        JSON viene de JavaScript pero es <strong>independiente del lenguaje</strong>. Cualquier lenguaje (Java, Python, PHP…) puede leer y escribir JSON.
+      </div>
+
+      <p class="mt-3">Así se ve un producto de nuestra API en JSON:</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span><i class="bi bi-braces me-1"></i>producto.json</span>
+        </div>
+        <pre>{
+  <span class="prop">"id"</span>: <span class="num">1</span>,
+  <span class="prop">"title"</span>: <span class="str">"Fjallraven - Foldsack No. 1 Backpack"</span>,
+  <span class="prop">"price"</span>: <span class="num">109.95</span>,
+  <span class="prop">"description"</span>: <span class="str">"Your perfect pack for everyday use..."</span>,
+  <span class="prop">"category"</span>: <span class="str">"men's clothing"</span>,
+  <span class="prop">"image"</span>: <span class="str">"https://fakestoreapi.com/img/81fAn..."</span>,
+  <span class="prop">"rating"</span>: {
+    <span class="prop">"rate"</span>: <span class="num">3.9</span>,
+    <span class="prop">"count"</span>: <span class="num">120</span>
+  }
+}</pre>
+      </div>
+
+      <p class="mt-3">Cuando la API devuelve <strong>múltiples productos</strong>, usa un array:</p>
+      <div class="code-block">
+        <div class="code-header"><span><i class="bi bi-braces me-1"></i>productos-array.json</span></div>
+        <pre>[
+  { <span class="prop">"id"</span>: <span class="num">1</span>, <span class="prop">"title"</span>: <span class="str">"Backpack"</span>, <span class="prop">"price"</span>: <span class="num">109.95</span> },
+  { <span class="prop">"id"</span>: <span class="num">2</span>, <span class="prop">"title"</span>: <span class="str">"Casual T-shirt"</span>, <span class="prop">"price"</span>: <span class="num">22.3</span> },
+  { <span class="prop">"id"</span>: <span class="num">3</span>, <span class="prop">"title"</span>: <span class="str">"Cotton Jacket"</span>, <span class="prop">"price"</span>: <span class="num">55.99</span> }
+]</pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-earmark-code text-warning"></i> ¿Qué es XML?</h4>
+      <p>XML (eXtensible Markup Language) fue el estándar antes de JSON. Todavía se usa en sistemas legacy, SOAP y algunas configuraciones.</p>
+
+      <p>El mismo producto en XML:</p>
+      <div class="code-block">
+        <div class="code-header"><span><i class="bi bi-file-earmark-code me-1"></i>producto.xml</span></div>
+        <pre><span class="kw">&lt;product&gt;</span>
+  <span class="kw">&lt;id&gt;</span><span class="num">1</span><span class="kw">&lt;/id&gt;</span>
+  <span class="kw">&lt;title&gt;</span><span class="str">Fjallraven - Foldsack No. 1 Backpack</span><span class="kw">&lt;/title&gt;</span>
+  <span class="kw">&lt;price&gt;</span><span class="num">109.95</span><span class="kw">&lt;/price&gt;</span>
+  <span class="kw">&lt;category&gt;</span><span class="str">men's clothing</span><span class="kw">&lt;/category&gt;</span>
+  <span class="kw">&lt;rating&gt;</span>
+    <span class="kw">&lt;rate&gt;</span><span class="num">3.9</span><span class="kw">&lt;/rate&gt;</span>
+    <span class="kw">&lt;count&gt;</span><span class="num">120</span><span class="kw">&lt;/count&gt;</span>
+  <span class="kw">&lt;/rating&gt;</span>
+<span class="kw">&lt;/product&gt;</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-table text-primary"></i> Comparativa directa</h4>
+      <table class="table compare-table table-bordered">
+        <thead>
+          <tr><th>Característica</th><th>JSON</th><th>XML</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Legibilidad</strong></td>
+            <td><span class="tag-good">Fácil de leer</span></td>
+            <td><span class="tag-warn">Más verboso</span></td>
+          </tr>
+          <tr>
+            <td><strong>Peso</strong></td>
+            <td><span class="tag-good">Ligero</span></td>
+            <td><span class="tag-warn">Más pesado</span></td>
+          </tr>
+          <tr>
+            <td><strong>Soporte en JS</strong></td>
+            <td><span class="tag-good">Nativo (JSON.parse)</span></td>
+            <td><span class="tag-warn">Requiere parseo manual</span></td>
+          </tr>
+          <tr>
+            <td><strong>Uso actual</strong></td>
+            <td><span class="tag-good">Estándar REST APIs</span></td>
+            <td><span class="tag-warn">Legacy / SOAP</span></td>
+          </tr>
+          <tr>
+            <td><strong>Arrays</strong></td>
+            <td><span class="tag-good">Soporte nativo [ ]</span></td>
+            <td><span class="tag-warn">Repetir etiquetas</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout callout-blue">
+        <strong>Conclusión:</strong> En el 95% de proyectos modernos usarás JSON. XML lo vas a encontrar principalmente en sistemas viejos o integraciones con SAP, bancos y servicios gubernamentales.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo: Parsear JSON en JavaScript</div>
+      </div>
+      <div class="sandbox-body">
+        <div class="code-block mb-3">
+          <div class="code-header"><span>script.js</span></div>
+          <pre><span class="cm">// Un string JSON (como lo que llega de una API)</span>
+<span class="kw">const</span> jsonString = <span class="str">'{"id":1,"title":"Backpack","price":109.95}'</span>;
+
+<span class="cm">// Convertir string → objeto JavaScript</span>
+<span class="kw">const</span> producto = <span class="fn">JSON</span>.<span class="fn">parse</span>(jsonString);
+<span class="fn">console</span>.<span class="fn">log</span>(producto.title);   <span class="cm">// "Backpack"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(producto.price);   <span class="cm">// 109.95</span>
+
+<span class="cm">// Convertir objeto → string JSON (para enviar a una API)</span>
+<span class="kw">const</span> nuevoProducto = { <span class="prop">title</span>: <span class="str">"Zapatos"</span>, <span class="prop">price</span>: <span class="num">79.99</span> };
+<span class="kw">const</span> enviando = <span class="fn">JSON</span>.<span class="fn">stringify</span>(nuevoProducto);
+<span class="fn">console</span>.<span class="fn">log</span>(enviando); <span class="cm">// '{"title":"Zapatos","price":79.99}'</span></pre>
+        </div>
+        <button class="run-btn" onclick="demoJSON()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+        <div class="output-area" id="out-json">El resultado aparecerá aquí...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ API REST ════════ -->
+  <section id="api-rest" class="content-section">
+    <h2 class="fw-bold mb-1">APIs REST</h2>
+    <p class="text-muted mb-4">El puente de comunicación entre frontend y backend.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-plug text-primary"></i> ¿Qué es una API?</h4>
+      <p>API significa <strong>Application Programming Interface</strong>. Es un contrato: "si me mandas esto, yo te devuelvo aquello".</p>
+      <p class="mt-2">Piénsalo como un restaurante:</p>
+      <ul class="mt-2" style="font-size:.9rem">
+        <li>El <strong>menú</strong> es la documentación de la API</li>
+        <li>Tu <strong>pedido</strong> es la petición (request)</li>
+        <li>El <strong>mesero</strong> es el protocolo HTTP</li>
+        <li>La <strong>cocina</strong> es el backend</li>
+        <li>El <strong>plato</strong> que te traen es la respuesta (response)</li>
+      </ul>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-shop text-primary"></i> FakeStore API — Nuestra API de práctica</h4>
+      <p>Durante el Módulo 1 usaremos <code>https://fakestoreapi.com</code>. Simula una tienda online con productos, carritos y usuarios.</p>
+      <table class="table table-bordered table-sm mt-3">
+        <thead><tr><th>Endpoint</th><th>Método</th><th>Qué hace</th></tr></thead>
+        <tbody>
+          <tr><td><code>/products</code></td><td><span class="badge bg-success">GET</span></td><td>Lista todos los productos</td></tr>
+          <tr><td><code>/products/1</code></td><td><span class="badge bg-success">GET</span></td><td>Obtiene el producto con id=1</td></tr>
+          <tr><td><code>/products?limit=5</code></td><td><span class="badge bg-success">GET</span></td><td>Primeros 5 productos</td></tr>
+          <tr><td><code>/products/categories</code></td><td><span class="badge bg-success">GET</span></td><td>Lista las categorías</td></tr>
+          <tr><td><code>/products</code></td><td><span class="badge bg-primary">POST</span></td><td>Crea un producto (simulado)</td></tr>
+          <tr><td><code>/products/1</code></td><td><span class="badge bg-warning text-dark">PUT</span></td><td>Actualiza producto id=1</td></tr>
+          <tr><td><code>/products/1</code></td><td><span class="badge bg-danger">DELETE</span></td><td>Elimina producto id=1</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-amber">
+        <strong>Nota:</strong> FakeStore API simula los cambios pero no los persiste realmente. Es perfecta para practicar sin romper nada.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo: Explorar la API en vivo</div>
+        <button class="run-btn" onclick="explorarAPI()"><i class="bi bi-play-fill"></i> Traer primer producto</button>
+      </div>
+      <div class="sandbox-body">
+        <p class="small text-muted mb-3">Hace GET a <code>https://fakestoreapi.com/products/1</code> y muestra la respuesta formateada:</p>
+        <div id="out-api" class="output-area">Haz clic en "Traer primer producto"...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FETCH ════════ -->
+  <section id="fetch" class="content-section">
+    <h2 class="fw-bold mb-1">fetch() — Tu herramienta para consumir APIs</h2>
+    <p class="text-muted mb-4">La función nativa de JavaScript para hacer peticiones HTTP.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-arrow-down-circle text-primary"></i> ¿Qué es fetch()?</h4>
+      <p><code>fetch()</code> es una función de JavaScript que permite hacer peticiones HTTP de forma asíncrona. Devuelve una <strong>Promesa</strong>.</p>
+      <div class="callout callout-blue">
+        <strong>Asíncrono</strong> significa que el navegador no se detiene a esperar la respuesta. Sigue ejecutando el resto del código y cuando llega la respuesta, la procesa. Esto es clave para que la UI no se congele.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-code-slash text-primary"></i> Anatomía de un fetch()</h4>
+      <p>Hay dos formas de escribirlo. Ambas hacen lo mismo:</p>
+
+      <p class="fw-semibold mt-3">Forma 1: Con <code>.then()</code> — Promesas encadenadas</p>
+      <div class="code-block">
+        <div class="code-header"><span>forma-promesas.js</span></div>
+        <pre><span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products/1"</span>)
+  .<span class="fn">then</span>(<span class="kw">function</span>(response) {
+    <span class="cm">// 1. La petición llegó. Convertimos a JSON</span>
+    <span class="kw">return</span> response.<span class="fn">json</span>();
+  })
+  .<span class="fn">then</span>(<span class="kw">function</span>(data) {
+    <span class="cm">// 2. Ya tenemos el objeto JavaScript</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(data.title);
+    <span class="fn">console</span>.<span class="fn">log</span>(data.price);
+  })
+  .<span class="fn">catch</span>(<span class="kw">function</span>(error) {
+    <span class="cm">// 3. Si algo falla, capturamos el error</span>
+    <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Error:"</span>, error);
+  });</pre>
+      </div>
+
+      <p class="fw-semibold mt-3">Forma 2: Con <code>async/await</code> — Más legible (la que usaremos)</p>
+      <div class="code-block">
+        <div class="code-header"><span>forma-async.js</span></div>
+        <pre><span class="cm">// La función debe ser "async" para usar "await" adentro</span>
+<span class="kw">async function</span> <span class="fn">obtenerProducto</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products/1"</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> response.<span class="fn">json</span>();
+
+    <span class="fn">console</span>.<span class="fn">log</span>(data.title);  <span class="cm">// "Fjallraven Backpack"</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(data.price);  <span class="cm">// 109.95</span>
+  } <span class="kw">catch</span> (error) {
+    <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Error:"</span>, error);
+  }
+}
+
+<span class="fn">obtenerProducto</span>(); <span class="cm">// Llamamos la función</span></pre>
+      </div>
+
+      <div class="callout callout-green mt-3">
+        <strong>¿Cuál usar?</strong> <code>async/await</code> es más moderno, más legible y más fácil de mantener. Es lo que usaremos de aquí en adelante y lo que usa Angular internamente.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo 1: fetch básico</div>
+        <button class="run-btn" onclick="demoFetch1()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+      </div>
+      <div class="sandbox-body">
+        <div class="code-block mb-3">
+          <div class="code-header"><span>demo-fetch-basico.js</span></div>
+          <pre><span class="kw">async function</span> <span class="fn">obtenerProducto</span>() {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products/1"</span>);
+  <span class="kw">const</span> producto = <span class="kw">await</span> response.<span class="fn">json</span>();
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Título:"</span>, producto.title);
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Precio:"</span>, producto.price);
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Categoría:"</span>, producto.category);
+}</pre>
+        </div>
+        <div id="out-fetch1" class="output-area">El resultado aparecerá aquí...</div>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo 2: Traer lista de productos</div>
+        <button class="run-btn" onclick="demoFetch2()"><i class="bi bi-play-fill"></i> Ejecutar</button>
+      </div>
+      <div class="sandbox-body">
+        <div class="code-block mb-3">
+          <div class="code-header"><span>demo-lista-productos.js</span></div>
+          <pre><span class="kw">async function</span> <span class="fn">listarProductos</span>() {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=3"</span>);
+  <span class="kw">const</span> productos = <span class="kw">await</span> response.<span class="fn">json</span>();
+
+  <span class="cm">// Recorremos el array con forEach</span>
+  productos.<span class="fn">forEach</span>(<span class="kw">function</span>(p) {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`#</span>${p.id}<span class="str"> - </span>${p.title}<span class="str"> → $</span>${p.price}<span class="str">`</span>);
+  });
+}</pre>
+        </div>
+        <div id="out-fetch2" class="output-area">El resultado aparecerá aquí...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ PRÁCTICA ════════ -->
+  <section id="practica" class="content-section">
+    <h2 class="fw-bold mb-1">Práctica Guiada</h2>
+    <p class="text-muted mb-4">Construyamos algo real: una mini-tienda que consume la FakeStore API.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-hammer text-primary"></i> ¿Qué vamos a construir?</h4>
+      <p>Una página HTML que al cargar hace fetch a la API y muestra tarjetas de productos. Sin frameworks, solo HTML + JS puro.</p>
+      <div class="step-pills">
+        <div class="step-pill"><div class="num">1</div> Crear el HTML base</div>
+        <div class="step-pill"><div class="num">2</div> Hacer fetch a la API</div>
+        <div class="step-pill"><div class="num">3</div> Recorrer el array</div>
+        <div class="step-pill"><div class="num">4</div> Crear tarjetas con innerHTML</div>
+        <div class="step-pill"><div class="num">5</div> Insertar en el DOM</div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-code text-primary"></i> Código completo — Mini Tienda</h4>
+      <p>Crea un archivo <code>index.html</code> y pega este código:</p>
+      <div class="code-block">
+        <div class="code-header"><span>index.html</span></div>
+        <pre><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html</span> <span class="prop">lang</span>=<span class="str">"es"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;head&gt;</span>
+  <span class="kw">&lt;meta</span> <span class="prop">charset</span>=<span class="str">"UTF-8"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;title&gt;</span>Mi Tienda<span class="kw">&lt;/title&gt;</span>
+  <span class="kw">&lt;style&gt;</span>
+    <span class="fn">body</span> { font-family: sans-serif; padding: 20px; }
+    <span class="fn">.productos</span> { display: flex; flex-wrap: wrap; gap: 16px; }
+    <span class="fn">.tarjeta</span> {
+      border: 1px solid #ddd; border-radius: 8px;
+      padding: 16px; width: 200px;
+    }
+    <span class="fn">.tarjeta img</span> { width: 100%; height: 150px; object-fit: contain; }
+    <span class="fn">.tarjeta h3</span> { font-size: 14px; margin: 8px 0; }
+    <span class="fn">.tarjeta .precio</span> { color: #2563eb; font-weight: bold; }
+  <span class="kw">&lt;/style&gt;</span>
+<span class="kw">&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+  <span class="kw">&lt;h1&gt;</span>🛍️ Mi Tienda<span class="kw">&lt;/h1&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">id</span>=<span class="str">"contenedor"</span> <span class="prop">class</span>=<span class="str">"productos"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+  <span class="kw">&lt;script&gt;</span>
+    <span class="kw">async function</span> <span class="fn">cargarProductos</span>() {
+      <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=6"</span>);
+      <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+      <span class="kw">const</span> contenedor = document.<span class="fn">getElementById</span>(<span class="str">"contenedor"</span>);
+
+      data.<span class="fn">forEach</span>(<span class="kw">function</span>(producto) {
+        contenedor.innerHTML += <span class="str">`
+          &lt;div class="tarjeta"&gt;
+            &lt;img src="</span>${producto.image}<span class="str">" alt="</span>${producto.title}<span class="str">"&gt;
+            &lt;h3&gt;</span>${producto.title}<span class="str">&lt;/h3&gt;
+            &lt;p class="precio"&gt;$</span>${producto.price}<span class="str">&lt;/p&gt;
+          &lt;/div&gt;
+        `</span>;
+      });
+    }
+
+    <span class="fn">cargarProductos</span>(); <span class="cm">// Se ejecuta al cargar la página</span>
+  <span class="kw">&lt;/script&gt;</span>
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></pre>
+      </div>
+    </div>
+
+    <!-- DEMO LIVE -->
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-eye text-primary"></i> Resultado en vivo</div>
+        <button class="run-btn" onclick="cargarTienda()"><i class="bi bi-play-fill"></i> Cargar productos</button>
+      </div>
+      <div class="sandbox-body">
+        <p class="small text-muted mb-3">Así se verá cuando abras tu archivo <code>index.html</code>:</p>
+        <div id="tienda-live">
+          <div class="text-center text-muted py-5">
+            <i class="bi bi-bag-x" style="font-size:2rem"></i>
+            <p class="mt-2">Haz clic en "Cargar productos" para ver el resultado</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-lightbulb text-warning"></i> Puntos clave de este ejercicio</h4>
+      <ul style="font-size:.9rem;line-height:2">
+        <li><code>document.getElementById("contenedor")</code> — selecciona el div por su id</li>
+        <li><code>innerHTML +=</code> — agrega HTML al final del contenedor</li>
+        <li>Template literals <code>`...${variable}...`</code> — mezclan texto y variables de forma limpia</li>
+        <li><code>forEach</code> — recorre cada elemento del array de productos</li>
+        <li>La función se llama al final para que se ejecute cuando carga la página</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════ SETUP ════════ -->
+  <section id="setup" class="content-section">
+    <h2 class="fw-bold mb-1">Setup del Entorno de Desarrollo</h2>
+    <p class="text-muted mb-4">Instalaciones necesarias para las próximas clases.</p>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-success-subtle text-success"><i class="bi bi-hexagon-fill"></i></div>
+          <h5>1. Node.js</h5>
+          <p class="mb-2">Motor de JavaScript en el servidor. Angular CLI lo necesita.</p>
+          <a href="https://nodejs.org" target="_blank" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-download me-1"></i>nodejs.org
+          </a>
+          <div class="code-block mt-3">
+            <div class="code-header"><span>verificar</span></div>
+            <pre style="font-size:.75rem">node --version
+npm --version</pre>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-warning-subtle text-warning"><i class="bi bi-send-fill"></i></div>
+          <h5>2. Postman</h5>
+          <p class="mb-2">Para probar APIs sin necesidad de escribir código.</p>
+          <a href="https://postman.com/downloads" target="_blank" class="btn btn-sm btn-outline-warning">
+            <i class="bi bi-download me-1"></i>postman.com
+          </a>
+          <p class="small text-muted mt-2">También puedes usar la versión web en <code>web.postman.co</code></p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-primary-subtle text-primary"><i class="bi bi-code-square"></i></div>
+          <h5>3. VS Code</h5>
+          <p class="mb-2">Editor de código ligero con excelente soporte para TypeScript y Angular.</p>
+          <a href="https://code.visualstudio.com" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-download me-1"></i>code.visualstudio.com
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block mt-4">
+      <h4><i class="bi bi-puzzle text-primary"></i> Extensiones recomendadas para VS Code</h4>
+      <table class="table table-bordered table-sm mt-2">
+        <thead><tr><th>Extensión</th><th>Para qué sirve</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Angular Language Service</strong></td><td>Autocompletado y errores en plantillas Angular</td></tr>
+          <tr><td><strong>Prettier</strong></td><td>Formateo automático de código</td></tr>
+          <tr><td><strong>ESLint</strong></td><td>Detecta errores en JavaScript/TypeScript</td></tr>
+          <tr><td><strong>Thunder Client</strong></td><td>Cliente REST dentro de VS Code (alternativa a Postman)</td></tr>
+          <tr><td><strong>GitLens</strong></td><td>Mejorar la experiencia con Git</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check-circle text-success"></i> Tarea para la Clase 2</h4>
+      <div class="callout callout-green">
+        <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2">
+          <li>Instalar Node.js, Postman y VS Code</li>
+          <li>Abrir Postman y hacer un GET a <code>https://fakestoreapi.com/products</code></li>
+          <li>Guardar el archivo <code>index.html</code> de la práctica y abrirlo en el navegador</li>
+          <li>Explorar qué pasa si cambias el <code>?limit=6</code> por <code>?limit=10</code></li>
+          <li><strong>Opcional:</strong> Agregar el precio con 2 decimales usando <code>.toFixed(2)</code></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+      <a href="clase2-js-avanzado.html" class="btn btn-primary">
+        Siguiente: Clase 2 — JavaScript Avanzado <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  /* ── Navegación + progreso ── */
+  const sections = ['agenda', 'intro', 'json-xml', 'api-rest', 'fetch', 'practica', 'setup'];
+
+  function updateProgress(currentId) {
+    const index = sections.indexOf(currentId);           // 0-based
+    const pct   = Math.round(((index + 1) / sections.length) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+  }
+
+  function showSection(id, el) {
+    event.preventDefault();
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
+    updateProgress(id);
+    window.scrollTo(0, 0);
+  }
+
+  updateProgress('agenda'); // sección inicial al cargar
+
+  /* ── Demo JSON.parse ── */
+  function demoJSON() {
+    const out = document.getElementById('out-json');
+    const jsonString = '{"id":1,"title":"Fjallraven Backpack","price":109.95,"category":"men\'s clothing"}';
+    const producto = JSON.parse(jsonString);
+    const nuevoProducto = { title: "Zapatos Nike", price: 79.99 };
+    const enviando = JSON.stringify(nuevoProducto);
+
+    out.innerHTML = `
+      <div class="mb-2"><span style="color:#10b981">✓</span> <strong>JSON.parse()</strong> → objeto JS</div>
+      <div>  producto.title    = "<strong>${producto.title}</strong>"</div>
+      <div>  producto.price    = <strong>${producto.price}</strong></div>
+      <div>  producto.category = "<strong>${producto.category}</strong>"</div>
+      <div class="mt-2"><span style="color:#10b981">✓</span> <strong>JSON.stringify()</strong> → string para enviar</div>
+      <div>  enviando = <strong>${enviando}</strong></div>
+    `;
+  }
+
+  /* ── Demo Explorar API ── */
+  async function explorarAPI() {
+    const out = document.getElementById('out-api');
+    out.innerHTML = '<span style="color:#64748b">⏳ Cargando...</span>';
+    try {
+      const res  = await fetch('https://fakestoreapi.com/products/1');
+      const data = await res.json();
+      out.innerHTML = `<pre style="margin:0;font-size:.8rem">${JSON.stringify(data, null, 2)}</pre>`;
+    } catch(e) {
+      out.innerHTML = `<span style="color:#ef4444">Error: ${e.message}</span>`;
+    }
+  }
+
+  /* ── Demo fetch básico ── */
+  async function demoFetch1() {
+    const out = document.getElementById('out-fetch1');
+    out.innerHTML = '<span style="color:#64748b">⏳ Haciendo fetch...</span>';
+    try {
+      const res     = await fetch('https://fakestoreapi.com/products/1');
+      const producto = await res.json();
+      out.innerHTML = `
+        <div><span style="color:#10b981">✓</span> Título: <strong>${producto.title}</strong></div>
+        <div><span style="color:#10b981">✓</span> Precio: <strong>$${producto.price}</strong></div>
+        <div><span style="color:#10b981">✓</span> Categoría: <strong>${producto.category}</strong></div>
+        <div><span style="color:#10b981">✓</span> Rating: <strong>${producto.rating.rate} ⭐ (${producto.rating.count} votos)</strong></div>
+      `;
+    } catch(e) {
+      out.innerHTML = `<span style="color:#ef4444">Error: ${e.message}</span>`;
+    }
+  }
+
+  /* ── Demo fetch lista ── */
+  async function demoFetch2() {
+    const out = document.getElementById('out-fetch2');
+    out.innerHTML = '<span style="color:#64748b">⏳ Cargando lista...</span>';
+    try {
+      const res      = await fetch('https://fakestoreapi.com/products?limit=3');
+      const productos = await res.json();
+      out.innerHTML  = productos.map(p =>
+        `<div><span style="color:#10b981">✓</span> #${p.id} — <strong>${p.title.substring(0,40)}...</strong> → <strong style="color:#2563eb">$${p.price}</strong></div>`
+      ).join('');
+    } catch(e) {
+      out.innerHTML = `<span style="color:#ef4444">Error: ${e.message}</span>`;
+    }
+  }
+
+  /* ── Demo Tienda Live ── */
+  async function cargarTienda() {
+    const cont = document.getElementById('tienda-live');
+    cont.innerHTML = '<div class="text-center text-muted py-3"><div class="spinner-border spinner-border-sm"></div> Cargando productos...</div>';
+    try {
+      const res      = await fetch('https://fakestoreapi.com/products?limit=6');
+      const productos = await res.json();
+      cont.innerHTML = `<div class="row g-3">` +
+        productos.map(p => `
+          <div class="col-6 col-md-4 col-lg-2">
+            <div class="product-card text-center">
+              <img src="${p.image}" alt="${p.title}">
+              <div class="p-title">${p.title.substring(0, 35)}...</div>
+              <div class="p-price">$${p.price.toFixed(2)}</div>
+            </div>
+          </div>`).join('') + `</div>`;
+    } catch(e) {
+      cont.innerHTML = `<div class="alert alert-danger">Error al cargar: ${e.message}</div>`;
+    }
+     }
+</script>
+</body>
+</html>
