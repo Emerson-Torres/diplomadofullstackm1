@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 2 — JavaScript Avanzado para APIs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #1e293b; }
+
+    /* SIDEBAR */
+    #sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 270px; height: 100vh;
+      background: #0f172a; color: #e2e8f0;
+      overflow-y: auto; z-index: 1000;
+      padding-bottom: 2rem;
+      border-right: 1px solid #1e293b;
+    }
+    #sidebar .brand { padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid #1e293b; }
+    #sidebar .brand .badge-mod {
+      background: #10b981; color: #fff;
+      font-size: .7rem; padding: .25rem .6rem;
+      border-radius: 20px; letter-spacing: .05em; font-weight: 700;
+    }
+    #sidebar .brand h6 { color: #f8fafc; font-weight: 700; margin-top: .5rem; font-size: 1rem; }
+    #sidebar nav a {
+      display: flex; align-items: center; gap: .65rem;
+      padding: .55rem 1.25rem; color: #94a3b8;
+      text-decoration: none; font-size: .83rem;
+      border-left: 3px solid transparent; transition: all .15s;
+    }
+    #sidebar nav a:hover, #sidebar nav a.active {
+      color: #f8fafc; background: #1e293b; border-left-color: #10b981;
+    }
+    #sidebar .section-label {
+      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+      color: #475569; padding: 1.1rem 1.25rem .35rem; font-weight: 700;
+    }
+    #sidebar .progress-wrap { padding: .5rem 1.25rem 0; }
+    #sidebar .progress { height: 4px; background: #1e293b; }
+    #sidebar .progress-bar { background: #10b981; }
+
+    /* MAIN */
+    #main { margin-left: 270px; min-height: 100vh; }
+
+    /* TOPBAR */
+    .topbar {
+      background: #fff; border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 2rem; position: sticky; top: 0; z-index: 900;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .topbar .breadcrumb { margin: 0; font-size: .8rem; }
+
+    /* SECTIONS */
+    .content-section { display: none; padding: 2rem; animation: fadeIn .25s ease; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* HERO */
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
+      color: #fff; border-radius: 16px; padding: 2.5rem 3rem; margin-bottom: 2rem;
+    }
+    .hero-card .clase-badge {
+      background: rgba(16,185,129,.25); border: 1px solid rgba(16,185,129,.5);
+      color: #6ee7b7; font-size: .75rem; padding: .3rem .8rem;
+      border-radius: 20px; display: inline-block; margin-bottom: 1rem;
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+    .hero-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .hero-card p  { color: #94a3b8; font-size: 1rem; }
+    .hero-meta span {
+      background: rgba(255,255,255,.1); border-radius: 8px;
+      padding: .4rem .9rem; font-size: .82rem; margin-right: .5rem; color: #e2e8f0;
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content:''; position:absolute; left:.55rem; top:0; bottom:0; width:2px; background:#e2e8f0; }
+    .timeline-item { position: relative; margin-bottom: 1.25rem; }
+    .timeline-item::before {
+      content:''; position:absolute; left:-1.5rem; top:.35rem;
+      width:10px; height:10px; border-radius:50%;
+      background:#10b981; border:2px solid #fff; box-shadow:0 0 0 2px #10b981;
+    }
+    .timeline-item .t-time { font-size:.72rem; font-weight:700; color:#10b981; text-transform:uppercase; letter-spacing:.06em; }
+    .timeline-item .t-title { font-weight:600; font-size:.95rem; color:#1e293b; }
+    .timeline-item .t-desc  { font-size:.85rem; color:#64748b; }
+
+    /* CARDS */
+    .info-card { background:#fff; border-radius:12px; border:1px solid #e2e8f0; padding:1.5rem; height:100%; }
+    .info-card .ic-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:1rem; }
+    .info-card h5 { font-weight:700; font-size:.95rem; margin-bottom:.5rem; }
+    .info-card p  { font-size:.85rem; color:#64748b; margin:0; }
+
+    /* THEORY */
+    .theory-block { background:#fff; border-radius:12px; border:1px solid #e2e8f0; padding:1.75rem; margin-bottom:1.5rem; }
+    .theory-block h4 { font-weight:700; font-size:1.05rem; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
+    .theory-block p, .theory-block li { font-size:.9rem; color:#374151; line-height:1.75; }
+    .theory-block ul, .theory-block ol { padding-left:1.4rem; }
+
+    /* CALLOUTS */
+    .callout { border-left:4px solid; border-radius:0 8px 8px 0; padding:.9rem 1.2rem; margin:1rem 0; font-size:.88rem; }
+    .callout-blue   { border-color:#3b82f6; background:#eff6ff; color:#1e40af; }
+    .callout-green  { border-color:#10b981; background:#f0fdf4; color:#065f46; }
+    .callout-amber  { border-color:#f59e0b; background:#fffbeb; color:#92400e; }
+    .callout-red    { border-color:#ef4444; background:#fef2f2; color:#991b1b; }
+    .callout-purple { border-color:#8b5cf6; background:#f5f3ff; color:#4c1d95; }
+
+    /* CODE */
+    .code-block { background:#0f172a; border-radius:10px; overflow:hidden; margin:1rem 0; font-family:'JetBrains Mono',monospace; }
+    .code-block .code-header { background:#1e293b; padding:.5rem 1rem; display:flex; align-items:center; justify-content:space-between; }
+    .code-block .code-header span { font-size:.75rem; color:#64748b; font-family:'Inter',sans-serif; }
+    .code-block pre { margin:0; padding:1.25rem; color:#e2e8f0; font-size:.82rem; line-height:1.75; overflow-x:auto; }
+    .kw   { color:#93c5fd; }
+    .fn   { color:#86efac; }
+    .str  { color:#fca5a5; }
+    .cm   { color:#475569; font-style:italic; }
+    .num  { color:#fdba74; }
+    .prop { color:#c4b5fd; }
+    .bool { color:#f9a8d4; }
+
+    /* SANDBOX */
+    .sandbox { background:#fff; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; margin-bottom:1.5rem; }
+    .sandbox-header { background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:.75rem 1.25rem; display:flex; align-items:center; justify-content:space-between; }
+    .sandbox-header .title { font-weight:600; font-size:.9rem; display:flex; align-items:center; gap:.5rem; }
+    .sandbox-body { padding:1.5rem; }
+    .run-btn { background:#10b981; color:#fff; border:none; border-radius:8px; padding:.45rem 1.1rem; font-size:.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:.4rem; transition:background .15s; }
+    .run-btn:hover { background:#059669; }
+    .run-btn.blue { background:#3b82f6; } .run-btn.blue:hover { background:#2563eb; }
+    .run-btn.amber { background:#f59e0b; color:#1e293b; } .run-btn.amber:hover { background:#d97706; }
+    .run-btn.red { background:#ef4444; } .run-btn.red:hover { background:#dc2626; }
+    .output-area { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem; min-height:60px; font-size:.83rem; margin-top:1rem; font-family:'JetBrains Mono',monospace; color:#1e293b; line-height:1.7; }
+    .output-area .ok   { color:#10b981; }
+    .output-area .err  { color:#ef4444; }
+    .output-area .info { color:#3b82f6; }
+    .output-area .warn { color:#f59e0b; }
+
+    /* STEP PILLS */
+    .step-pills { display:flex; flex-wrap:wrap; gap:.75rem; margin:1rem 0; }
+    .step-pill { background:#f0fdf4; border:1px solid #bbf7d0; color:#065f46; border-radius:30px; padding:.4rem 1rem; font-size:.82rem; font-weight:600; display:flex; align-items:center; gap:.4rem; }
+    .step-pill .num { background:#10b981; color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.7rem; }
+
+    /* PRODUCT CARDS */
+    .productos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; }
+    .product-card { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:1rem; transition:box-shadow .2s; position:relative; }
+    .product-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.1); }
+    .product-card img { width:100%; height:110px; object-fit:contain; }
+    .product-card .p-title { font-size:.78rem; font-weight:600; margin:.5rem 0 .25rem; line-height:1.3; color:#1e293b; }
+    .product-card .p-price { color:#10b981; font-weight:700; font-size:.9rem; }
+    .product-card .btn-like {
+      background:none; border:1px solid #e2e8f0; border-radius:8px;
+      padding:.25rem .6rem; font-size:.8rem; cursor:pointer; margin-top:.5rem;
+      width:100%; transition:all .2s;
+    }
+    .product-card .btn-like:hover { background:#fef2f2; border-color:#fecaca; }
+    .product-card .btn-like.liked { background:#fef2f2; border-color:#f87171; color:#ef4444; }
+    .product-card .fav-badge {
+      position:absolute; top:.5rem; right:.5rem;
+      background:#ef4444; color:#fff; border-radius:20px;
+      font-size:.65rem; padding:.15rem .4rem; font-weight:700;
+    }
+
+    /* PROMISE DIAGRAM */
+    .promise-flow { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin:1rem 0; }
+    .promise-box { border-radius:8px; padding:.6rem 1rem; font-size:.8rem; font-weight:600; font-family:'JetBrains Mono',monospace; }
+    .pb-pending  { background:#fef3c7; color:#92400e; border:1px solid #fde68a; }
+    .pb-fulfilled{ background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; }
+    .pb-rejected { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+    .pb-arrow    { color:#94a3b8; font-size:1.2rem; }
+
+    /* COMPARISON */
+    .compare-cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0; }
+    .compare-col { border-radius:10px; padding:1.25rem; }
+    .compare-col h6 { font-weight:700; font-size:.85rem; margin-bottom:.75rem; }
+    .compare-col pre { margin:0; font-size:.78rem; line-height:1.7; font-family:'JetBrains Mono',monospace; }
+
+    @media(max-width:768px){ #sidebar{transform:translateX(-100%);} #main{margin-left:0;} .compare-cols{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="brand">
+    <div class="badge-mod">Módulo 1 · Clase 2</div>
+    <h6>Frontend con Angular</h6>
+    <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+      <span>Progreso de la clase</span><span id="progress-pct">13%</span>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:13%"></div></div>
+    <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">
+      Clase 2 de 8 · Módulo 1
+    </div>
+  </div>
+
+  <div class="section-label">Contenido</div>
+  <nav id="sidenav">
+    <a href="#" class="active" onclick="window.showSection('agenda',this)"><i class="bi bi-calendar3"></i> Agenda</a>
+    <a href="#" onclick="window.showSection('promesas',this)"><i class="bi bi-hourglass-split"></i> Promesas & async/await</a>
+    <a href="#" onclick="window.showSection('eventos-dom',this)"><i class="bi bi-cursor-fill"></i> Eventos del DOM</a>
+    <a href="#" onclick="window.showSection('fetch-dom',this)"><i class="bi bi-arrow-down-circle"></i> fetch() + DOM en acción</a>
+    <a href="#" onclick="window.showSection('tarjetas',this)"><i class="bi bi-grid-3x3-gap"></i> Tarjetas dinámicas</a>
+    <a href="#" onclick="window.showSection('favoritos',this)"><i class="bi bi-heart"></i> Favoritos con localStorage</a>
+    <a href="#" onclick="window.showSection('ejercicio',this)"><i class="bi bi-code-slash"></i> Ejercicio integrador</a>
+    <a href="#" onclick="window.showSection('qa',this)"><i class="bi bi-patch-question"></i> Q&A y cierre</a>
+  </nav>
+
+  <div class="section-label">Navegación</div>
+  <nav>
+    <a href="clase1.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 1</a>
+    <a href="clase3.html"><i class="bi bi-arrow-right-circle"></i> Clase 3 →</a>
+  </nav>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item text-muted">Módulo 1</li>
+        <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+        <li class="breadcrumb-item active fw-semibold">Clase 2 — JavaScript Avanzado para APIs</li>
+      </ol>
+    </nav>
+    <span class="ms-auto badge bg-success-subtle text-success border border-success-subtle">
+      <i class="bi bi-clock me-1"></i>2h efectivas
+    </span>
+  </div>
+
+  <!-- ══════ AGENDA ══════ -->
+  <section id="agenda" class="content-section active">
+    <div class="hero-card">
+      <div class="clase-badge"><i class="bi bi-2-circle me-1"></i>Clase 2 de 7</div>
+      <h1>JavaScript Avanzado para APIs</h1>
+      <p>Promesas, async/await, eventos del DOM y localStorage — las herramientas que usan los desarrolladores profesionales para consumir APIs.</p>
+      <div class="hero-meta mt-3">
+        <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
+        <span><i class="bi bi-layers me-1"></i>Teoría + Práctica</span>
+        <span><i class="bi bi-heart me-1"></i>Favoritos en vivo</span>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-success-subtle text-success"><i class="bi bi-bullseye"></i></div>
+          <h5>Objetivos</h5>
+          <p>Entender cómo funciona la asincronía en JS, manejar eventos del DOM con addEventListener y construir una mini-tienda con favoritos persistentes.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-primary-subtle text-primary"><i class="bi bi-grid-3x3-gap"></i></div>
+          <h5>Lo que vas a construir</h5>
+          <p>Una galería de productos de la FakeStore API con botón ❤️ por tarjeta. Los favoritos se guardan en localStorage y sobreviven al recargar.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-warning-subtle text-warning"><i class="bi bi-puzzle"></i></div>
+          <h5>Prerrequisitos</h5>
+          <p>Clase 0 (variables, funciones, arrays, objetos, DOM, eventos, localStorage) y Clase 1 (fetch básico, JSON, APIs REST).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-list-ol text-success"></i> Distribución del tiempo</h4>
+      <div class="timeline mt-3">
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Teoría: Promesas, async/await y eventos del DOM</div>
+          <div class="t-desc">Cómo JavaScript maneja operaciones que toman tiempo y cómo reaccionar a ellas.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Práctica: fetch() + addEventListener en conjunto</div>
+          <div class="t-desc"><code>btn.addEventListener("click", function() { fetch(...).then(...) })</code> — el patrón base de toda app web.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Práctica: Mostrar productos en tarjetas dinámicas</div>
+          <div class="t-desc">Construir tarjetas HTML desde JS con datos reales de la API, estados de carga y manejo de errores.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Práctica: localStorage — guardar favoritos con ❤️</div>
+          <div class="t-desc">Al hacer clic en "Me gusta", guardar el producto en localStorage y actualizar la UI.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">20 min</div>
+          <div class="t-title">Ejercicio: Recuperar favoritos al cargar la página</div>
+          <div class="t-desc">Al iniciar, leer el localStorage y marcar automáticamente las tarjetas que ya eran favoritas.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Q&A y cierre</div>
+          <div class="t-desc">Preguntas, resumen y tarea para la Clase 3.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ PROMESAS ══════ -->
+  <section id="promesas" class="content-section">
+    <h2 class="fw-bold mb-1">Promesas & async/await</h2>
+    <p class="text-muted mb-4">El modelo mental para entender por qué el código con APIs se escribe diferente.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-hourglass-split text-success"></i> ¿Por qué existe la asincronía?</h4>
+      <p>JavaScript es <strong>single-threaded</strong>: ejecuta una sola instrucción a la vez. Si tuviera que esperar a que cada petición a una API respondiera antes de continuar, la página se congelaría.</p>
+      <p class="mt-2">La solución: lanzar la petición y <em>continuar</em>. Cuando llegue la respuesta, ejecutar el código correspondiente. Esto es la <strong>asincronía</strong>.</p>
+
+      <div class="callout callout-amber mt-3">
+        <strong>Analogía:</strong> Pides una pizza por teléfono (fetch) y mientras esperas sigues viendo la TV (el resto del código). Cuando llega el delivery (respuesta), pausas la TV y recibes la pizza (.then / await).
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-3 text-success"></i> ¿Qué es una Promesa?</h4>
+      <p>Una <strong>Promesa (Promise)</strong> es un objeto que representa el resultado eventual de una operación asíncrona. Tiene tres estados posibles:</p>
+
+      <div class="promise-flow mt-3">
+        <div class="promise-box pb-pending">⏳ pending</div>
+        <div class="pb-arrow">→</div>
+        <div class="promise-box pb-fulfilled">✓ fulfilled (resuelta)</div>
+        <div class="pb-arrow">o</div>
+        <div class="promise-box pb-rejected">✗ rejected (rechazada)</div>
+      </div>
+
+      <div class="code-block mt-3">
+        <div class="code-header"><span>promesa-basica.js</span></div>
+        <pre><span class="cm">// fetch() devuelve una Promesa</span>
+<span class="kw">const</span> promesa = <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products/1"</span>);
+
+<span class="fn">console</span>.<span class="fn">log</span>(promesa);
+<span class="cm">// Promise { &lt;pending&gt; }  ← todavía no llegó la respuesta</span>
+
+<span class="cm">// .then() se ejecuta cuando la promesa se RESUELVE</span>
+<span class="cm">// .catch() se ejecuta si la promesa es RECHAZADA</span>
+promesa
+  .<span class="fn">then</span>(response => response.<span class="fn">json</span>())
+  .<span class="fn">then</span>(data => <span class="fn">console</span>.<span class="fn">log</span>(data.title))
+  .<span class="fn">catch</span>(error => <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Falló:"</span>, error));</pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-code-slash text-success"></i> .then() vs async/await — comparativa</h4>
+      <p>Ambas formas hacen exactamente lo mismo. <code>async/await</code> es syntactic sugar sobre Promesas — el navegador lo convierte internamente a <code>.then()</code>.</p>
+
+      <div class="compare-cols">
+        <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
+          <h6 style="color:#991b1b">Con .then() — Encadenado</h6>
+          <pre style="color:#7f1d1d"><span class="fn">fetch</span>(<span class="str">"...url..."</span>)
+  .<span class="fn">then</span>(res => res.<span class="fn">json</span>())
+  .<span class="fn">then</span>(data => {
+    <span class="cm">// usar data</span>
+    <span class="fn">mostrar</span>(data);
+  })
+  .<span class="fn">catch</span>(err => {
+    <span class="fn">console</span>.<span class="fn">error</span>(err);
+  });</pre>
+        </div>
+        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+          <h6 style="color:#065f46">Con async/await — Lineal ✓</h6>
+          <pre style="color:#14532d"><span class="kw">async function</span> <span class="fn">cargar</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"...url..."</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+    <span class="cm">// usar data</span>
+    <span class="fn">mostrar</span>(data);
+  } <span class="kw">catch</span>(err) {
+    <span class="fn">console</span>.<span class="fn">error</span>(err);
+  }
+}</pre>
+        </div>
+      </div>
+
+      <div class="callout callout-green">
+        <strong>¿Cuál usar?</strong> <code>async/await</code> siempre que puedas. El código se lee de arriba a abajo como si fuera síncrono, es más fácil de depurar y el manejo de errores con <code>try/catch</code> es más limpio. <code>.then()</code> lo verás en código viejo y en la Clase 3 con jQuery.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-exclamation-triangle text-success"></i> Errores comunes con async/await</h4>
+      <div class="code-block">
+        <div class="code-header"><span>errores-comunes.js</span></div>
+        <pre><span class="cm">// ✗ ERROR 1: usar await fuera de una función async</span>
+<span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>); <span class="cm">// SyntaxError!</span>
+
+<span class="cm">// ✓ CORRECTO: siempre dentro de async function</span>
+<span class="kw">async function</span> <span class="fn">cargar</span>() {
+  <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>); <span class="cm">// ✓</span>
+}
+
+<span class="cm">// ✗ ERROR 2: olvidar el segundo await para .json()</span>
+<span class="kw">async function</span> <span class="fn">mal</span>() {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>);
+  <span class="kw">const</span> data = res.<span class="fn">json</span>(); <span class="cm">// ← falta await! data es una Promesa, no el objeto</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(data.title); <span class="cm">// undefined</span>
+}
+
+<span class="cm">// ✓ CORRECTO</span>
+<span class="kw">async function</span> <span class="fn">bien</span>() {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>(); <span class="cm">// ✓ dos awaits</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(data.title);
+}
+
+<span class="cm">// ✗ ERROR 3: no manejar el error de red</span>
+<span class="kw">async function</span> <span class="fn">sinManejo</span>() {
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"url-que-no-existe"</span>);
+  <span class="cm">// Si falla la red → Uncaught (in promise) TypeError</span>
+}
+
+<span class="cm">// ✓ CORRECTO: siempre try/catch</span>
+<span class="kw">async function</span> <span class="fn">conManejo</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"..."</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+    <span class="fn">mostrar</span>(data);
+  } <span class="kw">catch</span> (error) {
+    <span class="fn">mostrarError</span>(<span class="str">"No se pudo cargar. Intenta de nuevo."</span>);
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo: .then() vs async/await — mismo resultado</div>
+        <div class="d-flex gap-2">
+          <button class="run-btn amber" onclick="demoThen()"><i class="bi bi-play-fill"></i> .then()</button>
+          <button class="run-btn" onclick="demoAsync()"><i class="bi bi-play-fill"></i> async/await</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div id="out-promesas" class="output-area">Haz clic en cualquiera de los dos botones para ver el resultado...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ EVENTOS DOM ══════ -->
+  <section id="eventos-dom" class="content-section">
+    <h2 class="fw-bold mb-1">Eventos del DOM — El puente entre el usuario y la API</h2>
+    <p class="text-muted mb-4">Cómo reaccionar a las acciones del usuario para disparar peticiones.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-cursor-fill text-success"></i> El patrón fundamental</h4>
+      <p>Toda aplicación web moderna sigue este patrón: <strong>evento del usuario → petición a la API → actualizar el DOM</strong>.</p>
+
+      <div class="step-pills">
+        <div class="step-pill"><div class="num">1</div> Usuario hace clic / escribe / selecciona</div>
+        <div class="step-pill"><div class="num">2</div> addEventListener captura el evento</div>
+        <div class="step-pill"><div class="num">3</div> fetch() pide datos a la API</div>
+        <div class="step-pill"><div class="num">4</div> DOM se actualiza con la respuesta</div>
+      </div>
+
+      <div class="code-block mt-3">
+        <div class="code-header"><span>patron-fundamental.js</span></div>
+        <pre><span class="cm">// El patrón completo en su forma más simple</span>
+<span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">"btn-cargar"</span>);
+
+btn.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="kw">async function</span>() {
+
+  <span class="cm">// 1. Feedback visual inmediato</span>
+  btn.textContent = <span class="str">"Cargando..."</span>;
+  btn.disabled = <span class="bool">true</span>;
+
+  <span class="kw">try</span> {
+    <span class="cm">// 2. Petición a la API</span>
+    <span class="kw">const</span> res      = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=4"</span>);
+    <span class="kw">const</span> productos = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+    <span class="cm">// 3. Actualizar el DOM</span>
+    <span class="kw">const</span> contenedor = document.<span class="fn">getElementById</span>(<span class="str">"contenedor"</span>);
+    contenedor.innerHTML = productos.<span class="fn">map</span>(p => <span class="str">`
+      &lt;div class="tarjeta"&gt;
+        &lt;img src="</span>${p.image}<span class="str">"&gt;
+        &lt;h3&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">30</span>)}<span class="str">...&lt;/h3&gt;
+        &lt;p&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
+      &lt;/div&gt;
+    `</span>).<span class="fn">join</span>(<span class="str">""</span>);
+
+  } <span class="kw">catch</span>(error) {
+    <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Error:"</span>, error);
+  } <span class="kw">finally</span> {
+    <span class="cm">// 4. Restaurar el botón siempre (con o sin error)</span>
+    btn.textContent = <span class="str">"Cargar productos"</span>;
+    btn.disabled = <span class="bool">false</span>;
+  }
+});</pre>
+      </div>
+
+      <div class="callout callout-blue">
+        <strong>finally</strong> se ejecuta siempre, haya error o no. Es el lugar ideal para restaurar el estado del botón, ocultar spinners o limpiar recursos.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-input-cursor-text text-success"></i> Eventos útiles para filtrar productos</h4>
+      <div class="code-block">
+        <div class="code-header"><span>eventos-filtro.js</span></div>
+        <pre><span class="cm">// Búsqueda en tiempo real con "input"</span>
+<span class="kw">const</span> inputBusqueda = document.<span class="fn">getElementById</span>(<span class="str">"busqueda"</span>);
+
+inputBusqueda.<span class="fn">addEventListener</span>(<span class="str">"input"</span>, <span class="kw">function</span>() {
+  <span class="kw">const</span> texto = <span class="kw">this</span>.value.<span class="fn">toLowerCase</span>();
+
+  <span class="cm">// Filtrar tarjetas ya renderizadas en el DOM</span>
+  document.<span class="fn">querySelectorAll</span>(<span class="str">".tarjeta"</span>).<span class="fn">forEach</span>(<span class="kw">function</span>(tarjeta) {
+    <span class="kw">const</span> titulo = tarjeta.<span class="fn">querySelector</span>(<span class="str">"h3"</span>).textContent.<span class="fn">toLowerCase</span>();
+    tarjeta.style.display = titulo.<span class="fn">includes</span>(texto) ? <span class="str">"block"</span> : <span class="str">"none"</span>;
+  });
+});
+
+<span class="cm">// Filtro por categoría con "change"</span>
+<span class="kw">const</span> selectCategoria = document.<span class="fn">getElementById</span>(<span class="str">"categoria"</span>);
+
+selectCategoria.<span class="fn">addEventListener</span>(<span class="str">"change"</span>, <span class="kw">async function</span>() {
+  <span class="kw">const</span> cat = <span class="kw">this</span>.value;
+  <span class="kw">const</span> url = cat
+    ? <span class="str">`https://fakestoreapi.com/products/category/</span>${cat}<span class="str">`</span>
+    : <span class="str">"https://fakestoreapi.com/products"</span>;
+
+  <span class="kw">const</span> res      = <span class="kw">await</span> <span class="fn">fetch</span>(url);
+  <span class="kw">const</span> productos = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="fn">renderProductos</span>(productos); <span class="cm">// función que pinta las tarjetas</span>
+});</pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo: Botón + fetch() en acción</div>
+        <button class="run-btn" id="btn-demo-ev" onclick="demoEventoFetch()">
+          <i class="bi bi-play-fill"></i> Cargar producto
+        </button>
+      </div>
+      <div class="sandbox-body">
+        <p class="small text-muted mb-3">Simula exactamente el patrón <code>addEventListener("click") → fetch() → DOM</code></p>
+        <div id="out-evento-fetch" class="output-area">Haz clic en el botón para disparar el fetch...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ FETCH + DOM ══════ -->
+  <section id="fetch-dom" class="content-section">
+    <h2 class="fw-bold mb-1">fetch() + DOM — El patrón completo</h2>
+    <p class="text-muted mb-4">Conectar una petición real con la interfaz visual, incluyendo estados de carga y errores.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-layers text-success"></i> Los tres estados de una carga</h4>
+      <p>Cualquier operación asíncrona tiene tres estados que debes manejar en la UI:</p>
+      <div class="row g-3 mt-1">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#fffbeb;border:1px solid #fde68a">
+            <div class="fw-bold mb-1" style="color:#92400e">⏳ Loading</div>
+            <p class="small mb-0" style="color:#374151">Mostrar un spinner o skeleton. Deshabilitar el botón. El usuario sabe que algo está pasando.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <div class="fw-bold mb-1" style="color:#065f46">✓ Success</div>
+            <p class="small mb-0" style="color:#374151">Ocultar el spinner, renderizar los datos. El usuario ve el resultado.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#fef2f2;border:1px solid #fecaca">
+            <div class="fw-bold mb-1" style="color:#991b1b">✗ Error</div>
+            <p class="small mb-0" style="color:#374151">Mostrar mensaje claro. Ofrecer reintentar. Nunca dejar la UI congelada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-code text-success"></i> Implementación con los tres estados</h4>
+      <div class="code-block">
+        <div class="code-header"><span>fetch-con-estados.js</span></div>
+        <pre><span class="kw">async function</span> <span class="fn">cargarProductos</span>() {
+  <span class="kw">const</span> contenedor = document.<span class="fn">getElementById</span>(<span class="str">"productos"</span>);
+
+  <span class="cm">// ── ESTADO: LOADING ──────────────────────</span>
+  contenedor.innerHTML = <span class="str">`
+    &lt;div class="text-center py-4"&gt;
+      &lt;div class="spinner-border text-success"&gt;&lt;/div&gt;
+      &lt;p class="mt-2 text-muted"&gt;Cargando productos...&lt;/p&gt;
+    &lt;/div&gt;
+  `</span>;
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res       = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=6"</span>);
+
+    <span class="cm">// Verificar que la respuesta HTTP fue exitosa</span>
+    <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP Error: </span>${res.status}<span class="str">`</span>);
+
+    <span class="kw">const</span> productos  = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+    <span class="cm">// ── ESTADO: SUCCESS ───────────────────────</span>
+    contenedor.innerHTML = productos.<span class="fn">map</span>(p => <span class="str">`
+      &lt;div class="col"&gt;
+        &lt;div class="product-card"&gt;
+          &lt;img src="</span>${p.image}<span class="str">" alt="</span>${p.title}<span class="str">"&gt;
+          &lt;div class="p-title"&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">40</span>)}<span class="str">...&lt;/div&gt;
+          &lt;div class="p-price"&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    `</span>).<span class="fn">join</span>(<span class="str">""</span>);
+
+  } <span class="kw">catch</span>(error) {
+    <span class="cm">// ── ESTADO: ERROR ─────────────────────────</span>
+    contenedor.innerHTML = <span class="str">`
+      &lt;div class="alert alert-danger"&gt;
+        &lt;strong&gt;Error:&lt;/strong&gt; </span>${error.message}<span class="str">
+        &lt;button onclick="cargarProductos()"&gt;🔄 Reintentar&lt;/button&gt;
+      &lt;/div&gt;
+    `</span>;
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo en vivo: Los 3 estados</div>
+        <div class="d-flex gap-2">
+          <button class="run-btn" onclick="demoCargarOk()"><i class="bi bi-play-fill"></i> Cargar OK</button>
+          <button class="run-btn red" onclick="demoCargarError()"><i class="bi bi-x-circle"></i> Simular error</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div id="demo-tres-estados">
+          <div class="text-center text-muted py-3 small">Haz clic en un botón para ver el estado correspondiente</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ TARJETAS ══════ -->
+  <section id="tarjetas" class="content-section">
+    <h2 class="fw-bold mb-1">Tarjetas Dinámicas desde la API</h2>
+    <p class="text-muted mb-4">Construir una galería de productos completa con datos reales.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-grid-3x3-gap text-success"></i> De JSON a HTML — el proceso</h4>
+      <p>Cuando llega el array de productos de la API, hay que transformar cada objeto en un bloque de HTML. El método <code>map()</code> + template literals es la forma idiomática de hacerlo:</p>
+
+      <div class="code-block">
+        <div class="code-header"><span>json-a-html.js</span></div>
+        <pre><span class="cm">// La API devuelve esto:</span>
+<span class="kw">const</span> producto = {
+  <span class="prop">id</span>: <span class="num">1</span>,
+  <span class="prop">title</span>: <span class="str">"Fjallraven Backpack"</span>,
+  <span class="prop">price</span>: <span class="num">109.95</span>,
+  <span class="prop">image</span>: <span class="str">"https://fakestoreapi.com/img/81fAn..."</span>,
+  <span class="prop">category</span>: <span class="str">"men's clothing"</span>,
+  <span class="prop">rating</span>: { <span class="prop">rate</span>: <span class="num">3.9</span>, <span class="prop">count</span>: <span class="num">120</span> }
+};
+
+<span class="cm">// Y queremos generar esto:</span>
+<span class="cm">// &lt;div class="product-card"&gt;</span>
+<span class="cm">//   &lt;img src="..."&gt;</span>
+<span class="cm">//   &lt;div class="p-title"&gt;Fjallraven...&lt;/div&gt;</span>
+<span class="cm">//   &lt;div class="p-price"&gt;$109.95&lt;/div&gt;</span>
+<span class="cm">//   &lt;button class="btn-like" data-id="1"&gt;❤️ Me gusta&lt;/button&gt;</span>
+<span class="cm">// &lt;/div&gt;</span>
+
+<span class="cm">// La función que convierte UN producto en HTML</span>
+<span class="kw">function</span> <span class="fn">crearTarjeta</span>(producto) {
+  <span class="kw">return</span> <span class="str">`
+    &lt;div class="product-card" data-id="</span>${producto.id}<span class="str">"&gt;
+      &lt;img src="</span>${producto.image}<span class="str">" alt="</span>${producto.title}<span class="str">" loading="lazy"&gt;
+      &lt;div class="p-title"&gt;</span>${producto.title.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">45</span>)}<span class="str">...&lt;/div&gt;
+      &lt;div class="p-price"&gt;$</span>${producto.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/div&gt;
+      &lt;div class="small text-muted"&gt;⭐ </span>${producto.rating.rate}<span class="str"> (</span>${producto.rating.count}<span class="str">)&lt;/div&gt;
+      &lt;button class="btn-like" data-id="</span>${producto.id}<span class="str">"&gt;🤍 Me gusta&lt;/button&gt;
+    &lt;/div&gt;
+  `</span>;
+}
+
+<span class="cm">// Renderizar TODOS los productos de una vez</span>
+<span class="kw">async function</span> <span class="fn">renderProductos</span>() {
+  <span class="kw">const</span> res       = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=6"</span>);
+  <span class="kw">const</span> productos  = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="kw">const</span> contenedor = document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>);
+
+  <span class="cm">// map() convierte cada objeto en HTML, join("") los une en un string</span>
+  contenedor.innerHTML = productos.<span class="fn">map</span>(<span class="fn">crearTarjeta</span>).<span class="fn">join</span>(<span class="str">""</span>);
+}</pre>
+      </div>
+
+      <div class="callout callout-purple">
+        <strong>data-id</strong>: El atributo <code>data-*</code> en HTML permite guardar información extra en un elemento. Aquí guardamos el id del producto en el botón para saber qué producto "gustó" cuando el usuario hace clic. Se accede con <code>element.dataset.id</code>.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-stars text-success"></i> Estrellas dinámicas con el rating</h4>
+      <div class="code-block">
+        <div class="code-header"><span>rating-estrellas.js</span></div>
+        <pre><span class="cm">// Convertir rating numérico en estrellas visuales</span>
+<span class="kw">function</span> <span class="fn">renderStars</span>(rate) {
+  <span class="kw">const</span> llenas  = Math.<span class="fn">floor</span>(rate);         <span class="cm">// estrellas completas</span>
+  <span class="kw">const</span> media   = rate % <span class="num">1</span> >= <span class="num">0.5</span> ? <span class="num">1</span> : <span class="num">0</span>; <span class="cm">// media estrella</span>
+  <span class="kw">const</span> vacias  = <span class="num">5</span> - llenas - media;
+
+  <span class="kw">return</span> <span class="str">"★"</span>.<span class="fn">repeat</span>(llenas) +
+         (media ? <span class="str">"½"</span> : <span class="str">""</span>) +
+         <span class="str">"☆"</span>.<span class="fn">repeat</span>(vacias);
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">renderStars</span>(<span class="num">3.9</span>)); <span class="cm">// "★★★★☆"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">renderStars</span>(<span class="num">4.5</span>)); <span class="cm">// "★★★★½"</span></pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-grid text-success"></i> Demo en vivo: Galería de productos</div>
+        <button class="run-btn" onclick="demoGaleria()"><i class="bi bi-play-fill"></i> Cargar galería</button>
+      </div>
+      <div class="sandbox-body">
+        <div id="galeria-demo">
+          <div class="text-center text-muted py-4"><i class="bi bi-grid-3x3-gap" style="font-size:2rem"></i><p class="mt-2">Haz clic para cargar la galería</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ FAVORITOS ══════ -->
+  <section id="favoritos" class="content-section">
+    <h2 class="fw-bold mb-1">Favoritos con localStorage</h2>
+    <p class="text-muted mb-4">Guardar el estado de "me gusta" de cada producto de forma persistente.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-heart text-success"></i> La lógica de favoritos</h4>
+      <p>Al hacer clic en ❤️ necesitamos:</p>
+      <div class="step-pills">
+        <div class="step-pill"><div class="num">1</div> Saber qué producto se clickeó (data-id)</div>
+        <div class="step-pill"><div class="num">2</div> Leer favoritos actuales del localStorage</div>
+        <div class="step-pill"><div class="num">3</div> Agregar o quitar el id según si ya estaba</div>
+        <div class="step-pill"><div class="num">4</div> Guardar el array actualizado</div>
+        <div class="step-pill"><div class="num">5</div> Actualizar la UI del botón</div>
+      </div>
+
+      <div class="code-block mt-3">
+        <div class="code-header"><span>logica-favoritos.js</span></div>
+        <pre><span class="cm">// ── Helpers de localStorage ──────────────────</span>
+<span class="kw">function</span> <span class="fn">getFavoritos</span>() {
+  <span class="kw">const</span> raw = localStorage.<span class="fn">getItem</span>(<span class="str">"favoritos"</span>);
+  <span class="kw">return</span> raw ? <span class="fn">JSON</span>.<span class="fn">parse</span>(raw) : [];
+}
+
+<span class="kw">function</span> <span class="fn">saveFavoritos</span>(arr) {
+  localStorage.<span class="fn">setItem</span>(<span class="str">"favoritos"</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(arr));
+}
+
+<span class="cm">// ── Toggle favorito ──────────────────────────</span>
+<span class="kw">function</span> <span class="fn">toggleFavorito</span>(productoId) {
+  <span class="kw">const</span> favs   = <span class="fn">getFavoritos</span>();
+  <span class="kw">const</span> index  = favs.<span class="fn">indexOf</span>(productoId);
+
+  <span class="kw">if</span> (index === -<span class="num">1</span>) {
+    favs.<span class="fn">push</span>(productoId);           <span class="cm">// No estaba → agregar</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"❤️ Agregado a favoritos"</span>);
+  } <span class="kw">else</span> {
+    favs.<span class="fn">splice</span>(index, <span class="num">1</span>);           <span class="cm">// Ya estaba → quitar</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"🤍 Quitado de favoritos"</span>);
+  }
+
+  <span class="fn">saveFavoritos</span>(favs);
+  <span class="kw">return</span> favs.<span class="fn">includes</span>(productoId); <span class="cm">// true si quedó en favoritos</span>
+}
+
+<span class="cm">// ── Escuchar clics en los botones ────────────</span>
+<span class="cm">// Delegación de eventos: un solo listener en el contenedor</span>
+document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>).<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="kw">function</span>(event) {
+  <span class="kw">const</span> btn = event.target.<span class="fn">closest</span>(<span class="str">".btn-like"</span>);
+  <span class="kw">if</span> (!btn) <span class="kw">return</span>; <span class="cm">// no era el botón de like</span>
+
+  <span class="kw">const</span> id      = <span class="fn">Number</span>(btn.dataset.id);
+  <span class="kw">const</span> esLiked = <span class="fn">toggleFavorito</span>(id);
+
+  <span class="cm">// Actualizar UI del botón</span>
+  btn.textContent = esLiked ? <span class="str">"❤️ Me gusta"</span> : <span class="str">"🤍 Me gusta"</span>;
+  btn.classList.<span class="fn">toggle</span>(<span class="str">"liked"</span>, esLiked);
+});</pre>
+      </div>
+
+      <div class="callout callout-blue">
+        <strong>Delegación de eventos:</strong> En lugar de poner un <code>addEventListener</code> en cada botón (que pueden ser 20), ponemos uno solo en el contenedor padre. Cuando el usuario hace clic, el evento "burbujea" hasta el contenedor y ahí verificamos si el clic fue en un <code>.btn-like</code> con <code>closest()</code>.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-arrow-clockwise text-success"></i> Recuperar favoritos al cargar la página</h4>
+      <p>Al renderizar las tarjetas, consultamos el localStorage para marcar las que ya eran favoritas:</p>
+      <div class="code-block">
+        <div class="code-header"><span>recuperar-favoritos.js</span></div>
+        <pre><span class="kw">function</span> <span class="fn">crearTarjeta</span>(producto) {
+  <span class="kw">const</span> favs    = <span class="fn">getFavoritos</span>();
+  <span class="kw">const</span> esLiked = favs.<span class="fn">includes</span>(producto.id);
+
+  <span class="cm">// El botón ya arranca con el estado correcto</span>
+  <span class="kw">return</span> <span class="str">`
+    &lt;div class="product-card" data-id="</span>${producto.id}<span class="str">"&gt;
+      &lt;img src="</span>${producto.image}<span class="str">" loading="lazy"&gt;
+      &lt;div class="p-title"&gt;</span>${producto.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">40</span>)}<span class="str">...&lt;/div&gt;
+      &lt;div class="p-price"&gt;$</span>${producto.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/div&gt;
+      &lt;button
+        class="btn-like </span>${esLiked ? <span class="str">"liked"</span> : <span class="str">""</span>}<span class="str">"
+        data-id="</span>${producto.id}<span class="str">"&gt;
+        </span>${esLiked ? <span class="str">"❤️"</span> : <span class="str">"🤍"</span>}<span class="str"> Me gusta
+      &lt;/button&gt;
+    &lt;/div&gt;
+  `</span>;
+}
+
+<span class="cm">// Llamar al cargar la página</span>
+<span class="fn">renderProductos</span>();  <span class="cm">// las tarjetas ya saben qué estaba en favoritos</span></pre>
+      </div>
+    </div>
+
+    <!-- DEMO FAVORITOS COMPLETO -->
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-heart-fill text-danger"></i> Demo completo: Galería + Favoritos persistentes</div>
+        <div class="d-flex gap-2">
+          <button class="run-btn" onclick="demoFavoritosCargar()"><i class="bi bi-play-fill"></i> Cargar tienda</button>
+          <button class="run-btn red" onclick="demoFavoritosLimpiar()"><i class="bi bi-trash"></i> Limpiar favoritos</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <span class="small text-muted">Favoritos guardados:</span>
+          <span id="fav-count" class="badge bg-danger">0</span>
+          <span id="fav-ids" class="small text-muted font-monospace"></span>
+        </div>
+        <div id="galeria-favs">
+          <div class="text-center text-muted py-4"><i class="bi bi-heart" style="font-size:2rem"></i><p class="mt-2 small">Carga la tienda y haz clic en ❤️ para guardar favoritos.<br>Recarga la página y verás que se mantienen.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ EJERCICIO ══════ -->
+  <section id="ejercicio" class="content-section">
+    <h2 class="fw-bold mb-1">Ejercicio Integrador</h2>
+    <p class="text-muted mb-4">Construir la mini-tienda completa paso a paso.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-hammer text-success"></i> El reto: Mini-tienda con favoritos</h4>
+      <p>Crear un archivo <code>tienda.html</code> que integre todo lo visto en la clase:</p>
+      <div class="step-pills mb-3">
+        <div class="step-pill"><div class="num">1</div> Botón "Cargar productos" con spinner</div>
+        <div class="step-pill"><div class="num">2</div> fetch() a FakeStore API</div>
+        <div class="step-pill"><div class="num">3</div> Renderizar tarjetas con map()</div>
+        <div class="step-pill"><div class="num">4</div> Botón ❤️ en cada tarjeta</div>
+        <div class="step-pill"><div class="num">5</div> Favoritos en localStorage</div>
+        <div class="step-pill"><div class="num">6</div> Recuperar favoritos al recargar</div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-code text-success"></i> Código completo del ejercicio</h4>
+      <div class="code-block">
+        <div class="code-header"><span>tienda.html — código completo</span></div>
+        <pre><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html</span> <span class="prop">lang</span>=<span class="str">"es"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;head&gt;</span>
+  <span class="kw">&lt;meta</span> <span class="prop">charset</span>=<span class="str">"UTF-8"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;title&gt;</span>Mi Tienda<span class="kw">&lt;/title&gt;</span>
+  <span class="kw">&lt;style&gt;</span>
+    <span class="fn">body</span> { font-family: sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; }
+    <span class="fn">.galeria</span> { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:16px; }
+    <span class="fn">.tarjeta</span> { border:1px solid #ddd; border-radius:8px; padding:12px; text-align:center; }
+    <span class="fn">.tarjeta img</span> { width:100%; height:120px; object-fit:contain; }
+    <span class="fn">.tarjeta h3</span> { font-size:13px; margin:8px 0 4px; }
+    <span class="fn">.precio</span>     { color:#10b981; font-weight:bold; }
+    <span class="fn">.btn-like</span>   { width:100%; margin-top:8px; padding:4px; border:1px solid #ddd;
+                   border-radius:6px; cursor:pointer; background:white; }
+    <span class="fn">.btn-like.liked</span> { background:#fef2f2; border-color:#f87171; }
+  <span class="kw">&lt;/style&gt;</span>
+<span class="kw">&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+  <span class="kw">&lt;h1&gt;</span>🛍️ Mi Tienda<span class="kw">&lt;/h1&gt;</span>
+  <span class="kw">&lt;button</span> <span class="prop">id</span>=<span class="str">"btn-cargar"</span><span class="kw">&gt;</span>Cargar productos<span class="kw">&lt;/button&gt;</span>
+  <span class="kw">&lt;p&gt;</span>Favoritos: <span class="kw">&lt;span</span> <span class="prop">id</span>=<span class="str">"contador"</span><span class="kw">&gt;</span>0<span class="kw">&lt;/span&gt;&lt;/p&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">id</span>=<span class="str">"galeria"</span> <span class="prop">class</span>=<span class="str">"galeria"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+  <span class="kw">&lt;script&gt;</span>
+    <span class="cm">// ── localStorage helpers ──</span>
+    <span class="kw">function</span> <span class="fn">getFavs</span>() {
+      <span class="kw">return</span> <span class="fn">JSON</span>.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">"favs"</span>)) || [];
+    }
+    <span class="kw">function</span> <span class="fn">saveFavs</span>(arr) {
+      localStorage.<span class="fn">setItem</span>(<span class="str">"favs"</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(arr));
+    }
+    <span class="kw">function</span> <span class="fn">actualizarContador</span>() {
+      document.<span class="fn">getElementById</span>(<span class="str">"contador"</span>).textContent = <span class="fn">getFavs</span>().length;
+    }
+
+    <span class="cm">// ── Render ──</span>
+    <span class="kw">function</span> <span class="fn">crearTarjeta</span>(p) {
+      <span class="kw">const</span> liked = <span class="fn">getFavs</span>().<span class="fn">includes</span>(p.id);
+      <span class="kw">return</span> <span class="str">`
+        &lt;div class="tarjeta"&gt;
+          &lt;img src="</span>${p.image}<span class="str">" loading="lazy"&gt;
+          &lt;h3&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">35</span>)}<span class="str">...&lt;/h3&gt;
+          &lt;p class="precio"&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
+          &lt;button class="btn-like </span>${liked?<span class="str">"liked"</span>:<span class="str">""</span>}<span class="str">" data-id="</span>${p.id}<span class="str">"&gt;
+            </span>${liked?<span class="str">"❤️"</span>:<span class="str">"🤍"</span>}<span class="str"> Me gusta
+          &lt;/button&gt;
+        &lt;/div&gt;
+      `</span>;
+    }
+
+    <span class="cm">// ── Cargar productos ──</span>
+    <span class="kw">async function</span> <span class="fn">cargarProductos</span>() {
+      <span class="kw">const</span> btn     = document.<span class="fn">getElementById</span>(<span class="str">"btn-cargar"</span>);
+      <span class="kw">const</span> galeria = document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>);
+
+      btn.textContent = <span class="str">"⏳ Cargando..."</span>;
+      btn.disabled = <span class="bool">true</span>;
+
+      <span class="kw">try</span> {
+        <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=8"</span>);
+        <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+        galeria.innerHTML = data.<span class="fn">map</span>(<span class="fn">crearTarjeta</span>).<span class="fn">join</span>(<span class="str">""</span>);
+        <span class="fn">actualizarContador</span>();
+      } <span class="kw">catch</span>(e) {
+        galeria.innerHTML = <span class="str">`&lt;p style="color:red"&gt;Error: </span>${e.message}<span class="str">&lt;/p&gt;`</span>;
+      } <span class="kw">finally</span> {
+        btn.textContent = <span class="str">"Cargar productos"</span>;
+        btn.disabled = <span class="bool">false</span>;
+      }
+    }
+
+    <span class="cm">// ── Evento del botón de cargar ──</span>
+    document.<span class="fn">getElementById</span>(<span class="str">"btn-cargar"</span>)
+      .<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="fn">cargarProductos</span>);
+
+    <span class="cm">// ── Delegación de eventos para los "Me gusta" ──</span>
+    document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>)
+      .<span class="fn">addEventListener</span>(<span class="str">"click"</span>, <span class="kw">function</span>(e) {
+        <span class="kw">const</span> btn = e.target.<span class="fn">closest</span>(<span class="str">".btn-like"</span>);
+        <span class="kw">if</span> (!btn) <span class="kw">return</span>;
+
+        <span class="kw">const</span> id   = <span class="fn">Number</span>(btn.dataset.id);
+        <span class="kw">const</span> favs = <span class="fn">getFavs</span>();
+        <span class="kw">const</span> idx  = favs.<span class="fn">indexOf</span>(id);
+
+        <span class="kw">if</span> (idx === -<span class="num">1</span>) { favs.<span class="fn">push</span>(id); }
+        <span class="kw">else</span>            { favs.<span class="fn">splice</span>(idx, <span class="num">1</span>); }
+
+        <span class="fn">saveFavs</span>(favs);
+        <span class="kw">const</span> liked = favs.<span class="fn">includes</span>(id);
+        btn.textContent = (liked ? <span class="str">"❤️"</span> : <span class="str">"🤍"</span>) + <span class="str">" Me gusta"</span>;
+        btn.classList.<span class="fn">toggle</span>(<span class="str">"liked"</span>, liked);
+        <span class="fn">actualizarContador</span>();
+      });
+
+    <span class="cm">// ── Cargar al iniciar ──</span>
+    <span class="fn">cargarProductos</span>();
+  <span class="kw">&lt;/script&gt;</span>
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-lightbulb text-warning"></i> Puntos clave del ejercicio</h4>
+      <ul style="font-size:.9rem;line-height:2">
+        <li><code>async function</code> + <code>try/catch/finally</code> — manejo completo de la petición</li>
+        <li><code>data.map(crearTarjeta).join("")</code> — patrón para renderizar listas desde arrays</li>
+        <li><code>data-id</code> + <code>event.target.closest()</code> — delegación de eventos</li>
+        <li><code>JSON.parse/stringify</code> — leer y escribir arrays en localStorage</li>
+        <li>Las tarjetas leen localStorage <strong>al crearse</strong> → el estado se restaura solo</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════ Q&A ══════ -->
+  <section id="qa" class="content-section">
+    <h2 class="fw-bold mb-1">Q&A y Cierre</h2>
+    <p class="text-muted mb-4">Resumen de lo aprendido y tarea para la Clase 3.</p>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="theory-block h-100">
+          <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
+          <ul style="font-size:.9rem;line-height:2.2">
+            <li>Qué es una <strong>Promesa</strong> y sus tres estados</li>
+            <li>Diferencia entre <strong>.then()</strong> y <strong>async/await</strong></li>
+            <li>Por qué siempre <strong>dos await</strong>: uno para fetch y otro para .json()</li>
+            <li>El patrón <strong>loading / success / error</strong></li>
+            <li>Usar <strong>addEventListener</strong> para disparar peticiones</li>
+            <li>Renderizar listas con <strong>map() + template literals</strong></li>
+            <li>Guardar y recuperar favoritos en <strong>localStorage</strong></li>
+            <li><strong>Delegación de eventos</strong> con <code>closest()</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="theory-block h-100">
+          <h4><i class="bi bi-journal-check text-success"></i> Tarea para la Clase 3</h4>
+          <div class="callout callout-green">
+            <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2.2">
+              <li>Terminar el ejercicio <code>tienda.html</code> si no lo terminaste en clase</li>
+              <li>Agregar un <strong>input de búsqueda</strong> que filtre las tarjetas ya renderizadas en tiempo real</li>
+              <li>Agregar un <strong>botón "Ver favoritos"</strong> que oculte los productos no marcados</li>
+              <li><strong>Opcional desafío:</strong> Mostrar el total de precio de todos los favoritos</li>
+            </ol>
+          </div>
+          <div class="callout callout-amber mt-3">
+            <strong>Clase 3 — jQuery y AJAX:</strong> Veremos la forma "clásica" de hacer todo esto con jQuery. Entenderás por qué jQuery fue tan popular y en qué sistemas lo vas a encontrar aún hoy.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-2">
+      <a href="clase1-fundamentos-web.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Clase 1
+      </a>
+      <a href="clase3-jquery-ajax.html" class="btn btn-success">
+        Clase 3 — jQuery & AJAX <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ══════════════════════════════════════
+   NAVEGACIÓN + PROGRESO
+══════════════════════════════════════ */
+const sections2 = ['agenda','promesas','eventos-dom','fetch-dom','tarjetas','favoritos','ejercicio','qa'];
+
+function _updateProgress(id) {
+  const pct = Math.round(((sections2.indexOf(id) + 1) / sections2.length) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '%';
+}
+
+window.showSection = function(id, el) {
+  event.preventDefault();
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  _updateProgress(id);
+  window.scrollTo(0, 0);
+};
+
+_updateProgress('agenda');
+
+/* ══════════════════════════════════════
+   HELPERS
+══════════════════════════════════════ */
+function ok(t)   { return `<div><span class="ok">✓</span> ${t}</div>`; }
+function info(t) { return `<div><span class="info">→</span> ${t}</div>`; }
+function err(t)  { return `<div><span class="err">✗</span> ${t}</div>`; }
+function warn(t) { return `<div><span class="warn">⚠</span> ${t}</div>`; }
+
+/* ══════════════════════════════════════
+   DEMO: .then() vs async/await
+══════════════════════════════════════ */
+function demoThen() {
+  const out = document.getElementById('out-promesas');
+  out.innerHTML = info('Usando <strong>.then()</strong> — enviando petición...');
+  fetch('https://fakestoreapi.com/products/2')
+    .then(res => res.json())
+    .then(data => {
+      out.innerHTML =
+        warn('Forma con <strong>.then()</strong>:') +
+        ok(`id: <strong>${data.id}</strong>`) +
+        ok(`title: <strong>${data.title.substring(0,40)}...</strong>`) +
+        ok(`price: <strong>$${data.price}</strong>`) +
+        ok(`category: <strong>${data.category}</strong>`);
+    })
+    .catch(e => { out.innerHTML = err(e.message); });
+}
+
+async function demoAsync() {
+  const out = document.getElementById('out-promesas');
+  out.innerHTML = info('Usando <strong>async/await</strong> — enviando petición...');
+  try {
+    const res  = await fetch('https://fakestoreapi.com/products/2');
+    const data = await res.json();
+    out.innerHTML =
+      ok('Forma con <strong>async/await</strong>:') +
+      ok(`id: <strong>${data.id}</strong>`) +
+      ok(`title: <strong>${data.title.substring(0,40)}...</strong>`) +
+      ok(`price: <strong>$${data.price}</strong>`) +
+      ok(`category: <strong>${data.category}</strong>`) +
+      info('Mismo resultado, código más limpio ✓');
+  } catch(e) { out.innerHTML = err(e.message); }
+}
+
+/* ══════════════════════════════════════
+   DEMO: evento + fetch
+══════════════════════════════════════ */
+async function demoEventoFetch() {
+  const btn = document.getElementById('btn-demo-ev');
+  const out = document.getElementById('out-evento-fetch');
+  const ids = [1,2,3,4,5,6,7,8];
+  const randomId = ids[Math.floor(Math.random() * ids.length)];
+
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cargando...';
+  btn.disabled = true;
+  out.innerHTML = info(`<strong>addEventListener("click")</strong> disparado → fetch(products/${randomId})`);
+
+  try {
+    const res  = await fetch(`https://fakestoreapi.com/products/${randomId}`);
+    const data = await res.json();
+    out.innerHTML =
+      ok(`Evento capturado → fetch ejecutado → respuesta recibida`) +
+      `<div class="mt-2 p-2" style="background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0">
+        <div class="d-flex gap-3 align-items-center">
+          <img src="${data.image}" style="width:60px;height:60px;object-fit:contain">
+          <div>
+            <div class="fw-semibold" style="font-size:.85rem">${data.title.substring(0,45)}...</div>
+            <div style="color:#10b981;font-weight:700">$${data.price.toFixed(2)}</div>
+            <div class="small text-muted">${data.category} · ⭐ ${data.rating.rate}</div>
+          </div>
+        </div>
+      </div>`;
+  } catch(e) {
+    out.innerHTML = err(`Error: ${e.message}`);
+  } finally {
+    btn.innerHTML = '<i class="bi bi-play-fill"></i> Cargar producto';
+    btn.disabled = false;
+  }
+}
+
+/* ══════════════════════════════════════
+   DEMO: tres estados
+══════════════════════════════════════ */
+async function demoCargarOk() {
+  const cont = document.getElementById('demo-tres-estados');
+  cont.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-success spinner-border-sm"></div> <span class="text-muted ms-2">Estado: <strong>loading</strong>...</span></div>`;
+  try {
+    const res      = await fetch('https://fakestoreapi.com/products?limit=3');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const productos = await res.json();
+    cont.innerHTML = `
+      <div class="alert alert-success py-2 mb-2"><i class="bi bi-check-circle me-2"></i>Estado: <strong>success</strong> — ${productos.length} productos recibidos</div>
+      <div class="row g-2">
+        ${productos.map(p => `
+          <div class="col-4">
+            <div class="p-2 border rounded text-center" style="font-size:.78rem">
+              <img src="${p.image}" style="height:50px;object-fit:contain;display:block;margin:0 auto 4px">
+              <div class="fw-semibold">${p.title.substring(0,20)}...</div>
+              <div style="color:#10b981">$${p.price.toFixed(2)}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) {
+    cont.innerHTML = `<div class="alert alert-danger"><i class="bi bi-x-circle me-2"></i>Estado: <strong>error</strong> — ${e.message}</div>`;
+  }
+}
+
+async function demoCargarError() {
+  const cont = document.getElementById('demo-tres-estados');
+  cont.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-danger spinner-border-sm"></div> <span class="text-muted ms-2">Estado: <strong>loading</strong>...</span></div>`;
+  await new Promise(r => setTimeout(r, 800));
+  cont.innerHTML = `
+    <div class="alert alert-danger">
+      <i class="bi bi-x-circle me-2"></i>Estado: <strong>error</strong> — Failed to fetch (URL inválida simulada)
+      <div class="mt-2"><button class="btn btn-sm btn-outline-danger" onclick="demoCargarOk()">🔄 Reintentar</button></div>
+    </div>`;
+}
+
+/* ══════════════════════════════════════
+   DEMO: galería
+══════════════════════════════════════ */
+function renderStars(rate) {
+  const llenas = Math.floor(rate);
+  const vacias = 5 - Math.ceil(rate);
+  return '★'.repeat(llenas) + (rate % 1 >= 0.5 ? '½' : '') + '☆'.repeat(vacias);
+}
+
+async function demoGaleria() {
+  const cont = document.getElementById('galeria-demo');
+  cont.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-success spinner-border-sm"></div><p class="text-muted mt-2 small">Cargando...</p></div>`;
+  try {
+    const res      = await fetch('https://fakestoreapi.com/products?limit=6');
+    const productos = await res.json();
+    cont.innerHTML = `<div class="productos-grid">${productos.map(p => `
+      <div class="product-card text-center">
+        <img src="${p.image}" alt="${p.title}" loading="lazy">
+        <div class="p-title">${p.title.substring(0,35)}...</div>
+        <div class="p-price">$${p.price.toFixed(2)}</div>
+        <div class="small text-muted">${renderStars(p.rating.rate)} (${p.rating.count})</div>
+      </div>`).join('')}</div>`;
+  } catch(e) {
+    cont.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+  }
+}
+
+/* ══════════════════════════════════════
+   DEMO: favoritos completo
+══════════════════════════════════════ */
+function getFavs2()      { return JSON.parse(localStorage.getItem('favs_demo2') || '[]'); }
+function saveFavs2(arr)  { localStorage.setItem('favs_demo2', JSON.stringify(arr)); }
+
+function updateFavUI() {
+  const favs = getFavs2();
+  document.getElementById('fav-count').textContent = favs.length;
+  document.getElementById('fav-ids').textContent = favs.length
+    ? 'IDs: ' + favs.join(', ')
+    : 'ninguno aún';
+}
+
+function crearTarjetaFav(p) {
+  const favs  = getFavs2();
+  const liked = favs.includes(p.id);
+  return `
+    <div class="product-card text-center" style="font-size:.82rem">
+      <img src="${p.image}" loading="lazy">
+      <div class="p-title">${p.title.substring(0,30)}...</div>
+      <div class="p-price">$${p.price.toFixed(2)}</div>
+      <button class="btn-like ${liked ? 'liked' : ''}" data-id="${p.id}">
+        ${liked ? '❤️' : '🤍'} Me gusta
+      </button>
+    </div>`;
+}
+
+async function demoFavoritosCargar() {
+  const cont = document.getElementById('galeria-favs');
+  cont.innerHTML = `<div class="text-center py-3"><div class="spinner-border text-success spinner-border-sm"></div></div>`;
+  try {
+    const res      = await fetch('https://fakestoreapi.com/products?limit=6');
+    const productos = await res.json();
+    cont.innerHTML  = `<div class="productos-grid">${productos.map(crearTarjetaFav).join('')}</div>`;
+    updateFavUI();
+
+    // Delegación de eventos
+    cont.onclick = function(e) {
+      const btn = e.target.closest('.btn-like');
+      if (!btn) return;
+      const id   = Number(btn.dataset.id);
+      const favs = getFavs2();
+      const idx  = favs.indexOf(id);
+      if (idx === -1) favs.push(id); else favs.splice(idx, 1);
+      saveFavs2(favs);
+      const liked = favs.includes(id);
+      btn.textContent = (liked ? '❤️' : '🤍') + ' Me gusta';
+      btn.classList.toggle('liked', liked);
+      updateFavUI();
+    };
+  } catch(e) {
+    cont.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+  }
+}
+
+function demoFavoritosLimpiar() {
+  localStorage.removeItem('favs_demo2');
+  updateFavUI();
+  // Actualizar botones si la galería está cargada
+  document.querySelectorAll('#galeria-favs .btn-like').forEach(btn => {
+    btn.textContent = '🤍 Me gusta';
+    btn.classList.remove('liked');
+  });
+}
+
+// Inicializar contador al cargar
+updateFavUI();
+</script>
+</body>
+</html>
