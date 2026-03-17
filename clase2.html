@@ -211,6 +211,7 @@
     <a href="#" onclick="window.showSection('favoritos',this)"><i class="bi bi-heart"></i> Favoritos con localStorage</a>
     <a href="#" onclick="window.showSection('ejercicio',this)"><i class="bi bi-code-slash"></i> Ejercicio integrador</a>
     <a href="#" onclick="window.showSection('qa',this)"><i class="bi bi-patch-question"></i> Q&A y cierre</a>
+    <a href="#" onclick="window.showSection('conexion',this)"><i class="bi bi-arrow-right-circle"></i> Conexión con Clase 3</a>
   </nav>
 
   <div class="section-label">Navegación</div>
@@ -1039,6 +1040,107 @@ document.<span class="fn">getElementById</span>(<span class="str">"galeria"</spa
     </div>
   </section>
 
+  <!-- ══════ CONEXIÓN CON CLASE 3 ══════ -->
+  <section id="conexion" class="content-section">
+    <h2 class="fw-bold mb-1">Conexión con la Clase 3</h2>
+    <p class="text-muted mb-4">Entendiste cómo JavaScript moderno hace peticiones. Ahora aprenderás cómo se hacía antes — y por qué aún importa.</p>
+
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1a1240 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;color:#fff">
+      <p style="color:#94a3b8;font-size:.9rem">En Clase 3 verás el mismo resultado, pero escrito con jQuery. Reconocerás la lógica porque ya la conoces:</p>
+      <div class="code-block mt-3">
+        <div class="code-header"><span>preview-clase3.js — Lo que harás en la próxima clase</span></div>
+        <pre><span class="cm">// Clase 2 → fetch() + async/await moderno</span>
+<span class="kw">async function</span> <span class="fn">cargar</span>() {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=4"</span>);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+  document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>).innerHTML = data.<span class="fn">map</span>(crearTarjeta).<span class="fn">join</span>(<span class="str">""</span>);
+}
+
+<span class="cm">// Clase 3 → $.ajax() jQuery — misma lógica, otra sintaxis</span>
+<span class="jq">$</span>.<span class="fn">ajax</span>({
+  <span class="prop">url</span>: <span class="str">"https://fakestoreapi.com/products?limit=4"</span>,
+  <span class="prop">method</span>: <span class="str">"GET"</span>,
+  <span class="prop">success</span>: <span class="kw">function</span>(data) {
+    <span class="cm">// data ya viene parseado — sin .json()</span>
+    <span class="jq">$</span>(<span class="str">"#galeria"</span>).<span class="fn">html</span>(data.<span class="fn">map</span>(crearTarjeta).<span class="fn">join</span>(<span class="str">""</span>));
+  },
+  <span class="prop">error</span>: <span class="kw">function</span>(err) {
+    <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Error:"</span>, err);
+  }
+});</pre>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #10b981">
+          <h5 class="fw-bold" style="color:#10b981"><i class="bi bi-2-circle me-2"></i>Lo de hoy que usarás</h5>
+          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+            <li>La lógica de <code>success</code> / <code>error</code></li>
+            <li>Renderizar con <code>map()</code> + template literals</li>
+            <li>Disparar peticiones desde un botón</li>
+            <li>El estado de carga (loading/success/error)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #8b5cf6">
+          <h5 class="fw-bold" style="color:#8b5cf6"><i class="bi bi-3-circle me-2"></i>Lo nuevo en Clase 3</h5>
+          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+            <li>Historia de jQuery y por qué nació</li>
+            <li>Sintaxis <code>$( )</code> y selectores jQuery</li>
+            <li><code>$.ajax()</code> y <code>$.get()</code></li>
+            <li>Comparativa directa: jQuery vs fetch</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #f59e0b">
+          <h5 class="fw-bold" style="color:#f59e0b"><i class="bi bi-briefcase me-2"></i>Por qué lo estudiamos</h5>
+          <p style="font-size:.88rem;line-height:1.75;color:#374151">Más del <strong>75% de los sitios web</strong> usan jQuery. Lo vas a encontrar en proyectos reales, código legacy, WordPress y librerías como DataTables. Conocerlo te permite <strong>mantener y leer</strong> ese código sin problema.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check2-all text-success"></i> ¿Estás listo para la Clase 3?</h4>
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <p class="fw-semibold mb-2" style="color:#065f46">Deberías poder hacer esto:</p>
+            <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+              <li>Traer productos con <code>fetch()</code></li>
+              <li>Renderizar tarjetas con <code>map()</code></li>
+              <li>Usar <code>addEventListener</code> en un botón</li>
+              <li>Guardar datos en <code>localStorage</code></li>
+              <li>Manejar los 3 estados: loading / success / error</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <p class="fw-semibold mb-2" style="color:#4c1d95">En Clase 3 verás la misma lógica en jQuery y responderás:</p>
+            <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+              <li>¿Por qué <code>$.ajax</code> no necesita <code>.json()</code>?</li>
+              <li>¿Cuándo conviene jQuery sobre fetch?</li>
+              <li>¿Cómo se lee y mantiene código jQuery legacy?</li>
+              <li>¿Qué hace <code>$(document).ready()</code>?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="clase2-js-avanzado.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Inicio de esta clase
+      </a>
+      <a href="clase3-jquery-ajax.html" class="btn btn-success">
+        Clase 3 — jQuery & AJAX <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
 </div><!-- /main -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1046,7 +1148,7 @@ document.<span class="fn">getElementById</span>(<span class="str">"galeria"</spa
 /* ══════════════════════════════════════
    NAVEGACIÓN + PROGRESO
 ══════════════════════════════════════ */
-const sections2 = ['agenda','promesas','eventos-dom','fetch-dom','tarjetas','favoritos','ejercicio','qa'];
+const sections2 = ['agenda','promesas','eventos-dom','fetch-dom','tarjetas','favoritos','ejercicio','qa','conexion'];
 
 function _updateProgress(id) {
   const pct = Math.round(((sections2.indexOf(id) + 1) / sections2.length) * 100);

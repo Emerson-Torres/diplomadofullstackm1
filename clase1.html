@@ -370,6 +370,9 @@
     <a href="#" data-section="setup" onclick="showSection('setup',this)">
       <i class="bi bi-tools"></i> Setup del Entorno
     </a>
+    <a href="#" data-section="conexion" onclick="showSection('conexion',this)">
+      <i class="bi bi-arrow-right-circle"></i> Conexión con Clase 2
+    </a>
   </nav>
 
   <div class="section-label">Navegación</div>
@@ -391,7 +394,7 @@
       </ol>
     </nav>
     <span class="ms-auto badge bg-primary-subtle text-primary border border-primary-subtle">
-      <i class="bi bi-clock me-1"></i>1.5h efectivas
+      <i class="bi bi-clock me-1"></i>2h efectivas
     </span>
   </div>
 
@@ -402,7 +405,7 @@
       <h1>Fundamentos Web & Primera API</h1>
       <p>Introducción al ecosistema FullStack, estructura de datos en la web y tu primera petición a una API real.</p>
       <div class="hero-meta mt-3">
-        <span><i class="bi bi-clock me-1"></i>1.5h efectivas</span>
+        <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
         <span><i class="bi bi-layers me-1"></i>Teoría + Práctica</span>
         <span><i class="bi bi-globe me-1"></i>fakestoreapi.com</span>
       </div>
@@ -743,6 +746,108 @@
       </div>
     </div>
 
+    <div class="theory-block">
+      <h4><i class="bi bi-send-fill" style="color:#3b82f6"></i> Probando FakeStore API con Postman</h4>
+      <p>Antes de escribir una línea de código, siempre conviene probar los endpoints manualmente. Postman es la herramienta estándar para esto.</p>
+
+      <p class="fw-semibold mt-3">① GET — el más simple</p>
+      <div class="code-block">
+        <div class="code-header"><span>Pasos en Postman</span></div>
+        <pre style="color:#e2e8f0;font-size:.82rem;line-height:1.9">1. Abre Postman → New Request
+2. Método: <span class="kw">GET</span>
+3. URL: <span class="str">https://fakestoreapi.com/products?limit=3</span>
+4. Clic en <span class="fn">Send</span>
+5. Verás un 200 OK con un array JSON de 3 productos</pre>
+      </div>
+
+      <p class="fw-semibold mt-3">② POST — crear un producto</p>
+      <div class="code-block">
+        <div class="code-header"><span>Pasos en Postman para POST</span></div>
+        <pre style="color:#e2e8f0;font-size:.82rem;line-height:1.9">1. Método: <span class="kw">POST</span>
+2. URL: <span class="str">https://fakestoreapi.com/products</span>
+3. Pestaña <span class="fn">Body</span> → seleccionar <span class="prop">raw</span> → dropdown: <span class="prop">JSON</span>
+4. Pegar este JSON:
+5. Clic en <span class="fn">Send</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span>body del POST — JSON</span></div>
+        <pre>{
+  <span class="prop">"title"</span>:       <span class="str">"Nuevo producto"</span>,
+  <span class="prop">"price"</span>:       <span class="num">52.50</span>,
+  <span class="prop">"description"</span>: <span class="str">"Es un producto nuevo"</span>,
+  <span class="prop">"category"</span>:    <span class="str">"men's clothing"</span>,
+  <span class="prop">"image"</span>:       <span class="str">"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"</span>
+}</pre>
+      </div>
+      <p class="mt-2" style="font-size:.9rem">Recibirás un <strong>201 Created</strong> con el objeto que enviaste más un <code>id</code> asignado.</p>
+
+      <div class="callout callout-blue mt-3">
+        <strong><i class="bi bi-lightbulb me-1"></i>¿Qué pasa con el Content-Type?</strong><br>
+        Cuando seleccionas <em>raw → JSON</em> en Postman, automáticamente agrega el header <code>Content-Type: application/json</code>. Sin este header, muchos servidores no saben cómo interpretar el body y responden con un error. En fetch() lo debes agregar tú manualmente.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-patch-question-fill" style="color:#f59e0b"></i> Pregunta frecuente de clase: ¿por qué el POST acepta campos que no existen en el schema?</h4>
+
+      <p>Si al JSON del POST le agregas un campo inventado como <code>"new": 123</code>, FakeStore igualmente responde <strong>201 Created</strong>. ¿Por qué?</p>
+
+      <div class="code-block">
+        <div class="code-header"><span>body con campo extra — ¿da error?</span></div>
+        <pre>{
+  <span class="prop">"title"</span>:    <span class="str">"Nuevo producto"</span>,
+  <span class="prop">"price"</span>:    <span class="num">52.50</span>,
+  <span class="prop">"category"</span>: <span class="str">"men's clothing"</span>,
+  <span class="prop">"image"</span>:    <span class="str">"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg"</span>,
+  <span class="prop">"new"</span>:      <span class="num">123</span>   <span class="cm">← campo inventado, no existe en el modelo</span>
+}
+
+<span class="cm">Respuesta: 201 Created ← ¿por qué no da 400?</span></pre>
+      </div>
+
+      <p class="fw-semibold mt-3">Hay 3 razones:</p>
+
+      <div class="row g-3 mt-1">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><span style="background:#8b5cf6;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;margin-right:.4rem">1</span>Es una API mock — no valida schema</div>
+            <p class="small mb-0" style="color:#374151">FakeStore no tiene validación de campos. Su propósito es <em>simular comportamiento HTTP</em>, no rechazar datos incorrectos. Recibe lo que le mandes y lo "acepta" sin revisar el modelo.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold mb-2" style="color:#1e40af;font-size:.88rem"><span style="background:#3b82f6;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;margin-right:.4rem">2</span>REST permite ignorar campos extra</div>
+            <p class="small mb-0" style="color:#374151">En REST, un servidor puede <em>ignorar</em> campos desconocidos en lugar de rechazarlos. Se llama <strong>tolerant reader pattern</strong> y es un diseño válido. No viola ningún estándar.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#fffbeb;border:1px solid #fde68a">
+            <div class="fw-bold mb-2" style="color:#92400e;font-size:.88rem"><span style="background:#f59e0b;color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;margin-right:.4rem">3</span>El 201 no garantiza persistencia</div>
+            <p class="small mb-0" style="color:#374151">FakeStore no guarda nada en base de datos. Si haces <code>GET /products</code> después, tu producto no aparece. El 201 es solo una respuesta simulada que devuelve lo que enviaste.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="fw-semibold mt-4 mb-2">¿Qué debería hacer una API real bien diseñada?</p>
+      <div class="table-responsive">
+        <table class="table table-bordered" style="font-size:.84rem">
+          <thead style="background:#0f172a;color:#e2e8f0">
+            <tr><th>Comportamiento</th><th>¿Es correcto?</th><th>Cuándo usarlo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Aceptar campos extra e ignorarlos → <code>201</code></td><td><span class="badge bg-success">✅ Válido (REST)</span></td><td>APIs públicas que quieren ser tolerantes</td></tr>
+            <tr><td>Rechazar campos no permitidos → <code>400</code></td><td><span class="badge bg-success">✅ Válido (estricto)</span></td><td>APIs internas con schema bien definido</td></tr>
+            <tr><td>Guardar solo los campos conocidos → <code>201</code></td><td><span class="badge bg-success">✅ Lo más común</span></td><td>La mayoría de APIs de producción</td></tr>
+            <tr><td>Guardar también los campos desconocidos</td><td><span class="badge bg-warning text-dark">⚠️ Depende</span></td><td>Solo si el diseño lo requiere explícitamente</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-green">
+        <strong>Conclusión:</strong> El 201 que ves en FakeStore es correcto para una API mock. En el Módulo 2 (Spring Boot) aprenderás a <em>validar el schema del body</em> correctamente y a responder <code>400 Bad Request</code> cuando lleguen campos no permitidos, usando anotaciones como <code>@Valid</code> y <code>@JsonIgnoreProperties</code>.
+      </div>
+    </div>
+
     <div class="sandbox">
       <div class="sandbox-header">
         <div class="title"><i class="bi bi-play-circle-fill text-success"></i> Demo: Explorar la API en vivo</div>
@@ -1018,8 +1123,9 @@ npm --version</pre>
       <div class="callout callout-green">
         <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2">
           <li>Instalar Node.js, Postman y VS Code</li>
-          <li>Abrir Postman y hacer un GET a <code>https://fakestoreapi.com/products</code></li>
-          <li>Guardar el archivo <code>index.html</code> de la práctica y abrirlo en el navegador</li>
+              <li>En Postman: hacer un <code>GET https://fakestoreapi.com/products</code> y revisar la respuesta</li>
+              <li>En Postman: hacer un <code>POST https://fakestoreapi.com/products</code> con Body → raw → JSON y agregar un campo inventado — observa que igual responde 201 y recuerda por qué</li>
+              <li>Guardar el archivo <code>index.html</code> de la práctica y abrirlo en el navegador</li>
           <li>Explorar qué pasa si cambias el <code>?limit=6</code> por <code>?limit=10</code></li>
           <li><strong>Opcional:</strong> Agregar el precio con 2 decimales usando <code>.toFixed(2)</code></li>
         </ol>
@@ -1027,8 +1133,110 @@ npm --version</pre>
     </div>
 
     <div class="d-flex justify-content-end mt-4">
-      <a href="clase2-js-avanzado.html" class="btn btn-primary">
+      <a href="clase2.html" class="btn btn-primary">
         Siguiente: Clase 2 — JavaScript Avanzado <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════ CONEXIÓN CON CLASE 2 ══════ -->
+  <section id="conexion" class="content-section">
+    <h2 class="fw-bold mb-1">Conexión con la Clase 2</h2>
+    <p class="text-muted mb-4">Todo lo que aprendiste hoy es la base exacta de lo que construirás en la próxima clase.</p>
+
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;color:#fff">
+      <p style="color:#94a3b8;font-size:.9rem">En la Clase 2 vas a escribir esto y entenderás cada parte porque ya lo viste hoy:</p>
+      <div class="code-block mt-3">
+        <div class="code-header"><span>preview-clase2.js — Esto lo harás en la próxima clase</span></div>
+        <pre><span class="cm">// Clase 1 → aprendiste: fetch(), JSON, APIs REST, verbos HTTP</span>
+<span class="cm">// Clase 2 → vas a conectar TODO con el DOM y localStorage</span>
+
+<span class="cm">// Esto que hoy viste como concepto...</span>
+<span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=6"</span>);
+<span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+<span class="cm">// ...en Clase 2 lo vas a convertir en tarjetas HTML reales</span>
+document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>).innerHTML =
+  data.<span class="fn">map</span>(p => <span class="str">`
+    &lt;div class="tarjeta"&gt;
+      &lt;img src="</span>${p.image}<span class="str">"&gt;
+      &lt;h3&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">35</span>)}<span class="str">...&lt;/h3&gt;
+      &lt;p&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
+      &lt;button data-id="</span>${p.id}<span class="str">"&gt;❤️ Me gusta&lt;/button&gt;
+    &lt;/div&gt;
+  `</span>).<span class="fn">join</span>(<span class="str">""</span>);
+
+<span class="cm">// Y los favoritos van a sobrevivir al recargar la página</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">"favoritos"</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>([<span class="num">1</span>, <span class="num">4</span>, <span class="num">7</span>]));</pre>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #3b82f6">
+          <h5 class="fw-bold" style="color:#3b82f6"><i class="bi bi-1-circle me-2"></i>Lo de hoy que usarás</h5>
+          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+            <li><code>fetch()</code> con <code>async/await</code></li>
+            <li>Parsear JSON con <code>.json()</code></li>
+            <li>Verbos HTTP — GET para traer productos</li>
+            <li>Endpoint <code>/products?limit=N</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #10b981">
+          <h5 class="fw-bold" style="color:#10b981"><i class="bi bi-2-circle me-2"></i>Lo nuevo en Clase 2</h5>
+          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+            <li>Promesas y estados (pending, fulfilled, rejected)</li>
+            <li><code>addEventListener</code> para disparar el fetch</li>
+            <li>Renderizar tarjetas con <code>map()</code></li>
+            <li>localStorage para guardar favoritos ❤️</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #f59e0b">
+          <h5 class="fw-bold" style="color:#f59e0b"><i class="bi bi-lightbulb me-2"></i>Por qué importa el orden</h5>
+          <p style="font-size:.88rem;line-height:1.75;color:#374151">Sin entender <strong>qué es una API</strong> y <strong>cómo funciona fetch()</strong> (Clase 1), no tendría sentido hablar de eventos del DOM que disparan peticiones (Clase 2). Cada clase desbloquea la siguiente.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check2-all text-success"></i> ¿Estás listo para la Clase 2?</h4>
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <p class="fw-semibold mb-2" style="color:#065f46">Deberías poder responder:</p>
+            <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+              <li>¿Qué devuelve <code>fetch()</code>?</li>
+              <li>¿Para qué sirve el segundo <code>.json()</code>?</li>
+              <li>¿Qué significa que un endpoint es REST?</li>
+              <li>¿Cuál es la diferencia entre GET y POST?</li>
+              <li>¿Qué estructura tiene la respuesta de FakeStore?</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fffbeb;border:1px solid #fde68a">
+            <p class="fw-semibold mb-2" style="color:#92400e">Si alguna respuesta no la tienes clara:</p>
+            <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+              <li>Repasa la sección <strong>"fetch()"</strong> de esta clase</li>
+              <li>Abre la consola y ejecuta los demos otra vez</li>
+              <li>Prueba el endpoint en Postman</li>
+              <li>Pregunta en el Q&A antes de que empiece la Clase 2</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="clase1.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Inicio de esta clase
+      </a>
+      <a href="clase2.html" class="btn btn-primary">
+        Clase 2 — JavaScript Avanzado <i class="bi bi-arrow-right ms-2"></i>
       </a>
     </div>
   </section>
@@ -1038,26 +1246,27 @@ npm --version</pre>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   /* ── Navegación + progreso ── */
-  const sections = ['agenda', 'intro', 'json-xml', 'api-rest', 'fetch', 'practica', 'setup'];
+  const sections = ['agenda', 'intro', 'json-xml', 'api-rest', 'fetch', 'practica', 'setup', 'conexion'];
 
-  function updateProgress(currentId) {
-    const index = sections.indexOf(currentId);           // 0-based
+  function _updateProgress(currentId) {
+    const index = sections.indexOf(currentId);
     const pct   = Math.round(((index + 1) / sections.length) * 100);
     document.getElementById('progress-bar').style.width = pct + '%';
     document.getElementById('progress-pct').textContent = pct + '%';
   }
 
-  function showSection(id, el) {
+  // window.showSection garantiza scope global aunque haya scripts de terceros
+  window.showSection = function(id, el) {
     event.preventDefault();
     document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     el.classList.add('active');
-    updateProgress(id);
+    _updateProgress(id);
     window.scrollTo(0, 0);
-  }
+  };
 
-  updateProgress('agenda'); // sección inicial al cargar
+  _updateProgress('agenda'); // sección inicial al cargar
 
   /* ── Demo JSON.parse ── */
   function demoJSON() {
@@ -1142,7 +1351,7 @@ npm --version</pre>
     } catch(e) {
       cont.innerHTML = `<div class="alert alert-danger">Error al cargar: ${e.message}</div>`;
     }
-     }
+  }
 </script>
 </body>
 </html>

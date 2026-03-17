@@ -1,1 +1,1158 @@
- 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 3 — jQuery y AJAX Clásico</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    body { font-family:'Inter',sans-serif; background:#f0f2f5; color:#1e293b; }
+    #sidebar {
+      position:fixed; top:0; left:0; width:270px; height:100vh;
+      background:#0f172a; color:#e2e8f0; overflow-y:auto; z-index:1000;
+      padding-bottom:2rem; border-right:1px solid #1e293b;
+    }
+    #sidebar .brand { padding:1.5rem 1.25rem 1rem; border-bottom:1px solid #1e293b; }
+    #sidebar .brand .badge-mod { background:#8b5cf6; color:#fff; font-size:.7rem; padding:.25rem .6rem; border-radius:20px; letter-spacing:.05em; font-weight:700; }
+    #sidebar .brand h6 { color:#f8fafc; font-weight:700; margin-top:.5rem; font-size:1rem; }
+    #sidebar nav a { display:flex; align-items:center; gap:.65rem; padding:.55rem 1.25rem; color:#94a3b8; text-decoration:none; font-size:.83rem; border-left:3px solid transparent; transition:all .15s; }
+    #sidebar nav a:hover, #sidebar nav a.active { color:#f8fafc; background:#1e293b; border-left-color:#8b5cf6; }
+    #sidebar .section-label { font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:#475569; padding:1.1rem 1.25rem .35rem; font-weight:700; }
+    #sidebar .progress-wrap { padding:.5rem 1.25rem 0; }
+    #sidebar .progress { height:4px; background:#1e293b; }
+    #sidebar .progress-bar { background:#8b5cf6; transition:width .4s ease; }
+    #main { margin-left:270px; min-height:100vh; }
+    .topbar { background:#fff; border-bottom:1px solid #e2e8f0; padding:.75rem 2rem; position:sticky; top:0; z-index:900; display:flex; align-items:center; gap:1rem; }
+    .topbar .breadcrumb { margin:0; font-size:.8rem; }
+    .content-section { display:none; padding:2rem; animation:fadeIn .25s ease; }
+    .content-section.active { display:block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
+    .hero-card { background:linear-gradient(135deg,#0f172a 0%,#2e1065 100%); color:#fff; border-radius:16px; padding:2.5rem 3rem; margin-bottom:2rem; }
+    .hero-card .clase-badge { background:rgba(139,92,246,.25); border:1px solid rgba(139,92,246,.5); color:#c4b5fd; font-size:.75rem; padding:.3rem .8rem; border-radius:20px; display:inline-block; margin-bottom:1rem; letter-spacing:.06em; text-transform:uppercase; }
+    .hero-card h1 { font-size:2rem; font-weight:700; margin-bottom:.5rem; }
+    .hero-card p  { color:#94a3b8; font-size:1rem; }
+    .hero-meta span { background:rgba(255,255,255,.1); border-radius:8px; padding:.4rem .9rem; font-size:.82rem; margin-right:.5rem; color:#e2e8f0; }
+    .timeline { position:relative; padding-left:2rem; }
+    .timeline::before { content:''; position:absolute; left:.55rem; top:0; bottom:0; width:2px; background:#e2e8f0; }
+    .timeline-item { position:relative; margin-bottom:1.25rem; }
+    .timeline-item::before { content:''; position:absolute; left:-1.5rem; top:.35rem; width:10px; height:10px; border-radius:50%; background:#8b5cf6; border:2px solid #fff; box-shadow:0 0 0 2px #8b5cf6; }
+    .timeline-item .t-time  { font-size:.72rem; font-weight:700; color:#8b5cf6; text-transform:uppercase; letter-spacing:.06em; }
+    .timeline-item .t-title { font-weight:600; font-size:.95rem; color:#1e293b; }
+    .timeline-item .t-desc  { font-size:.85rem; color:#64748b; }
+    .info-card { background:#fff; border-radius:12px; border:1px solid #e2e8f0; padding:1.5rem; height:100%; }
+    .info-card .ic-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:1rem; }
+    .info-card h5 { font-weight:700; font-size:.95rem; margin-bottom:.5rem; }
+    .info-card p  { font-size:.85rem; color:#64748b; margin:0; }
+    .theory-block { background:#fff; border-radius:12px; border:1px solid #e2e8f0; padding:1.75rem; margin-bottom:1.5rem; }
+    .theory-block h4 { font-weight:700; font-size:1.05rem; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
+    .theory-block p, .theory-block li { font-size:.9rem; color:#374151; line-height:1.75; }
+    .theory-block ul, .theory-block ol { padding-left:1.4rem; }
+    .callout { border-left:4px solid; border-radius:0 8px 8px 0; padding:.9rem 1.2rem; margin:1rem 0; font-size:.88rem; }
+    .callout-blue   { border-color:#3b82f6; background:#eff6ff;  color:#1e40af; }
+    .callout-green  { border-color:#10b981; background:#f0fdf4;  color:#065f46; }
+    .callout-amber  { border-color:#f59e0b; background:#fffbeb;  color:#92400e; }
+    .callout-red    { border-color:#ef4444; background:#fef2f2;  color:#991b1b; }
+    .callout-purple { border-color:#8b5cf6; background:#f5f3ff;  color:#4c1d95; }
+    .code-block { background:#0f172a; border-radius:10px; overflow:hidden; margin:1rem 0; font-family:'JetBrains Mono',monospace; }
+    .code-block .code-header { background:#1e293b; padding:.5rem 1rem; display:flex; align-items:center; justify-content:space-between; }
+    .code-block .code-header span { font-size:.75rem; color:#64748b; font-family:'Inter',sans-serif; }
+    .code-block pre { margin:0; padding:1.25rem; color:#e2e8f0; font-size:.82rem; line-height:1.75; overflow-x:auto; }
+    .kw{color:#93c5fd;} .fn{color:#86efac;} .str{color:#fca5a5;} .cm{color:#475569;font-style:italic;} .num{color:#fdba74;} .prop{color:#c4b5fd;} .bool{color:#f9a8d4;} .jq{color:#d8b4fe;font-weight:600;}
+    .sandbox { background:#fff; border-radius:12px; border:1px solid #e2e8f0; overflow:hidden; margin-bottom:1.5rem; }
+    .sandbox-header { background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:.75rem 1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; }
+    .sandbox-header .title { font-weight:600; font-size:.9rem; display:flex; align-items:center; gap:.5rem; }
+    .sandbox-body { padding:1.5rem; }
+    .run-btn { background:#8b5cf6; color:#fff; border:none; border-radius:8px; padding:.45rem 1.1rem; font-size:.82rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:.4rem; transition:background .15s; }
+    .run-btn:hover   { background:#7c3aed; }
+    .run-btn.green   { background:#10b981; } .run-btn.green:hover  { background:#059669; }
+    .run-btn.blue    { background:#3b82f6; } .run-btn.blue:hover   { background:#2563eb; }
+    .run-btn.red     { background:#ef4444; } .run-btn.red:hover    { background:#dc2626; }
+    .run-btn.amber   { background:#f59e0b; color:#1e293b; } .run-btn.amber:hover { background:#d97706; }
+    .output-area { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:1rem; min-height:60px; font-size:.83rem; margin-top:1rem; font-family:'JetBrains Mono',monospace; color:#1e293b; line-height:1.7; }
+    .output-area .ok   { color:#10b981; }
+    .output-area .err  { color:#ef4444; }
+    .output-area .info { color:#3b82f6; }
+    .output-area .jq-c { color:#8b5cf6; }
+    .output-area .warn { color:#f59e0b; }
+    .step-pills { display:flex; flex-wrap:wrap; gap:.75rem; margin:1rem 0; }
+    .step-pill { background:#f5f3ff; border:1px solid #ddd6fe; color:#4c1d95; border-radius:30px; padding:.4rem 1rem; font-size:.82rem; font-weight:600; display:flex; align-items:center; gap:.4rem; }
+    .step-pill .num { background:#8b5cf6; color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.7rem; }
+    .compare-cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin:1rem 0; }
+    .compare-col  { border-radius:10px; padding:1.25rem; }
+    .compare-col h6 { font-weight:700; font-size:.85rem; margin-bottom:.75rem; display:flex; align-items:center; gap:.4rem; }
+    .history-item { display:flex; gap:1rem; margin-bottom:1.1rem; align-items:flex-start; }
+    .history-year { background:#8b5cf6; color:#fff; border-radius:8px; padding:.3rem .7rem; font-size:.75rem; font-weight:700; white-space:nowrap; font-family:'JetBrains Mono',monospace; min-width:3.5rem; text-align:center; }
+    .history-text { font-size:.88rem; color:#374151; line-height:1.6; }
+    .productos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
+    .product-card { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:1rem; text-align:center; transition:box-shadow .2s; }
+    .product-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+    .product-card img  { width:100%; height:100px; object-fit:contain; }
+    .product-card .p-title { font-size:.76rem; font-weight:600; margin:.5rem 0 .25rem; line-height:1.3; color:#1e293b; }
+    .product-card .p-price { color:#8b5cf6; font-weight:700; font-size:.88rem; }
+    .product-card .p-method { font-size:.68rem; padding:.15rem .5rem; border-radius:20px; margin-top:.4rem; display:inline-block; font-weight:700; }
+    .badge-jq   { background:#f5f3ff; color:#4c1d95; }
+    .badge-fetch{ background:#f0fdf4; color:#065f46; }
+    .lib-pill { display:inline-flex; align-items:center; gap:.4rem; background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:.4rem .8rem; font-size:.8rem; font-weight:600; margin:.2rem; }
+    .lib-pill .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    @media(max-width:768px){ #sidebar{transform:translateX(-100%);} #main{margin-left:0;} .compare-cols{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="brand">
+    <div class="badge-mod">Módulo 1 · Clase 3</div>
+    <h6>Frontend con Angular</h6>
+    <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
+  </div>
+  <div class="progress-wrap">
+    <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+      <span>Progreso de la clase</span><span id="progress-pct">10%</span>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:10%"></div></div>
+    <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Clase 3 de 8 · Módulo 1</div>
+  </div>
+  <div class="section-label">Contenido</div>
+  <nav id="sidenav">
+    <a href="#" class="active" onclick="window.showSection('agenda',this)">     <i class="bi bi-calendar3"></i> Agenda</a>
+    <a href="#" onclick="window.showSection('historia',this)">                  <i class="bi bi-clock-history"></i> Historia & Contexto</a>
+    <a href="#" onclick="window.showSection('ecosistema',this)">                <i class="bi bi-grid-3x3-gap"></i> Ecosistema de librerías JS</a>
+    <a href="#" onclick="window.showSection('incluir',this)">                   <i class="bi bi-download"></i> Incluir jQuery</a>
+    <a href="#" onclick="window.showSection('sintaxis',this)">                  <i class="bi bi-braces"></i> Sintaxis jQuery</a>
+    <a href="#" onclick="window.showSection('ajax',this)">                      <i class="bi bi-arrow-left-right"></i> $.ajax y $.get</a>
+    <a href="#" onclick="window.showSection('comparativa',this)">               <i class="bi bi-layout-split"></i> jQuery vs fetch</a>
+    <a href="#" onclick="window.showSection('cuando-usar',this)">               <i class="bi bi-signpost-split"></i> ¿Cuándo usar cada uno?</a>
+    <a href="#" onclick="window.showSection('qa',this)">                        <i class="bi bi-patch-question"></i> Q&A y cierre</a>
+    <a href="#" onclick="window.showSection('conexion',this)">                  <i class="bi bi-arrow-right-circle"></i> Conexión con Clase 4</a>
+  </nav>
+  <div class="section-label">Navegación</div>
+  <nav>
+    <a href="clase2.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 2</a>
+    <a href="clase4.html"> <i class="bi bi-arrow-right-circle"></i> Clase 4 →</a>
+  </nav>
+</nav>
+
+<div id="main">
+  <div class="topbar">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item text-muted">Módulo 1</li>
+        <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+        <li class="breadcrumb-item active fw-semibold">Clase 3 — jQuery y AJAX Clásico</li>
+      </ol>
+    </nav>
+    <span class="ms-auto badge" style="background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe">
+      <i class="bi bi-clock me-1"></i>2h efectivas
+    </span>
+  </div>
+
+  <!-- ══ AGENDA ══ -->
+  <section id="agenda" class="content-section active">
+    <div class="hero-card">
+      <div class="clase-badge"><i class="bi bi-3-circle me-1"></i>Clase 3 de 7</div>
+      <h1>jQuery y AJAX Clásico</h1>
+      <p>Por qué jQuery dominó la web por 15 años, cómo se usa hoy en sistemas heredados, y en qué se diferencia del fetch() moderno que ya conoces.</p>
+      <div class="hero-meta mt-3">
+        <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
+        <span><i class="bi bi-code-slash me-1"></i>Código comparativo</span>
+        <span><i class="bi bi-building me-1"></i>Contexto real</span>
+      </div>
+    </div>
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-question-circle" style="color:#8b5cf6;font-size:1.3rem"></i></div>
+          <h5>¿Por qué aprender jQuery?</h5>
+          <p>Más del 75% de los sitios web todavía lo usan. Lo vas a encontrar en WordPress, proyectos legacy, librerías como DataTables, Select2 y DatePicker.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-success-subtle text-success"><i class="bi bi-layout-split"></i></div>
+          <h5>Comparativa real</h5>
+          <p>Construiremos la misma galería de productos dos veces: con <code>$.ajax</code> y con <code>fetch()</code>. Diferencias concretas, no solo teoría.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon bg-warning-subtle text-warning"><i class="bi bi-compass"></i></div>
+          <h5>Criterio profesional</h5>
+          <p>Al terminar sabrás leer código jQuery legacy, entender qué hace, y decidir con criterio cuándo tiene sentido usarlo y cuándo no.</p>
+        </div>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-list-ol" style="color:#8b5cf6"></i> Distribución del tiempo</h4>
+      <div class="timeline mt-3">
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Teoría: Historia, AJAX y el ecosistema de librerías JS</div>
+          <div class="t-desc">Por qué nació jQuery, qué problema resolvió, y el panorama de librerías que existen hoy.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Práctica: Incluir jQuery y primeros selectores</div>
+          <div class="t-desc"><code>&lt;script src="jquery-3.6.0.min.js"&gt;</code> — sintaxis <code>$( )</code>, selectores, manipulación del DOM.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Práctica: $.ajax y $.get con FakeStore API</div>
+          <div class="t-desc">Peticiones GET, éxito y error, renderizar productos con jQuery.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Práctica: Comparativa — $.ajax vs fetch()</div>
+          <div class="t-desc">Rehacer el ejercicio de tarjetas con ambas formas, diferencias lado a lado.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">20 min</div>
+          <div class="t-title">Discusión: ventajas, desventajas y cuándo usar cada uno</div>
+          <div class="t-desc">Análisis con casos reales: legacy, nuevos proyectos, y el camino hacia Angular.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Q&A y conexión con Clase 4 — TypeScript</div>
+          <div class="t-desc">Preguntas y el puente hacia el tipado estático que necesita Angular.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ HISTORIA ══ -->
+  <section id="historia" class="content-section">
+    <h2 class="fw-bold mb-1">Historia y Contexto</h2>
+    <p class="text-muted mb-4">Para entender jQuery hay que entender el caos que vino a resolver.</p>
+    <div class="theory-block">
+      <h4><i class="bi bi-fire" style="color:#8b5cf6"></i> El problema que existía antes de jQuery</h4>
+      <p>En los años 2000, JavaScript era una pesadilla. Cada navegador implementaba las APIs de forma diferente. El mismo código que funcionaba en Firefox fallaba en Internet Explorer:</p>
+      <div class="code-block">
+        <div class="code-header"><span>el-infierno-2005.js — antes de jQuery</span></div>
+        <pre><span class="cm">// Obtener un elemento — había que detectar el navegador manualmente</span>
+<span class="kw">function</span> <span class="fn">getElement</span>(id) {
+  <span class="kw">if</span> (document.getElementById)  <span class="kw">return</span> document.<span class="fn">getElementById</span>(id);   <span class="cm">// IE5+, Firefox</span>
+  <span class="kw">if</span> (document.all)             <span class="kw">return</span> document.all[id];                  <span class="cm">// IE4</span>
+  <span class="kw">if</span> (document.layers)          <span class="kw">return</span> document.layers[id];               <span class="cm">// Netscape 4</span>
+}
+
+<span class="cm">// Hacer AJAX — también cambiaba según el navegador</span>
+<span class="kw">var</span> xhr;
+<span class="kw">if</span> (window.XMLHttpRequest) {
+  xhr = <span class="kw">new</span> <span class="fn">XMLHttpRequest</span>();                    <span class="cm">// IE7+, Firefox, Chrome</span>
+} <span class="kw">else</span> {
+  xhr = <span class="kw">new</span> <span class="fn">ActiveXObject</span>(<span class="str">"Microsoft.XMLHTTP"</span>);    <span class="cm">// IE6 y anterior</span>
+}
+xhr.<span class="fn">open</span>(<span class="str">"GET"</span>, <span class="str">"/api/productos"</span>, <span class="bool">true</span>);
+xhr.onreadystatechange = <span class="kw">function</span>() {
+  <span class="kw">if</span> (xhr.readyState === <span class="num">4</span> && xhr.status === <span class="num">200</span>) {
+    <span class="kw">var</span> data = <span class="fn">eval</span>(<span class="str">"("</span> + xhr.responseText + <span class="str">")"</span>); <span class="cm">// inseguro pero era lo único</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(data);
+  }
+};
+xhr.<span class="fn">send</span>();</pre>
+      </div>
+      <div class="callout callout-amber">
+        <strong>¿Ves el problema?</strong> 20 líneas para un simple GET, detección manual del navegador, y <code>eval()</code> para parsear JSON porque <code>JSON.parse()</code> no existía en todos los browsers. jQuery vino a limpiar todo esto.
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-calendar-range" style="color:#8b5cf6"></i> La línea del tiempo</h4>
+      <div class="mt-3">
+        <div class="history-item"><span class="history-year">2006</span><div class="history-text"><strong>Nace jQuery</strong> — creado por John Resig. Lema: <em>"Write less, do more"</em>. Resuelve la incompatibilidad entre navegadores con una API única.</div></div>
+        <div class="history-item"><span class="history-year">2008</span><div class="history-text"><strong>Explosión de popularidad.</strong> Se convierte en la librería más usada del mundo. Casi todos los sitios lo incluían por defecto.</div></div>
+        <div class="history-item"><span class="history-year">2010</span><div class="history-text"><strong>jQuery UI y jQuery Mobile.</strong> Extienden con componentes de interfaz y soporte móvil. El ecosistema crece enormemente.</div></div>
+        <div class="history-item"><span class="history-year">2013</span><div class="history-text"><strong>Nacen React y Angular.js.</strong> Los frameworks modernos empiezan a cambiar el paradigma. jQuery sigue dominando, pero la era de los componentes comienza.</div></div>
+        <div class="history-item"><span class="history-year">2015</span><div class="history-text"><strong>ES6 y fetch() llegan al estándar.</strong> JavaScript moderno incluye Promesas, fetch, y selectores nativos. Los navegadores ya son compatibles entre sí.</div></div>
+        <div class="history-item"><span class="history-year">2019</span><div class="history-text"><strong>Bootstrap 5 elimina jQuery.</strong> El framework CSS más popular lo abandona como dependencia. Señal clara: la era de jQuery como obligatorio terminó.</div></div>
+        <div class="history-item"><span class="history-year">Hoy</span><div class="history-text"><strong>~75% de los sitios web todavía lo usan</strong> (W3Techs 2025). WordPress, sistemas bancarios, ERPs y proyectos con 10+ años de historia siguen dependiendo de él. <strong>Por eso lo estudiamos.</strong></div></div>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-briefcase" style="color:#8b5cf6"></i> ¿Dónde lo vas a encontrar en el trabajo?</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-2" style="color:#4c1d95"><i class="bi bi-check-circle-fill me-2"></i>Sí lo vas a ver en…</div>
+            <ul class="small ps-3 mb-0" style="color:#374151;line-height:2.1">
+              <li>Sitios WordPress y todos sus plugins</li>
+              <li>Sistemas bancarios y gubernamentales</li>
+              <li>ERPs y CRMs legacy (SAP UI, Salesforce clásico)</li>
+              <li>Librerías: <strong>DataTables</strong>, <strong>Select2</strong>, <strong>Datepicker</strong></li>
+              <li>Proyectos de empresas con 10+ años</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+            <div class="fw-bold mb-2 text-danger"><i class="bi bi-x-circle-fill me-2"></i>No deberías usarlo en…</div>
+            <ul class="small ps-3 mb-0" style="color:#374151;line-height:2.1">
+              <li>Proyectos nuevos con Angular, React o Vue</li>
+              <li>Apps que ya usan ES6+ con fetch nativo</li>
+              <li>Cuando solo necesitas 1–2 funcionalidades</li>
+              <li>Apps móviles o de alto rendimiento</li>
+              <li><strong>Cualquier proyecto que empieces hoy</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:#8b5cf6"></i> Demo: XMLHttpRequest vs jQuery vs fetch — el mismo GET</div>
+      </div>
+      <div class="sandbox-body">
+        <p class="small text-muted mb-3">Los tres hacen exactamente lo mismo. Solo cambia la cantidad de código y la claridad.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="run-btn red"   onclick="demoXHR()">   <i class="bi bi-play-fill"></i> XHR (2005)</button>
+          <button class="run-btn"       onclick="demoJQ()">    <i class="bi bi-play-fill"></i> $.ajax (jQuery)</button>
+          <button class="run-btn green" onclick="demoFetch()"> <i class="bi bi-play-fill"></i> fetch() (moderno)</button>
+        </div>
+        <div id="out-historia" class="output-area">Elige una forma de hacer la petición...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ECOSISTEMA ══ -->
+  <section id="ecosistema" class="content-section">
+    <h2 class="fw-bold mb-1">El Ecosistema de Librerías JavaScript</h2>
+    <p class="text-muted mb-4">jQuery no está solo — es parte de un universo de librerías que extienden lo que JS puede hacer.</p>
+    <div class="theory-block">
+      <h4><i class="bi bi-layers" style="color:#8b5cf6"></i> ¿Qué es una librería JavaScript?</h4>
+      <p>Una <strong>librería</strong> es código que alguien ya escribió para resolver un problema común. En lugar de escribirlo tú desde cero, la incluyes y usas sus funciones.</p>
+      <div class="compare-cols mt-3">
+        <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
+          <h6 style="color:#991b1b"><i class="bi bi-x-circle me-2"></i>Sin librería — tú escribes todo</h6>
+          <pre style="font-size:.78rem;color:#7f1d1d;margin:0;line-height:1.7"><span class="cm">// Formatear una fecha manualmente</span>
+<span class="kw">function</span> <span class="fn">formatDate</span>(date) {
+  <span class="kw">const</span> d = date.<span class="fn">getDate</span>().<span class="fn">toString</span>().<span class="fn">padStart</span>(<span class="num">2</span>,<span class="str">'0'</span>);
+  <span class="kw">const</span> m = (date.<span class="fn">getMonth</span>()+<span class="num">1</span>).<span class="fn">toString</span>().<span class="fn">padStart</span>(<span class="num">2</span>,<span class="str">'0'</span>);
+  <span class="kw">const</span> y = date.<span class="fn">getFullYear</span>();
+  <span class="kw">return</span> <span class="str">`</span>${d}<span class="str">/</span>${m}<span class="str">/</span>${y}<span class="str">`</span>;
+}
+<span class="cm">// ... y así con cada caso especial</span></pre>
+        </div>
+        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+          <h6 style="color:#065f46"><i class="bi bi-check-circle me-2"></i>Con librería (dayjs) ✓</h6>
+          <pre style="font-size:.78rem;color:#14532d;margin:0;line-height:1.7" id="dayjs-demo-code"><span class="cm">// Cargando dayjs...</span></pre>
+        </div>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-grid-3x3-gap" style="color:#8b5cf6"></i> Categorías de librerías que vas a encontrar</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-cursor-fill me-2"></i>DOM & Manipulación</div>
+            <div><span class="lib-pill"><span class="dot" style="background:#8b5cf6"></span>jQuery</span><span class="lib-pill"><span class="dot" style="background:#64748b"></span>Zepto.js</span></div>
+            <p class="small mt-2 mb-0" style="color:#64748b">Selectores, eventos, animaciones, AJAX. jQuery es el rey histórico de esta categoría.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold mb-2" style="color:#1e40af;font-size:.88rem"><i class="bi bi-arrow-left-right me-2"></i>HTTP / Peticiones</div>
+            <div><span class="lib-pill"><span class="dot" style="background:#3b82f6"></span>Axios</span><span class="lib-pill"><span class="dot" style="background:#0ea5e9"></span>fetch nativo</span><span class="lib-pill"><span class="dot" style="background:#8b5cf6"></span>$.ajax</span></div>
+            <p class="small mt-2 mb-0" style="color:#64748b">Axios es el más popular hoy. En Angular usarás <code>HttpClient</code>.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <div class="fw-bold mb-2" style="color:#065f46;font-size:.88rem"><i class="bi bi-calendar3 me-2"></i>Fechas & Tiempo</div>
+            <div><span class="lib-pill"><span class="dot" style="background:#10b981"></span>dayjs</span><span class="lib-pill"><span class="dot" style="background:#059669"></span>date-fns</span><span class="lib-pill"><span class="dot" style="background:#047857"></span>Moment.js</span></div>
+            <p class="small mt-2 mb-0" style="color:#64748b">Moment.js fue el estándar, hoy se prefiere dayjs (1KB vs 70KB).</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fffbeb;border:1px solid #fde68a">
+            <div class="fw-bold mb-2" style="color:#92400e;font-size:.88rem"><i class="bi bi-bar-chart me-2"></i>Gráficas & Visualización</div>
+            <div><span class="lib-pill"><span class="dot" style="background:#f59e0b"></span>Chart.js</span><span class="lib-pill"><span class="dot" style="background:#d97706"></span>D3.js</span><span class="lib-pill"><span class="dot" style="background:#b45309"></span>ApexCharts</span></div>
+            <p class="small mt-2 mb-0" style="color:#64748b">En Angular las usarás junto al framework, no en lugar de él.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+            <div class="fw-bold mb-2" style="color:#991b1b;font-size:.88rem"><i class="bi bi-table me-2"></i>Tablas & UI Components</div>
+            <div><span class="lib-pill"><span class="dot" style="background:#ef4444"></span>DataTables</span><span class="lib-pill"><span class="dot" style="background:#dc2626"></span>Select2</span><span class="lib-pill"><span class="dot" style="background:#b91c1c"></span>Flatpickr</span></div>
+            <p class="small mt-2 mb-0" style="color:#64748b">DataTables y Select2 <strong>dependen de jQuery</strong> — por eso jQuery sigue instalado en tantos proyectos.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <div class="fw-bold mb-2" style="color:#065f46;font-size:.88rem"><i class="bi bi-shield-check me-2"></i>Validación</div>
+            <div><span class="lib-pill"><span class="dot" style="background:#10b981"></span>Yup</span><span class="lib-pill"><span class="dot" style="background:#059669"></span>Zod</span><span class="lib-pill"><span class="dot" style="background:#8b5cf6"></span>jQuery Validate</span></div>
+            <p class="small mt-2 mb-0" style="color:#64748b">jQuery Validate es común en proyectos legacy. En Angular usarás ReactiveFormsModule.</p>
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-purple mt-3">
+        <strong>La clave:</strong> No necesitas aprender todas. Aprende a <em>leer su documentación</em> y a evaluar: ¿cuánto pesa? ¿está mantenida? ¿tiene soporte TypeScript? ¿es compatible con Angular?
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-3" style="color:#8b5cf6"></i> Librería vs Framework — la diferencia clave</h4>
+      <div class="compare-cols">
+        <div class="compare-col" style="background:#f5f3ff;border:1px solid #ddd6fe">
+          <h6 style="color:#4c1d95"><i class="bi bi-box me-2"></i>Librería (jQuery, Axios, Chart.js)</h6>
+          <p style="font-size:.86rem;color:#374151;margin:0"><strong>Tú controlas el flujo.</strong> Llamas a la librería cuando quieres. Es una herramienta dentro de tu código.<br><br><em>"Yo decido cuándo y cómo usar Chart.js para pintar una gráfica."</em></p>
+        </div>
+        <div class="compare-col" style="background:#eff6ff;border:1px solid #bfdbfe">
+          <h6 style="color:#1e40af"><i class="bi bi-cpu me-2"></i>Framework (Angular, React, Vue)</h6>
+          <p style="font-size:.86rem;color:#374151;margin:0"><strong>El framework controla el flujo.</strong> Te dice cómo estructurar tu app. Tú escribes código dentro de sus reglas.<br><br><em>"Angular me dice cómo organizar componentes, rutas y servicios."</em></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ INCLUIR ══ -->
+  <section id="incluir" class="content-section">
+    <h2 class="fw-bold mb-1">Incluir jQuery en tu proyecto</h2>
+    <p class="text-muted mb-4">Dos formas de agregarlo y los primeros pasos con la sintaxis <code>$( )</code>.</p>
+    <div class="theory-block">
+      <h4><i class="bi bi-download" style="color:#8b5cf6"></i> Formas de incluirlo</h4>
+      <p class="fw-semibold mt-2">① CDN — la más rápida (la que usamos en clase)</p>
+      <div class="code-block">
+        <div class="code-header"><span>index.html — incluir jQuery por CDN</span></div>
+        <pre><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html</span> <span class="prop">lang</span>=<span class="str">"es"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;head&gt;&lt;meta</span> <span class="prop">charset</span>=<span class="str">"UTF-8"</span><span class="kw">&gt;&lt;title&gt;</span>Mi Proyecto<span class="kw">&lt;/title&gt;&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+
+  <span class="kw">&lt;button</span> <span class="prop">id</span>=<span class="str">"btn"</span><span class="kw">&gt;</span>Cargar productos<span class="kw">&lt;/button&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">id</span>=<span class="str">"galeria"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+  <span class="cm">&lt;!-- 1. jQuery SIEMPRE ANTES de tu script --&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://code.jquery.com/jquery-3.6.0.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+  <span class="cm">&lt;!-- 2. Tu código que USA jQuery --&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></pre>
+      </div>
+      <p class="fw-semibold mt-3">② npm — para proyectos con Node.js (lo verás en Angular)</p>
+      <div class="code-block">
+        <div class="code-header"><span>terminal</span></div>
+        <pre>npm install jquery
+
+<span class="cm"># Luego en tu archivo JS/TS:</span>
+<span class="kw">import</span> $ <span class="kw">from</span> <span class="str">"jquery"</span>;</pre>
+      </div>
+      <div class="callout callout-red">
+        <strong>Error común: <code>$ is not defined</code></strong> — tu script se ejecuta antes de que jQuery cargue. Solución: jQuery siempre antes del <code>&lt;/body&gt;</code>, y tu script después de jQuery.
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-braces" style="color:#8b5cf6"></i> $(document).ready() — esperar al DOM</h4>
+      <div class="code-block">
+        <div class="code-header"><span>document-ready.js</span></div>
+        <pre><span class="cm">// Forma completa (jQuery clásico)</span>
+<span class="jq">$</span>(document).<span class="fn">ready</span>(<span class="kw">function</span>() {
+  <span class="jq">$</span>(<span class="str">"#btn"</span>).<span class="fn">click</span>(<span class="kw">function</span>() { <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Botón clickeado"</span>); });
+});
+
+<span class="cm">// Forma corta — exactamente igual (más usada)</span>
+<span class="jq">$</span>(<span class="kw">function</span>() {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"DOM listo"</span>);
+});
+
+<span class="cm">// Equivalente en JS nativo moderno</span>
+document.<span class="fn">addEventListener</span>(<span class="str">"DOMContentLoaded"</span>, <span class="kw">function</span>() { <span class="cm">/* ... */</span> });</pre>
+      </div>
+      <div class="callout callout-blue">
+        <strong>Hoy en día</strong> si pones tu script antes del <code>&lt;/body&gt;</code>, el DOM ya está listo y no necesitas <code>$(document).ready()</code>. Pero lo verás en código legacy — es importante reconocerlo.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SINTAXIS ══ -->
+  <section id="sintaxis" class="content-section">
+    <h2 class="fw-bold mb-1">Sintaxis jQuery</h2>
+    <p class="text-muted mb-4">jQuery traduce cada operación del DOM en una línea elegante. Todo pasa por <code>$( )</code>.</p>
+    <div class="theory-block">
+      <h4><i class="bi bi-search" style="color:#8b5cf6"></i> Selectores — igual que CSS</h4>
+      <div class="code-block">
+        <div class="code-header"><span>selectores.js</span></div>
+        <pre><span class="jq">$</span>(<span class="str">"#titulo"</span>)          <span class="cm">// por ID     → document.getElementById("titulo")</span>
+<span class="jq">$</span>(<span class="str">".tarjeta"</span>)         <span class="cm">// por clase  → document.querySelectorAll(".tarjeta")</span>
+<span class="jq">$</span>(<span class="str">"p"</span>)                <span class="cm">// por tag    → todos los &lt;p&gt;</span>
+<span class="jq">$</span>(<span class="str">"ul li"</span>)            <span class="cm">// descendiente</span>
+<span class="jq">$</span>(<span class="str">"input[type='text']"</span>) <span class="cm">// por atributo</span>
+<span class="jq">$</span>(<span class="str">"[data-id='5']"</span>)    <span class="cm">// por data-*</span>
+<span class="jq">$</span>(<span class="str">":visible"</span>)         <span class="cm">// solo los visibles</span>
+<span class="jq">$</span>(<span class="str">":first"</span>)           <span class="cm">// primer elemento</span></pre>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-pencil-square" style="color:#8b5cf6"></i> Manipular contenido, clases y eventos</h4>
+      <div class="code-block">
+        <div class="code-header"><span>manipulacion-y-eventos.js</span></div>
+        <pre><span class="cm">// ── CONTENIDO ────────────────────────────────────────────────</span>
+<span class="jq">$</span>(<span class="str">"#titulo"</span>).<span class="fn">text</span>(<span class="str">"Nuevo texto"</span>);        <span class="cm">// ← como textContent</span>
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">html</span>(<span class="str">"&lt;b&gt;HTML bold&lt;/b&gt;"</span>);    <span class="cm">// ← como innerHTML</span>
+<span class="jq">$</span>(<span class="str">"#input"</span>).<span class="fn">val</span>();                      <span class="cm">// leer valor de input</span>
+<span class="jq">$</span>(<span class="str">"#galeria"</span>).<span class="fn">empty</span>();                   <span class="cm">// vaciar contenido</span>
+<span class="jq">$</span>(<span class="str">"#galeria"</span>).<span class="fn">append</span>(<span class="str">"&lt;p&gt;nuevo&lt;/p&gt;"</span>);   <span class="cm">// agregar al final</span>
+
+<span class="cm">// ── CLASES ───────────────────────────────────────────────────</span>
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">addClass</span>(<span class="str">"activo"</span>);
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">removeClass</span>(<span class="str">"oculto"</span>);
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">toggleClass</span>(<span class="str">"resaltado"</span>);
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">hasClass</span>(<span class="str">"activo"</span>);          <span class="cm">// → true/false</span>
+
+<span class="cm">// ── MOSTRAR / OCULTAR ────────────────────────────────────────</span>
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">hide</span>();                      <span class="cm">// display:none</span>
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">show</span>();                      <span class="cm">// display:block</span>
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">toggle</span>();                    <span class="cm">// alterna</span>
+<span class="jq">$</span>(<span class="str">"#caja"</span>).<span class="fn">fadeIn</span>(<span class="num">300</span>);                <span class="cm">// animación</span>
+
+<span class="cm">// ── EVENTOS ──────────────────────────────────────────────────</span>
+<span class="jq">$</span>(<span class="str">"#btn"</span>).<span class="fn">click</span>(<span class="kw">function</span>() { <span class="cm">/* click */</span> });
+<span class="jq">$</span>(<span class="str">"#btn"</span>).<span class="fn">on</span>(<span class="str">"click"</span>, <span class="kw">function</span>() { <span class="cm">/* recomendado */</span> });
+
+<span class="cm">// ── DELEGACIÓN — un listener para muchos elementos ───────────</span>
+<span class="jq">$</span>(<span class="str">"#galeria"</span>).<span class="fn">on</span>(<span class="str">"click"</span>, <span class="str">".btn-like"</span>, <span class="kw">function</span>() {
+  <span class="kw">const</span> id = <span class="jq">$</span>(<span class="kw">this</span>).<span class="fn">data</span>(<span class="str">"id"</span>);  <span class="cm">// lee data-id del elemento</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Me gusta:"</span>, id);
+});</pre>
+      </div>
+    </div>
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:#8b5cf6"></i> Demo: jQuery DOM en vivo</div>
+      </div>
+      <div class="sandbox-body">
+        <div class="d-flex gap-2 flex-wrap mb-3">
+          <button class="run-btn"       onclick="demoJQHtml()">  .html()</button>
+          <button class="run-btn blue"  onclick="demoJQClass()"> .addClass()</button>
+          <button class="run-btn green" onclick="demoJQShow()">  .show()/.hide()</button>
+          <button class="run-btn amber" onclick="demoJQFade()">  .fadeIn()</button>
+          <button class="run-btn red"   onclick="demoJQReset()"> Reset</button>
+        </div>
+        <div id="jq-demo-box" class="p-3 rounded-3 text-center" style="background:#f8fafc;border:2px dashed #e2e8f0;min-height:80px;transition:all .3s">
+          <p class="mb-0 text-muted">La caja de demostración</p>
+        </div>
+        <div id="out-sintaxis" class="output-area mt-2" style="min-height:40px">El método ejecutado aparecerá aquí...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ AJAX ══ -->
+  <section id="ajax" class="content-section">
+    <h2 class="fw-bold mb-1">$.ajax y $.get — AJAX con jQuery</h2>
+    <p class="text-muted mb-4">La forma jQuery de hacer peticiones HTTP. Más verbosa que fetch, pero muy legible y omnipresente.</p>
+    <div class="theory-block">
+      <h4><i class="bi bi-arrow-left-right" style="color:#8b5cf6"></i> $.ajax — la función base</h4>
+      <div class="code-block">
+        <div class="code-header"><span>ajax-basico.js</span></div>
+        <pre><span class="jq">$</span>.<span class="fn">ajax</span>({
+  <span class="prop">url</span>:     <span class="str">"https://fakestoreapi.com/products"</span>,
+  <span class="prop">method</span>:  <span class="str">"GET"</span>,
+  <span class="prop">success</span>: <span class="kw">function</span>(data) {
+    <span class="cm">// data ya viene parseado — jQuery llama a JSON.parse() internamente</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(data[<span class="num">0</span>].title);   <span class="cm">// "Fjallraven Backpack"</span>
+  },
+  <span class="prop">error</span>: <span class="kw">function</span>(xhr, status, err) {
+    <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Error:"</span>, status, err);
+  }
+});
+
+<span class="cm">// Con todas las opciones útiles</span>
+<span class="jq">$</span>.<span class="fn">ajax</span>({
+  <span class="prop">url</span>:        <span class="str">"https://fakestoreapi.com/products/1"</span>,
+  <span class="prop">method</span>:     <span class="str">"GET"</span>,
+  <span class="prop">dataType</span>:   <span class="str">"json"</span>,          <span class="cm">// fuerza parseo JSON</span>
+  <span class="prop">timeout</span>:    <span class="num">5000</span>,            <span class="cm">// 5 segundos máximo</span>
+  <span class="prop">beforeSend</span>: <span class="kw">function</span>() {
+    <span class="jq">$</span>(<span class="str">"#spinner"</span>).<span class="fn">show</span>();       <span class="cm">// mostrar loading</span>
+    <span class="jq">$</span>(<span class="str">"#btn"</span>).<span class="fn">prop</span>(<span class="str">"disabled"</span>, <span class="bool">true</span>);
+  },
+  <span class="prop">success</span>: <span class="kw">function</span>(data) {
+    <span class="jq">$</span>(<span class="str">"#resultado"</span>).<span class="fn">html</span>(<span class="str">`&lt;h3&gt;</span>${data.title}<span class="str">&lt;/h3&gt;`</span>);
+  },
+  <span class="prop">error</span>: <span class="kw">function</span>() {
+    <span class="jq">$</span>(<span class="str">"#resultado"</span>).<span class="fn">html</span>(<span class="str">"&lt;p class='text-danger'&gt;Error&lt;/p&gt;"</span>);
+  },
+  <span class="prop">complete</span>: <span class="kw">function</span>() {        <span class="cm">// ← como "finally" — siempre se ejecuta</span>
+    <span class="jq">$</span>(<span class="str">"#spinner"</span>).<span class="fn">hide</span>();
+    <span class="jq">$</span>(<span class="str">"#btn"</span>).<span class="fn">prop</span>(<span class="str">"disabled"</span>, <span class="bool">false</span>);
+  }
+});</pre>
+      </div>
+      <div class="callout callout-purple">
+        <strong>complete</strong> en jQuery es el equivalente al <code>finally</code> de try/catch que viste en Clase 2. Siempre se ejecuta, haya éxito o error.
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-lightning" style="color:#8b5cf6"></i> $.get, $.post y $.getJSON — atajos</h4>
+      <div class="code-block">
+        <div class="code-header"><span>ajax-atajos.js</span></div>
+        <pre><span class="cm">// $.get() — atajo GET con callback</span>
+<span class="jq">$</span>.<span class="fn">get</span>(<span class="str">"https://fakestoreapi.com/products?limit=4"</span>, <span class="kw">function</span>(data) {
+  <span class="fn">console</span>.<span class="fn">log</span>(data);
+});
+
+<span class="cm">// $.get() encadenado con .done() y .fail()</span>
+<span class="jq">$</span>.<span class="fn">get</span>(<span class="str">"https://fakestoreapi.com/products?limit=4"</span>)
+  .<span class="fn">done</span>(<span class="kw">function</span>(data) { <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"✓ Éxito:"</span>, data.length); })
+  .<span class="fn">fail</span>(<span class="kw">function</span>(err)  { <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"✗ Error"</span>, err); });
+
+<span class="cm">// $.getJSON() — GET que garantiza JSON</span>
+<span class="jq">$</span>.<span class="fn">getJSON</span>(<span class="str">"https://fakestoreapi.com/products/1"</span>, <span class="kw">function</span>(producto) {
+  <span class="fn">console</span>.<span class="fn">log</span>(producto.title, <span class="str">"- $"</span>, producto.price);
+});
+
+<span class="cm">// $.post() — atajo POST</span>
+<span class="jq">$</span>.<span class="fn">post</span>(<span class="str">"https://fakestoreapi.com/products"</span>, {
+  <span class="prop">title</span>: <span class="str">"Nuevo Producto"</span>, <span class="prop">price</span>: <span class="num">29.99</span>
+}, <span class="kw">function</span>(response) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Creado con id:"</span>, response.id);
+});</pre>
+      </div>
+    </div>
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:#8b5cf6"></i> Demo en vivo: $.ajax con FakeStore API</div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="run-btn"       onclick="demoAjax()">     <i class="bi bi-play-fill"></i> $.ajax</button>
+          <button class="run-btn blue"  onclick="demoAjaxGet()">  <i class="bi bi-play-fill"></i> $.get</button>
+          <button class="run-btn green" onclick="demoAjaxJson()"> <i class="bi bi-play-fill"></i> $.getJSON</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div id="out-ajax" class="output-area">Haz clic en uno de los métodos para disparar la petición jQuery...</div>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-grid" style="color:#8b5cf6"></i> Patrón completo: galería con $.ajax</h4>
+      <div class="code-block">
+        <div class="code-header"><span>galeria-jquery.js</span></div>
+        <pre><span class="kw">function</span> <span class="fn">cargarProductosJQ</span>() {
+  <span class="kw">var</span> $galeria = <span class="jq">$</span>(<span class="str">"#galeria"</span>);
+  <span class="kw">var</span> $btn     = <span class="jq">$</span>(<span class="str">"#btn-cargar"</span>);
+
+  <span class="jq">$</span>.<span class="fn">ajax</span>({
+    <span class="prop">url</span>:        <span class="str">"https://fakestoreapi.com/products?limit=6"</span>,
+    <span class="prop">method</span>:     <span class="str">"GET"</span>,
+    <span class="prop">beforeSend</span>: <span class="kw">function</span>() {
+      $galeria.<span class="fn">html</span>(<span class="str">"&lt;div class='text-center py-4'&gt;&lt;div class='spinner-border'&gt;&lt;/div&gt;&lt;/div&gt;"</span>);
+      $btn.<span class="fn">prop</span>(<span class="str">"disabled"</span>, <span class="bool">true</span>).<span class="fn">text</span>(<span class="str">"Cargando..."</span>);
+    },
+    <span class="prop">success</span>: <span class="kw">function</span>(productos) {
+      <span class="kw">var</span> html = productos.<span class="fn">map</span>(<span class="kw">function</span>(p) {
+        <span class="kw">return</span> <span class="str">`&lt;div class="product-card"&gt;
+          &lt;img src="</span>${p.image}<span class="str">" loading="lazy"&gt;
+          &lt;div class="p-title"&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">30</span>)}<span class="str">...&lt;/div&gt;
+          &lt;div class="p-price"&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/div&gt;
+        &lt;/div&gt;`</span>;
+      }).<span class="fn">join</span>(<span class="str">""</span>);
+      $galeria.<span class="fn">html</span>(<span class="str">`&lt;div class="productos-grid"&gt;</span>${html}<span class="str">&lt;/div&gt;`</span>);
+    },
+    <span class="prop">error</span>: <span class="kw">function</span>(xhr, status) {
+      $galeria.<span class="fn">html</span>(<span class="str">`&lt;div class="alert alert-danger"&gt;Error: </span>${status}<span class="str">&lt;/div&gt;`</span>);
+    },
+    <span class="prop">complete</span>: <span class="kw">function</span>() {
+      $btn.<span class="fn">prop</span>(<span class="str">"disabled"</span>, <span class="bool">false</span>).<span class="fn">text</span>(<span class="str">"Cargar productos"</span>);
+    }
+  });
+}</pre>
+      </div>
+    </div>
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-grid" style="color:#8b5cf6"></i> Demo: Galería completa con $.ajax</div>
+        <div class="d-flex gap-2">
+          <button class="run-btn" id="btn-jq-galeria" onclick="demoAjaxGaleria()"><i class="bi bi-play-fill"></i> Cargar con $.ajax</button>
+          <button class="run-btn red" onclick="demoAjaxGaleriaError()"><i class="bi bi-x-circle"></i> Simular error</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div id="galeria-ajax"><div class="text-center text-muted py-4"><i class="bi bi-grid-3x3-gap" style="font-size:2rem"></i><p class="mt-2 small">Haz clic para cargar con $.ajax</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ COMPARATIVA ══ -->
+  <section id="comparativa" class="content-section">
+    <h2 class="fw-bold mb-1">Comparativa: $.ajax vs fetch()</h2>
+    <p class="text-muted mb-4">El mismo ejercicio de tarjetas construido con las dos formas, línea por línea.</p>
+    <div class="theory-block">
+      <h4><i class="bi bi-layout-split" style="color:#8b5cf6"></i> Código lado a lado</h4>
+      <div class="compare-cols">
+        <div class="compare-col" style="background:#f5f3ff;border:1px solid #ddd6fe">
+          <h6 style="color:#4c1d95"><i class="bi bi-code-slash me-2"></i>Con jQuery ($.ajax)</h6>
+          <pre style="font-size:.76rem;color:#3b0764;line-height:1.7;margin:0;overflow-x:auto"><span class="jq">$</span>.<span class="fn">ajax</span>({
+  <span class="prop">url</span>: <span class="str">"...fakestoreapi.com/products"</span>,
+  <span class="prop">method</span>: <span class="str">"GET"</span>,
+  <span class="prop">beforeSend</span>: <span class="kw">function</span>() {
+    <span class="jq">$</span>(<span class="str">"#galeria"</span>).<span class="fn">html</span>(<span class="str">"Cargando..."</span>);
+    <span class="jq">$</span>(<span class="str">"#btn"</span>).<span class="fn">prop</span>(<span class="str">"disabled"</span>,<span class="bool">true</span>);
+  },
+  <span class="prop">success</span>: <span class="kw">function</span>(data) {
+    <span class="jq">$</span>(<span class="str">"#galeria"</span>).<span class="fn">html</span>(
+      data.<span class="fn">map</span>(<span class="fn">crearTarjeta</span>).<span class="fn">join</span>(<span class="str">""</span>)
+    );
+  },
+  <span class="prop">error</span>: <span class="kw">function</span>() {
+    <span class="jq">$</span>(<span class="str">"#galeria"</span>).<span class="fn">html</span>(<span class="str">"Error"</span>);
+  },
+  <span class="prop">complete</span>: <span class="kw">function</span>() {
+    <span class="jq">$</span>(<span class="str">"#btn"</span>).<span class="fn">prop</span>(<span class="str">"disabled"</span>,<span class="bool">false</span>);
+  }
+});</pre>
+        </div>
+        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+          <h6 style="color:#065f46"><i class="bi bi-code-slash me-2"></i>Con fetch() + async/await ✓</h6>
+          <pre style="font-size:.76rem;color:#14532d;line-height:1.7;margin:0;overflow-x:auto"><span class="kw">async function</span> <span class="fn">cargar</span>() {
+  <span class="kw">const</span> g   = document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>);
+  <span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">"btn"</span>);
+
+  g.innerHTML  = <span class="str">"Cargando..."</span>;
+  btn.disabled = <span class="bool">true</span>;
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"...fakestoreapi.com/products"</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+    g.innerHTML = data.<span class="fn">map</span>(<span class="fn">crearTarjeta</span>).<span class="fn">join</span>(<span class="str">""</span>);
+  } <span class="kw">catch</span>(e) {
+    g.innerHTML = <span class="str">"Error"</span>;
+  } <span class="kw">finally</span> {
+    btn.disabled = <span class="bool">false</span>;
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-table" style="color:#8b5cf6"></i> Diferencias clave</h4>
+      <div class="table-responsive mt-2">
+        <table class="table table-bordered" style="font-size:.84rem">
+          <thead style="background:#0f172a;color:#e2e8f0">
+            <tr><th>Aspecto</th><th>$.ajax (jQuery)</th><th>fetch() nativo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="fw-semibold">Parseo JSON</td><td>Automático — no necesitas <code>.json()</code></td><td>Manual — <code>await res.json()</code></td></tr>
+            <tr><td class="fw-semibold">Errores HTTP (404/500)</td><td>Va directamente a callback <code>error</code></td><td>Solo <code>catch</code> en error de red; 404 no es error por defecto</td></tr>
+            <tr><td class="fw-semibold">Estado loading/complete</td><td><code>beforeSend</code> y <code>complete</code> integrados</td><td>Manual con <code>try/catch/finally</code></td></tr>
+            <tr><td class="fw-semibold">Sintaxis</td><td>Callbacks anidados — más verbosa</td><td>async/await — lectura lineal más clara</td></tr>
+            <tr><td class="fw-semibold">Dependencia</td><td>Requiere jQuery (~87KB)</td><td>Nativo — 0 dependencias</td></tr>
+            <tr><td class="fw-semibold">TypeScript</td><td>Soporte limitado</td><td>Soporte completo: <code>Promise&lt;Product[]&gt;</code></td></tr>
+            <tr><td class="fw-semibold">Angular</td><td>No se usa — Angular tiene HttpClient</td><td>No se usa directamente — Angular tiene HttpClient</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:#8b5cf6"></i> Demo: misma galería, dos formas</div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="run-btn"       onclick="demoComparativaJQ()">    <i class="bi bi-play-fill"></i> Cargar con $.ajax</button>
+          <button class="run-btn green" onclick="demoComparativaFetch()"> <i class="bi bi-play-fill"></i> Cargar con fetch()</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div id="indicador-metodo" class="mb-3 small text-muted">Haz clic en un botón para ver la galería con ese método — nota el badge en cada tarjeta</div>
+        <div id="galeria-comparativa"><div class="text-center text-muted py-3"><i class="bi bi-layout-split" style="font-size:2rem"></i></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CUÁNDO USAR ══ -->
+  <section id="cuando-usar" class="content-section">
+    <h2 class="fw-bold mb-1">¿Cuándo usar jQuery y cuándo no?</h2>
+    <p class="text-muted mb-4">Criterio profesional para tomar la decisión correcta según el contexto.</p>
+    <div class="theory-block">
+      <h4><i class="bi bi-signpost-split" style="color:#8b5cf6"></i> La regla general</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:2px solid #8b5cf6">
+            <div class="fw-bold mb-2" style="color:#4c1d95">✅ USA jQuery cuando…</div>
+            <ul style="font-size:.88rem;line-height:2.1;color:#374151;padding-left:1.2rem">
+              <li>El proyecto <strong>ya tiene jQuery</strong> y tu tarea es mantenerlo</li>
+              <li>Vas a integrar <strong>DataTables, Select2</strong> o jQuery Validate</li>
+              <li>Es un proyecto <strong>WordPress</strong> o de plantillas HTML</li>
+              <li>Te lo pide explícitamente el equipo o cliente</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3 h-100" style="background:#f0fdf4;border:2px solid #10b981">
+            <div class="fw-bold mb-2" style="color:#065f46">✅ USA fetch/Axios cuando…</div>
+            <ul style="font-size:.88rem;line-height:2.1;color:#374151;padding-left:1.2rem">
+              <li>Estás en un <strong>proyecto nuevo</strong></li>
+              <li>Usas <strong>React, Vue o Angular</strong></li>
+              <li>Quieres <strong>tipado con TypeScript</strong></li>
+              <li>Te importa el rendimiento y el peso del bundle</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-building" style="color:#8b5cf6"></i> Escenarios reales</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fff;border:1px solid #e2e8f0">
+            <div class="fw-semibold mb-1">📋 Empresa con sistema legacy</div>
+            <div class="callout callout-amber" style="margin:.5rem 0">Aprende a leer y mantener jQuery. No lo reescribas a menos que te lo pidan. El refactor cuesta tiempo y puede romper cosas.</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fff;border:1px solid #e2e8f0">
+            <div class="fw-semibold mb-1">🚀 Startup con proyecto nuevo</div>
+            <div class="callout callout-green" style="margin:.5rem 0">Usa Angular + HttpClient + TypeScript desde el inicio. No incluyas jQuery — no lo necesitas y añade peso innecesario.</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fff;border:1px solid #e2e8f0">
+            <div class="fw-semibold mb-1">🔧 Necesitas DataTables en Angular</div>
+            <div class="callout callout-purple" style="margin:.5rem 0">Incluye jQuery solo para DataTables. Intégralo con <code>declare var $: any</code>. Es aceptable para casos puntuales.</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fff;border:1px solid #e2e8f0">
+            <div class="fw-semibold mb-1">📱 Proyecto WordPress</div>
+            <div class="callout callout-blue" style="margin:.5rem 0">WordPress incluye jQuery por defecto. Úsalo — es el estándar del ecosistema y los hooks están construidos sobre él.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="theory-block">
+      <h4><i class="bi bi-arrow-right-circle" style="color:#8b5cf6"></i> El camino hacia Angular</h4>
+      <div class="step-pills">
+        <div class="step-pill"><div class="num">1</div> JS puro + fetch (Clases 1–2)</div>
+        <div class="step-pill"><div class="num">2</div> jQuery legacy (Clase 3 — hoy)</div>
+        <div class="step-pill"><div class="num">3</div> TypeScript tipado (Clase 4)</div>
+        <div class="step-pill"><div class="num">4</div> Angular + HttpClient (Clases 5–7)</div>
+      </div>
+      <div class="callout callout-purple mt-3">
+        <strong>En Angular no usarás ni fetch ni jQuery.</strong> Angular tiene su propio <code>HttpClient</code> con tipado TypeScript, manejo de errores con RxJS e interceptores. Para entender HttpClient, primero necesitas TypeScript — que es exactamente la Clase 4.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Q&A ══ -->
+  <section id="qa" class="content-section">
+    <h2 class="fw-bold mb-1">Q&A y Cierre</h2>
+    <p class="text-muted mb-4">Resumen y preparación para la Clase 4.</p>
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="theory-block h-100">
+          <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
+          <ul style="font-size:.9rem;line-height:2.2">
+            <li>Por qué jQuery nació y el problema que resolvió</li>
+            <li>El <strong>ecosistema de librerías JS</strong> por categorías</li>
+            <li>Diferencia entre <strong>librería</strong> y <strong>framework</strong></li>
+            <li>Incluir jQuery con <code>&lt;script&gt;</code> CDN</li>
+            <li>Selectores <code>$( )</code> y manipulación del DOM</li>
+            <li><code>$.ajax()</code>, <code>$.get()</code>, <code>$.getJSON()</code></li>
+            <li><code>beforeSend / success / error / complete</code></li>
+            <li>Comparativa directa <strong>jQuery vs fetch</strong></li>
+            <li>Criterio profesional: <strong>cuándo usar cada uno</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="theory-block h-100">
+          <h4><i class="bi bi-journal-check text-success"></i> Tarea para la Clase 4</h4>
+          <div class="callout callout-purple">
+            <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2.2">
+              <li>Reescribir la mini-tienda de Clase 2 usando <code>$.ajax</code> en lugar de <code>fetch</code></li>
+              <li>Agregar <code>beforeSend</code> para mostrar spinner y <code>complete</code> para ocultarlo</li>
+              <li><strong>Exploración:</strong> Busca "DataTables jQuery" para ver por qué jQuery sigue vivo</li>
+              <li><strong>Obligatorio:</strong> Instalar Node.js — lo necesitas para la Clase 4</li>
+            </ol>
+          </div>
+          <div class="callout callout-amber mt-3">
+            <strong>Clase 4 — TypeScript:</strong> Aprenderás a darle <em>tipos</em> a tu código. Entenderás por qué Angular lo exige y cómo te protege de errores antes de que ocurran.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CONEXIÓN CON CLASE 4 ══ -->
+  <section id="conexion" class="content-section">
+    <h2 class="fw-bold mb-1">Conexión con la Clase 4</h2>
+    <p class="text-muted mb-4">Conoces JavaScript a fondo — con y sin jQuery. Ahora viene el salto que te desbloquea Angular: TypeScript.</p>
+
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#0c1a2e 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;color:#fff">
+      <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem">El problema que TypeScript resuelve — con un código que ya sabes escribir:</p>
+      <div class="code-block">
+        <div class="code-header"><span>el-problema-sin-typescript.js vs con-typescript.ts</span></div>
+        <pre><span class="cm">// ❌ JavaScript puro (Clases 1-3): JS no sabe qué forma tiene "data"</span>
+<span class="jq">$</span>.<span class="fn">ajax</span>({ <span class="prop">url</span>: <span class="str">"...products/1"</span>, <span class="prop">success</span>: <span class="kw">function</span>(data) {
+  <span class="fn">console</span>.<span class="fn">log</span>(data.titlee);   <span class="cm">// typo → undefined en producción — JS no avisa</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(data.prece);    <span class="cm">// otro typo → undefined — nadie te avisó</span>
+  data.<span class="fn">noExiste</span>();            <span class="cm">// función inexistente → crash en producción</span>
+}});
+
+<span class="cm">// ✅ TypeScript (Clase 4): define la forma del objeto, el editor te avisa</span>
+<span class="kw">interface</span> <span class="fn">Product</span> {
+  <span class="prop">id</span>:       <span class="kw">number</span>;
+  <span class="prop">title</span>:    <span class="kw">string</span>;
+  <span class="prop">price</span>:    <span class="kw">number</span>;
+  <span class="prop">image</span>:    <span class="kw">string</span>;
+  <span class="prop">category</span>:<span class="kw">string</span>;
+}
+
+<span class="kw">async function</span> <span class="fn">cargar</span>(): Promise&lt;<span class="kw">void</span>&gt; {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"...products/1"</span>);
+  <span class="kw">const</span> data: <span class="fn">Product</span> = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="fn">console</span>.<span class="fn">log</span>(data.titlee);  <span class="cm">// ← ERROR en el editor ANTES de ejecutar</span>
+  <span class="fn">console</span>.<span class="fn">log</span>(data.title);   <span class="cm">// ← OK + autocomplete disponible ✓</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #8b5cf6">
+          <h5 class="fw-bold" style="color:#8b5cf6"><i class="bi bi-3-circle me-2"></i>Lo de hoy que usarás</h5>
+          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+            <li>La lógica de peticiones GET</li>
+            <li>Objetos de productos de la API</li>
+            <li>Funciones que reciben parámetros</li>
+            <li>La estructura de respuesta de FakeStore</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #06b6d4">
+          <h5 class="fw-bold" style="color:#0891b2"><i class="bi bi-4-circle me-2"></i>Lo nuevo en Clase 4</h5>
+          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+            <li>Tipos: <code>string</code>, <code>number</code>, <code>boolean</code></li>
+            <li><code>interface Product</code> para modelar la API</li>
+            <li>Funciones con tipos de retorno</li>
+            <li>Compilar <code>.ts → .js</code> con <code>tsc</code></li>
+            <li>Setup inicial de Angular CLI</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="theory-block h-100" style="border-left:4px solid #f59e0b">
+          <h5 class="fw-bold" style="color:#d97706"><i class="bi bi-stars me-2"></i>Por qué es el paso clave</h5>
+          <p style="font-size:.88rem;line-height:1.75;color:#374151">Angular <strong>está escrito en TypeScript</strong> y lo <strong>requiere</strong>. Sin TypeScript no puedes escribir un componente Angular. La Clase 4 es el puente obligatorio entre JavaScript y Angular.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check2-all text-success"></i> ¿Estás listo para la Clase 4?</h4>
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <p class="fw-semibold mb-2" style="color:#065f46">Deberías poder responder:</p>
+            <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+              <li>¿Cuál es la diferencia entre <code>$.ajax</code> y <code>fetch</code>?</li>
+              <li>¿Por qué <code>$.ajax</code> no necesita <code>.json()</code>?</li>
+              <li>¿Qué hace <code>complete</code> en jQuery?</li>
+              <li>¿Cuándo tiene sentido usar jQuery hoy?</li>
+              <li>¿Librería vs framework — cuál es la diferencia?</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <p class="fw-semibold mb-2" style="color:#0891b2">Buena noticia para TypeScript:</p>
+            <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+              <li>Tu objeto <code>{ id, title, price }</code> → se convierte en <code>interface Product</code></li>
+              <li>Tu función <code>function cargar(p)</code> → se convierte en <code>function cargar(p: Product)</code></li>
+              <li>La lógica ya la tienes — TypeScript solo agrega <em>anotaciones de tipo</em></li>
+              <li>La Clase 4 será más fácil de lo que imaginas</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="clase2-js-avanzado.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Clase 2
+      </a>
+      <a href="clase4-typescript.html" class="btn btn-primary" style="background:#06b6d4;border-color:#06b6d4">
+        Clase 4 — TypeScript <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js"></script>
+<script>
+/* ══ DAYJS — activa plugin y rellena el bloque de código en vivo ══ */
+dayjs.extend(window.dayjs_plugin_relativeTime);
+
+(function initDayjsDemo() {
+  const hoy       = dayjs().format('DD/MM/YYYY');
+  const en7       = dayjs().add(7, 'day').format('DD/MM/YYYY');
+  const en7Rel    = dayjs().add(7, 'day').fromNow();
+  const hace30    = dayjs().subtract(30, 'day').fromNow();
+
+  document.getElementById('dayjs-demo-code').innerHTML =
+    `<span class="cm">// Con CDN — incluir antes de tu script:</span>
+<span class="cm">// &lt;script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"&gt;&lt;/script&gt;</span>
+<span class="cm">// &lt;script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js"&gt;&lt;/script&gt;</span>
+
+dayjs.<span class="fn">extend</span>(window.dayjs_plugin_relativeTime);
+
+dayjs().<span class="fn">format</span>(<span class="str">"DD/MM/YYYY"</span>);
+<span class="cm">// → "${hoy}"  ← fecha de hoy, real</span>
+
+dayjs().<span class="fn">add</span>(<span class="num">7</span>, <span class="str">"day"</span>).<span class="fn">format</span>(<span class="str">"DD/MM/YYYY"</span>);
+<span class="cm">// → "${en7}"  ← en 7 días desde hoy</span>
+
+dayjs().<span class="fn">add</span>(<span class="num">7</span>, <span class="str">"day"</span>).<span class="fn">fromNow</span>();
+<span class="cm">// → "${en7Rel}"</span>
+
+dayjs().<span class="fn">subtract</span>(<span class="num">30</span>, <span class="str">"day"</span>).<span class="fn">fromNow</span>();
+<span class="cm">// → "${hace30}"</span>`;
+})();
+
+/* ══ NAVEGACIÓN + PROGRESO ══ */
+const sections3 = ['agenda','historia','ecosistema','incluir','sintaxis','ajax','comparativa','cuando-usar','qa','conexion'];
+
+function _upd(id) {
+  const pct = Math.round(((sections3.indexOf(id)+1)/sections3.length)*100);
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('progress-pct').textContent = pct+'%';
+}
+window.showSection = function(id,el) {
+  event.preventDefault();
+  document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#sidenav a').forEach(a=>a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  _upd(id);
+  window.scrollTo(0,0);
+};
+_upd('agenda');
+
+/* ══ HELPERS ══ */
+function ok(t)  { return `<div><span class="ok">✓</span> ${t}</div>`; }
+function inf(t) { return `<div><span class="info">→</span> ${t}</div>`; }
+function er(t)  { return `<div><span class="err">✗</span> ${t}</div>`; }
+function jqo(t) { return `<div><span class="jq-c">$</span> ${t}</div>`; }
+function wn(t)  { return `<div><span class="warn">⚠</span> ${t}</div>`; }
+
+function tarjeta(p, metodo) {
+  const bc = metodo==='jq'?'badge-jq':'badge-fetch';
+  const bt = metodo==='jq'?'via $.ajax':'via fetch()';
+  return `<div class="product-card"><img src="${p.image}" loading="lazy"><div class="p-title">${p.title.substring(0,30)}...</div><div class="p-price">$${p.price.toFixed(2)}</div><span class="p-method ${bc}">${bt}</span></div>`;
+}
+
+/* ══ DEMO HISTORIA ══ */
+function demoXHR() {
+  const out = document.getElementById('out-historia');
+  out.innerHTML = wn('XMLHttpRequest (estilo 2005) — muchas líneas...');
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET','https://fakestoreapi.com/products/3',true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState===4 && xhr.status===200) {
+      const d = JSON.parse(xhr.responseText);
+      out.innerHTML = er('XHR clásico — ~20 líneas de código:') + ok(`id: <strong>${d.id}</strong>`) + ok(`title: <strong>${d.title.substring(0,40)}...</strong>`) + ok(`price: <strong>$${d.price}</strong>`) + wn('Sin Promesas · detección manual de navegador necesaria en 2005');
+    }
+  };
+  xhr.send();
+}
+function demoJQ() {
+  const out = document.getElementById('out-historia');
+  out.innerHTML = jqo('$.ajax() ejecutándose...');
+  $.ajax({ url:'https://fakestoreapi.com/products/3', method:'GET',
+    success: function(d) {
+      out.innerHTML = jqo('$.ajax — limpio y unificado:') + ok(`id: <strong>${d.id}</strong>`) + ok(`title: <strong>${d.title.substring(0,40)}...</strong>`) + ok(`price: <strong>$${d.price}</strong>`) + inf('JSON parseado automáticamente · success/error claros');
+    },
+    error: function(e) { out.innerHTML = er('Error: '+e.statusText); }
+  });
+}
+async function demoFetch() {
+  const out = document.getElementById('out-historia');
+  out.innerHTML = inf('fetch() + async/await ejecutándose...');
+  try {
+    const res  = await fetch('https://fakestoreapi.com/products/3');
+    const d    = await res.json();
+    out.innerHTML = ok('fetch() moderno:') + ok(`id: <strong>${d.id}</strong>`) + ok(`title: <strong>${d.title.substring(0,40)}...</strong>`) + ok(`price: <strong>$${d.price}</strong>`) + ok('Nativo · 0 dependencias · async/await · TypeScript-friendly ✓');
+  } catch(e) { out.innerHTML = er('Error: '+e.message); }
+}
+
+/* ══ DEMO SINTAXIS ══ */
+function demoJQHtml()  { $('#jq-demo-box').html('<p class="mb-0 fw-bold" style="color:#4c1d95">Cambié con .html() — puedo poner <em>HTML real</em></p>'); document.getElementById('out-sintaxis').innerHTML = jqo('.html() ejecutado — innerHTML jQuery'); }
+function demoJQClass() { $('#jq-demo-box').toggleClass('bg-primary-subtle').css('border-color','#3b82f6'); document.getElementById('out-sintaxis').innerHTML = jqo('.toggleClass("bg-primary-subtle") alternado'); }
+function demoJQShow()  {
+  const $b = $('#jq-demo-box');
+  if ($b.is(':visible')) { $b.hide(300); document.getElementById('out-sintaxis').innerHTML = jqo('.hide(300) — oculto'); }
+  else { $b.show(300); document.getElementById('out-sintaxis').innerHTML = jqo('.show(300) — visible'); }
+}
+function demoJQFade()  { $('#jq-demo-box').fadeOut(200,function(){ $(this).css('background','#f5f3ff').fadeIn(400); }); document.getElementById('out-sintaxis').innerHTML = jqo('.fadeOut().fadeIn() encadenado'); }
+function demoJQReset() { $('#jq-demo-box').show().removeClass('bg-primary-subtle').css({'border-color':'','border':'2px dashed #e2e8f0','background':'#f8fafc'}).html('<p class="mb-0 text-muted">La caja de demostración</p>'); document.getElementById('out-sintaxis').innerHTML = inf('Reset'); }
+
+/* ══ DEMO $.ajax ══ */
+function demoAjax() {
+  const out = document.getElementById('out-ajax');
+  out.innerHTML = jqo('$.ajax() enviando...');
+  $.ajax({ url:'https://fakestoreapi.com/products?limit=3', method:'GET',
+    success: function(data) { out.innerHTML = jqo('SUCCESS — data ya es objeto JS (sin .json()):') + data.map(p=>ok(`[${p.id}] ${p.title.substring(0,35)}... — $${p.price}`)).join(''); },
+    error:   function(x,s) { out.innerHTML = er('Error: '+s); }
+  });
+}
+function demoAjaxGet() {
+  const out = document.getElementById('out-ajax');
+  out.innerHTML = jqo('$.get() enviando...');
+  $.get('https://fakestoreapi.com/products?limit=3')
+    .done(function(data) { out.innerHTML = jqo('$.get().done():') + data.map(p=>ok(`[${p.id}] $${p.price.toFixed(2)} — ${p.category}`)).join(''); })
+    .fail(function(e)    { out.innerHTML = er('Error: '+e.statusText); });
+}
+function demoAjaxJson() {
+  const out = document.getElementById('out-ajax');
+  out.innerHTML = jqo('$.getJSON() enviando...');
+  $.getJSON('https://fakestoreapi.com/products/1', function(p) {
+    out.innerHTML = jqo('$.getJSON() — producto individual:') + ok(`id: <strong>${p.id}</strong>`) + ok(`title: <strong>${p.title.substring(0,45)}...</strong>`) + ok(`price: <strong>$${p.price}</strong>`) + ok(`rating: <strong>${p.rating.rate} ⭐ (${p.rating.count} reviews)</strong>`);
+  });
+}
+
+/* ══ DEMO GALERÍA AJAX ══ */
+function demoAjaxGaleria() {
+  const $g=$('#galeria-ajax'), $b=$('#btn-jq-galeria');
+  $g.html('<div class="text-center py-4"><div class="spinner-border spinner-border-sm" style="color:#8b5cf6"></div><p class="text-muted mt-2 small">Cargando con $.ajax...</p></div>');
+  $b.prop('disabled',true).html('<i class="bi bi-hourglass-split"></i> Cargando...');
+  $.ajax({ url:'https://fakestoreapi.com/products?limit=6', method:'GET',
+    success: function(ps) {
+      $g.html('<div class="productos-grid">'+ps.map(function(p){ return `<div class="product-card"><img src="${p.image}" loading="lazy"><div class="p-title">${p.title.substring(0,30)}...</div><div class="p-price">$${p.price.toFixed(2)}</div><span class="p-method badge-jq">via $.ajax</span></div>`; }).join('')+'</div>');
+    },
+    error:    function(x,s){ $g.html('<div class="alert alert-danger">Error: '+s+' <button class="btn btn-sm btn-outline-danger ms-2" onclick="demoAjaxGaleria()">🔄 Reintentar</button></div>'); },
+    complete: function()   { $b.prop('disabled',false).html('<i class="bi bi-play-fill"></i> Cargar con $.ajax'); }
+  });
+}
+function demoAjaxGaleriaError() {
+  $('#galeria-ajax').html('<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-danger"></div></div>');
+  setTimeout(function(){ $('#galeria-ajax').html('<div class="alert alert-danger"><i class="bi bi-x-circle me-2"></i>Error — status "error" (URL inválida simulada) <button class="btn btn-sm btn-outline-danger ms-2" onclick="demoAjaxGaleria()">🔄 Reintentar</button></div>'); },900);
+}
+
+/* ══ DEMO COMPARATIVA ══ */
+function demoComparativaJQ() {
+  const g=document.getElementById('galeria-comparativa'), ind=document.getElementById('indicador-metodo');
+  g.innerHTML='<div class="text-center py-3"><div class="spinner-border spinner-border-sm" style="color:#8b5cf6"></div></div>';
+  ind.innerHTML='<span class="badge" style="background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe">Cargando con <strong>$.ajax</strong>...</span>';
+  $.ajax({ url:'https://fakestoreapi.com/products?limit=6', method:'GET',
+    success: function(data) {
+      g.innerHTML='<div class="productos-grid">'+data.map(p=>tarjeta(p,'jq')).join('')+'</div>';
+      ind.innerHTML='<span class="badge" style="background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe">Cargado con <strong>$.ajax</strong> ✓</span>';
+    },
+    error: function(){ g.innerHTML='<div class="alert alert-danger">Error</div>'; }
+  });
+}
+async function demoComparativaFetch() {
+  const g=document.getElementById('galeria-comparativa'), ind=document.getElementById('indicador-metodo');
+  g.innerHTML='<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-success"></div></div>';
+  ind.innerHTML='<span class="badge" style="background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0">Cargando con <strong>fetch()</strong>...</span>';
+  try {
+    const res=await fetch('https://fakestoreapi.com/products?limit=6');
+    const data=await res.json();
+    g.innerHTML='<div class="productos-grid">'+data.map(p=>tarjeta(p,'fetch')).join('')+'</div>';
+    ind.innerHTML='<span class="badge" style="background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0">Cargado con <strong>fetch()</strong> ✓</span>';
+  } catch(e){ g.innerHTML='<div class="alert alert-danger">'+e.message+'</div>'; }
+}
+</script>
+</body>
+</html>
