@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio localstorage Likes</title>
+    <link rel="stylesheet" href="likes.css">
+</head>
+
+<body>
+
+    <h1>Lista de productos</h1>
+    <div id="galeria"></div>
+</body>
+<script>
+    function crearTarjeta(producto) {
+        const favs    = getFavoritos();
+  const esLiked = favs.includes(producto.id);
+        return `
+    <div class="product-card" data-id="${producto.id}">
+      <img src="${producto.image}" alt="${producto.title}" loading="lazy">
+      <div class="p-title">${producto.title.substring(0, 45)}...</div>a
+      <div class="p-price">$${producto.price.toFixed(2)}</div>
+      <div class="small text-muted"> ${renderStars(producto.rating.rate)} (${producto.rating.count})</div>
+      <button
+        class="btn-like ${esLiked ? "liked" : ""}"
+        data-id="${producto.id}">
+        ${esLiked ? "❤️" : "🤍"} Me gusta
+      </button>
+    </div>
+  `;
+    }
+    function renderStars(rate) {
+        const llenas = Math.floor(rate);         // estrellas completas
+        const media = rate % 1 >= 0.5 ? 1 : 0; // media estrella
+        const vacias = 5 - llenas - media;
+
+        return "⭐".repeat(llenas) +
+            (media ? "½" : "") +
+            "☆".repeat(vacias);
+
+    }
+
+    // Renderizar TODOS los productos de una vez
+    async function renderProductos() {
+        const res = await fetch("https://fakestoreapi.com/products?limit=6");
+        const productos = await res.json();
+        const contenedor = document.getElementById("galeria");
+
+        // map() convierte cada objeto en HTML, join("") los une en un string
+        contenedor.innerHTML = productos.map(crearTarjeta).join("");
+    }
+
+    renderProductos();
+
+    // ── Helpers de localStorage ──────────────────
+    function getFavoritos() {
+        const raw = localStorage.getItem("favoritos");
+        return raw ? JSON.parse(raw) : [];
+    }
+
+    function saveFavoritos(arr) {
+        localStorage.setItem("favoritos", JSON.stringify(arr));
+    }
+
+    // ── Toggle favorito ──────────────────────────
+    function toggleFavorito(productoId) {
+        const favs = getFavoritos();
+        const index = favs.indexOf(productoId);
+
+        if (index === -1) {
+            favs.push(productoId);           // No estaba → agregar
+            console.log("❤️ Agregado a favoritos");
+        } else {
+            favs.splice(index, 1);           // Ya estaba → quitar
+            console.log("🤍 Quitado de favoritos");
+        }
+
+        saveFavoritos(favs);
+        return favs.includes(productoId); // true si quedó en favoritos
+    }
+
+    // ── Escuchar clics en los botones ────────────
+    // Delegación de eventos: un solo listener en el contenedor
+    document.getElementById("galeria").addEventListener("click", function (event) {
+        const btn = event.target.closest(".btn-like");
+        if (!btn) return; // no era el botón de like
+
+        const id = Number(btn.dataset.id);
+        const esLiked = toggleFavorito(id);
+
+        // Actualizar UI del botón
+        btn.textContent = esLiked ? "❤️ Me gusta" : "🤍 Me gusta";
+        btn.classList.toggle("liked", esLiked);
+    });
+
+</script>
+
+</html>
