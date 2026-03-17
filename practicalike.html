@@ -20,7 +20,7 @@
         return `
     <div class="product-card" data-id="${producto.id}">
       <img src="${producto.image}" alt="${producto.title}" loading="lazy">
-      <div class="p-title">${producto.title.substring(0, 45)}...</div>a
+      <div class="p-title">${producto.title.substring(0, 45)}...</div>
       <div class="p-price">$${producto.price.toFixed(2)}</div>
       <div class="small text-muted"> ${renderStars(producto.rating.rate)} (${producto.rating.count})</div>
       <button
