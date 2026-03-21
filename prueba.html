@@ -11,9 +11,11 @@
 <script>
     async function mal() {
   const res  = await fetch("https://fakestoreapi.com/products");
-  const data = await res.json(); // ← falta await! data es una Promesa, no el objeto
+  const data = await res.json(); 
   console.log(data); // undefined
 }
 mal();
+
+ 
 </script>
 </html>

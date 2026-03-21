@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nota de Clase — fetch y códigos HTTP 400 · 409 · 500</title>
+  <style>
+    /* ── BASE ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f5f3ff;
+      color: #1e1b4b;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── VARIABLES DE COLOR → Violeta ── */
+    :root {
+      --c-primary:     #7c3aed;
+      --c-primary-dk:  #5b21b6;
+      --c-primary-lt:  #ede9fe;
+      --c-primary-bd:  #c4b5fd;
+      --c-accent:      #8b5cf6;
+      --c-bg:          #f5f3ff;
+      --c-surface:     #ffffff;
+      --c-border:      #e5e7eb;
+      --c-text:        #1e1b4b;
+      --c-muted:       #6b7280;
+    }
+
+    /* ── TOPBAR / HEADER ── */
+    .page-header {
+      background: linear-gradient(135deg, #1e1b4b 0%, #3b0764 100%);
+      color: #fff;
+      padding: 2.5rem 2rem 2rem;
+      border-bottom: 4px solid var(--c-primary);
+    }
+    .page-header .badge-nota {
+      background: rgba(139,92,246,.35);
+      border: 1px solid rgba(196,181,253,.5);
+      color: #ddd6fe;
+      font-size: .72rem;
+      padding: .28rem .8rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: .85rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin: 0 0 .5rem;
+      line-height: 1.25;
+    }
+    .page-header p {
+      color: #c4b5fd;
+      font-size: .95rem;
+      margin: 0;
+    }
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: 1.25rem;
+    }
+    .header-meta span {
+      background: rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: .35rem .85rem;
+      font-size: .78rem;
+      color: #ddd6fe;
+    }
+
+    /* ── LAYOUT ── */
+    .page-body {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--c-primary-dk);
+      border-left: 4px solid var(--c-primary);
+      padding-left: .85rem;
+      margin: 2.5rem 0 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+    }
+    .section-num {
+      background: var(--c-primary);
+      color: #fff;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── THEORY BLOCK ── */
+    .theory-block {
+      background: var(--c-surface);
+      border-radius: 12px;
+      border: 1px solid var(--c-border);
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .theory-block h4 {
+      font-weight: 700;
+      font-size: 1rem;
+      margin: 0 0 .9rem;
+      color: var(--c-text);
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+    }
+    .theory-block p,
+    .theory-block li {
+      font-size: .9rem;
+      color: #374151;
+      line-height: 1.75;
+      margin-bottom: .5rem;
+    }
+    .theory-block ul, .theory-block ol {
+      padding-left: 1.4rem;
+    }
+
+    /* ── CALLOUTS ── */
+    .callout {
+      border-left: 4px solid;
+      border-radius: 0 8px 8px 0;
+      padding: .9rem 1.2rem;
+      margin: 1rem 0;
+      font-size: .88rem;
+      line-height: 1.65;
+    }
+    .callout-violet { border-color: var(--c-primary); background: var(--c-primary-lt); color: #4c1d95; }
+    .callout-green  { border-color: #10b981; background: #f0fdf4; color: #065f46; }
+    .callout-red    { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+    .callout-amber  { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+    .code-block .code-header {
+      background: #1e293b;
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #334155;
+    }
+    .code-block .code-header .lang {
+      font-size: .72rem;
+      color: #c4b5fd;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .code-block .code-header .dots span {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-left: 5px;
+    }
+    .code-block pre {
+      margin: 0;
+      padding: 1.25rem;
+      color: #e2e8f0;
+      font-size: .82rem;
+      line-height: 1.75;
+      overflow-x: auto;
+    }
+    /* tokens */
+    .kw  { color: #93c5fd; }
+    .fn  { color: #86efac; }
+    .str { color: #fca5a5; }
+    .cm  { color: #64748b; font-style: italic; }
+    .num { color: #fdba74; }
+    .prop{ color: #c4b5fd; }
+    .php-kw  { color: #f9a8d4; }
+    .php-fn  { color: #86efac; }
+    .php-str { color: #fca5a5; }
+    .php-cm  { color: #64748b; font-style: italic; }
+    .php-num { color: #fdba74; }
+    .php-var { color: #a5f3fc; }
+    .http-200 { color: #34d399; font-weight: 700; }
+    .http-400 { color: #fbbf24; font-weight: 700; }
+    .http-409 { color: #f87171; font-weight: 700; }
+    .http-500 { color: #f87171; font-weight: 700; }
+    .ok-token  { color: #34d399; }
+    .err-token { color: #f87171; }
+    .warn-token{ color: #fbbf24; }
+
+    /* ── COMPARISON TABLE ── */
+    .compare-wrap { overflow-x: auto; margin: 1rem 0; }
+    table.compare {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+    }
+    table.compare th {
+      background: #1e1b4b;
+      color: #e0e7ff;
+      font-weight: 700;
+      padding: .75rem 1rem;
+      text-align: left;
+    }
+    table.compare td {
+      padding: .7rem 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+      line-height: 1.55;
+    }
+    table.compare tr:nth-child(even) td { background: #faf5ff; }
+    table.compare tr:hover td { background: #f3e8ff; }
+    .badge {
+      display: inline-block;
+      border-radius: 20px;
+      padding: .18rem .65rem;
+      font-size: .73rem;
+      font-weight: 700;
+    }
+    .badge-try   { background: #d1fae5; color: #065f46; }
+    .badge-catch { background: #fee2e2; color: #991b1b; }
+    .badge-200   { background: #d1fae5; color: #065f46; }
+    .badge-400   { background: #fef3c7; color: #92400e; }
+    .badge-409   { background: #ffe4e6; color: #9f1239; }
+    .badge-500   { background: #fee2e2; color: #7f1d1d; }
+
+    /* ── STATUS FLOW ── */
+    .flow-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin: 1rem 0;
+    }
+    .flow-card {
+      flex: 1 1 180px;
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      border: 1px solid;
+    }
+    .flow-card .fc-code {
+      font-size: 1.3rem;
+      font-weight: 800;
+      font-family: 'Cascadia Code', monospace;
+      margin-bottom: .3rem;
+    }
+    .flow-card .fc-label {
+      font-size: .78rem;
+      font-weight: 600;
+      margin-bottom: .4rem;
+    }
+    .flow-card p {
+      font-size: .78rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+    .fc-200 { border-color: #6ee7b7; background: #f0fdf4; }
+    .fc-200 .fc-code { color: #059669; }
+    .fc-200 .fc-label { color: #065f46; }
+    .fc-400 { border-color: #fcd34d; background: #fffbeb; }
+    .fc-400 .fc-code { color: #d97706; }
+    .fc-400 .fc-label { color: #92400e; }
+    .fc-409 { border-color: #fca5a5; background: #fff1f2; }
+    .fc-409 .fc-code { color: #dc2626; }
+    .fc-409 .fc-label { color: #9f1239; }
+    .fc-500 { border-color: #f87171; background: #fef2f2; }
+    .fc-500 .fc-code { color: #b91c1c; }
+    .fc-500 .fc-label { color: #7f1d1d; }
+
+    /* ── ERROR COMMON CARDS ── */
+    .error-card {
+      background: #fff;
+      border: 1px solid var(--c-border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #ef4444;
+    }
+    .error-card .ec-title {
+      font-size: .9rem;
+      font-weight: 700;
+      color: #b91c1c;
+      margin-bottom: .5rem;
+    }
+    .error-card .ec-body {
+      font-size: .85rem;
+      color: #374151;
+      line-height: 1.65;
+    }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: .65rem;
+      padding: .6rem 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: .88rem;
+      color: #374151;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li .chk {
+      width: 22px; height: 22px;
+      background: var(--c-primary-lt);
+      border: 2px solid var(--c-primary-bd);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: .8rem;
+      color: var(--c-primary);
+      font-weight: 700;
+    }
+
+    /* ── SANDBOX (demo interactivo) ── */
+    .sandbox {
+      background: #fff;
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .sandbox-header {
+      background: #faf5ff;
+      border-bottom: 1px solid #e9d5ff;
+      padding: .75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sandbox-header .title {
+      font-weight: 700;
+      font-size: .88rem;
+      color: var(--c-primary-dk);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .sandbox-body { padding: 1.5rem; }
+    .run-btn {
+      background: var(--c-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .45rem 1.1rem;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      transition: background .15s;
+    }
+    .run-btn:hover { background: var(--c-primary-dk); }
+    .run-btn-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .output-area {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 64px;
+      font-size: .82rem;
+      margin-top: 1rem;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      color: #e2e8f0;
+      line-height: 1.65;
+    }
+    .out-ok   { color: #34d399; }
+    .out-warn { color: #fbbf24; }
+    .out-err  { color: #f87171; }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      background: #1e1b4b;
+      color: #a5b4fc;
+      text-align: center;
+      padding: 1.25rem;
+      font-size: .8rem;
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 640px) {
+      .page-header h1 { font-size: 1.3rem; }
+      .page-body { padding: 1.25rem 1rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<header class="page-header">
+  <div style="max-width:960px; margin:0 auto;">
+    <div class="badge-nota">&#x1F4CB; Nota de Clase &mdash; Diplomado FullStack</div>
+    <h1>fetch y códigos HTTP: ¿dónde cae el 400, el 409 y el 500?</h1>
+    <p>Manejo de respuestas HTTP en un endpoint de creación de usuarios con CodeIgniter 4 y cómo consumirlo correctamente con <code style="background:rgba(255,255,255,.12);padding:.1rem .4rem;border-radius:4px;">fetch</code> en JavaScript.</p>
+    <div class="header-meta">
+      <span>&#x2699;&#xFE0F; CodeIgniter 4</span>
+      <span>&#x1F4DA; JavaScript &mdash; fetch API</span>
+      <span>&#x1F4E1; HTTP 200 · 400 · 409 · 500</span>
+      <span>&#x1F4C5; Clase práctica</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════ BODY ══════ -->
+<main class="page-body">
+
+  <!-- ══════ 1. EL ENDPOINT ══════ -->
+  <div class="section-title">
+    <span class="section-num">1</span>
+    Qué hace el endpoint y por qué usa 400 vs 409
+  </div>
+
+  <div class="theory-block">
+    <h4>&#x1F5C4;&#xFE0F; Contexto del backend — <code>Admin::createUser()</code></h4>
+    <p>
+      El método <strong>createUser()</strong> del controlador <code>app/Controllers/Admin.php</code> recibe datos de un formulario de registro y sigue <strong>tres fases</strong> de validación antes de insertar el usuario:
+    </p>
+
+    <div class="flow-row">
+      <div class="flow-card fc-400">
+        <div class="fc-code">400</div>
+        <div class="fc-label">Bad Request — validación de formato</div>
+        <p>Los campos de entrada son vacíos, mal formados o muy cortos. El problema está en <em>lo que el cliente envió</em>, sin llegar a la base de datos.</p>
+      </div>
+      <div class="flow-card fc-409">
+        <div class="fc-code">409</div>
+        <div class="fc-label">Conflict — conflicto de unicidad</div>
+        <p>Los datos tienen formato correcto pero <em>colisionan con un registro ya existente</em> en la base de datos (email o username duplicado).</p>
+      </div>
+      <div class="flow-card fc-200">
+        <div class="fc-code">200</div>
+        <div class="fc-label">OK — inserción exitosa</div>
+        <p>Todas las validaciones pasaron y el usuario fue creado. Devuelve el nuevo <code>id</code>, <code>username</code> y <code>email</code>.</p>
+      </div>
+      <div class="flow-card fc-500">
+        <div class="fc-code">500</div>
+        <div class="fc-label">Internal Server Error</div>
+        <p>Excepción inesperada en el servidor (fallo de BD, error de configuración, etc.). El cliente no tiene culpa.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="theory-block">
+    <h4>&#x1F4C4; Código real del controlador (CI4)</h4>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="lang">PHP &mdash; app/Controllers/Admin.php</span>
+        <div class="dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div>
+      </div>
+<pre><span class="php-kw">public function</span> <span class="php-fn">createUser</span>(): <span class="php-kw">ResponseInterface</span>
+{
+    <span class="php-cm">// ── Leer campos del POST ─────────────────────────────────────</span>
+    <span class="php-var">$username</span>         = <span class="php-fn">trim</span>((<span class="php-kw">string</span>) <span class="php-var">$this</span>-&gt;request-&gt;<span class="php-fn">getPost</span>(<span class="php-str">'username'</span>));
+    <span class="php-var">$email</span>            = <span class="php-fn">trim</span>((<span class="php-kw">string</span>) <span class="php-var">$this</span>-&gt;request-&gt;<span class="php-fn">getPost</span>(<span class="php-str">'email'</span>));
+    <span class="php-var">$password</span>         = <span class="php-fn">trim</span>((<span class="php-kw">string</span>) (<span class="php-var">$this</span>-&gt;request-&gt;<span class="php-fn">getPost</span>(<span class="php-str">'password'</span>) ?? <span class="php-str">''</span>));
+    <span class="php-cm">// ... otros campos opcionales (nombres, apellidos, linkedin, cargo...)</span>
+
+    <span class="php-cm">// ── FASE 1: Validación de formato → 400 ─────────────────────</span>
+    <span class="php-kw">if</span> (<span class="php-var">$username</span> === <span class="php-str">''</span>) {
+        <span class="php-kw">return</span> <span class="php-var">$this</span>-&gt;<span class="php-fn">respond</span>([<span class="php-str">'error'</span> =&gt; <span class="php-str">'El nombre de usuario es obligatorio'</span>], <span class="http-400">400</span>);
+    }
+    <span class="php-kw">if</span> (<span class="php-var">$email</span> === <span class="php-str">''</span> || !<span class="php-fn">filter_var</span>(<span class="php-var">$email</span>, <span class="php-kw">FILTER_VALIDATE_EMAIL</span>)) {
+        <span class="php-kw">return</span> <span class="php-var">$this</span>-&gt;<span class="php-fn">respond</span>([<span class="php-str">'error'</span> =&gt; <span class="php-str">'Se requiere un email válido'</span>], <span class="http-400">400</span>);
+    }
+    <span class="php-kw">if</span> (<span class="php-var">$password</span> === <span class="php-str">''</span> || <span class="php-fn">strlen</span>(<span class="php-var">$password</span>) &lt; <span class="php-num">8</span>) {
+        <span class="php-kw">return</span> <span class="php-var">$this</span>-&gt;<span class="php-fn">respond</span>([<span class="php-str">'error'</span> =&gt; <span class="php-str">'La contraseña debe tener al menos 8 caracteres'</span>], <span class="http-400">400</span>);
+    }
+
+    <span class="php-kw">try</span> {
+        <span class="php-var">$userModel</span> = <span class="php-kw">new</span> <span class="php-fn">UserModel</span>();
+
+        <span class="php-cm">// ── FASE 2: Conflictos de unicidad → 409 ────────────────────</span>
+        <span class="php-kw">if</span> (<span class="php-var">$userModel</span>-&gt;<span class="php-fn">where</span>(<span class="php-str">'email'</span>, <span class="php-var">$email</span>)-&gt;<span class="php-fn">first</span>()) {
+            <span class="php-kw">return</span> <span class="php-var">$this</span>-&gt;<span class="php-fn">respond</span>([<span class="php-str">'error'</span> =&gt; <span class="php-str">'El email ya está en uso'</span>], <span class="http-409">409</span>);
+        }
+        <span class="php-kw">if</span> (<span class="php-var">$userModel</span>-&gt;<span class="php-fn">where</span>(<span class="php-str">'username'</span>, <span class="php-var">$username</span>)-&gt;<span class="php-fn">first</span>()) {
+            <span class="php-kw">return</span> <span class="php-var">$this</span>-&gt;<span class="php-fn">respond</span>([<span class="php-str">'error'</span> =&gt; <span class="php-str">'El nombre de usuario ya está en uso'</span>], <span class="http-409">409</span>);
+        }
+
+        <span class="php-cm">// ── FASE 3: Insertar usuario → 200 ──────────────────────────</span>
+        <span class="php-var">$id</span> = <span class="php-var">$userModel</span>-&gt;<span class="php-fn">insert</span>([
+            <span class="php-str">'username'</span>  =&gt; <span class="php-var">$username</span>,
+            <span class="php-str">'email'</span>     =&gt; <span class="php-var">$email</span>,
+            <span class="php-str">'password'</span>  =&gt; <span class="php-fn">password_hash</span>(<span class="php-var">$password</span>, <span class="php-kw">PASSWORD_DEFAULT</span>),
+            <span class="php-cm">// ... otros campos opcionales</span>
+        ]);
+        <span class="php-kw">return</span> <span class="php-var">$this</span>-&gt;<span class="php-fn">respond</span>([<span class="php-str">'data'</span> =&gt; [<span class="php-str">'id'</span> =&gt; <span class="php-var">$id</span>, <span class="php-str">'username'</span> =&gt; <span class="php-var">$username</span>, <span class="php-str">'email'</span> =&gt; <span class="php-var">$email</span>]], <span class="http-200">200</span>);
+
+    } <span class="php-kw">catch</span> (\<span class="php-fn">Throwable</span> <span class="php-var">$e</span>) {
+        <span class="php-cm">// ── FASE 4: Excepción interna → 500 ─────────────────────────</span>
+        <span class="php-kw">return</span> <span class="php-var">$this</span>-&gt;<span class="php-fn">respond</span>([<span class="php-str">'error'</span> =&gt; <span class="php-str">'No se pudo crear el usuario'</span>], <span class="http-500">500</span>);
+    }
+}</pre>
+    </div>
+
+    <div class="callout callout-violet">
+      <strong>&#x2139;&#xFE0F; ¿Por qué 400 y no 422?</strong><br>
+      400 (<em>Bad Request</em>) es la respuesta semánticamente correcta cuando los datos de entrada no cumplen las reglas del servidor.
+      Algunos equipos prefieren 422 (<em>Unprocessable Entity</em>) para errores de validación, pero 400 es igualmente válido y más universal.
+    </div>
+  </div>
+
+
+  <!-- ══════ 2. TRY/CATCH CON FETCH ══════ -->
+  <div class="section-title">
+    <span class="section-num">2</span>
+    Cómo funciona try / catch con fetch — la regla de oro
+  </div>
+
+  <div class="theory-block">
+    <h4>&#x1F3AF; La pregunta clave</h4>
+    <p>
+      <strong>«Cuando el servidor responde 400 o 409, ¿el código entra al <code>try</code> o al <code>catch</code>?»</strong>
+    </p>
+    <div class="callout callout-violet" style="font-size:.95rem; margin-top:.5rem;">
+      <strong>Respuesta directa:</strong> entra al <strong><code>try</code></strong>.<br>
+      <code>fetch</code> solo lanza una excepción (y va al <code>catch</code>) en casos de <strong>error de red</strong>, no por códigos HTTP 4xx o 5xx.
+    </div>
+
+    <p>Esto significa que <strong>con el código incorrecto</strong>, un 400 o un 409 parecería una respuesta exitosa:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="lang">JavaScript &mdash; &#x274C; Código problemático (NO usar así)</span>
+        <div class="dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div>
+      </div>
+<pre><span class="kw">async function</span> <span class="fn">peticion</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://miapi.com/api/users"</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+    <span class="fn">mostrar</span>(data); <span class="cm">// ← PROBLEMA: si res.status es 400 o 409,</span>
+                   <span class="cm">//   data.error contiene el mensaje de error del servidor</span>
+                   <span class="cm">//   pero este código lo trata como si fuera un éxito</span>
+  } <span class="kw">catch</span> (error) {
+    <span class="cm">// Aquí solo llegan errores de RED</span>
+    <span class="cm">// Un 400 o 409 NUNCA llega aquí → el mensaje de error del servidor se pierde</span>
+    <span class="fn">mostrarError</span>(<span class="str">"No se pudo cargar. Intenta de nuevo."</span>);
+  }
+}
+
+<span class="cm">// ¿Qué pasa cuando el servidor responde 409?</span>
+<span class="cm">// → res.status === 409  (pero no lo chequeamos)</span>
+<span class="cm">// → data = { "error": "El email ya está en uso" }</span>
+<span class="cm">// → mostrar(data) recibe el error como si fuera datos válidos ← BUG</span></pre>
+    </div>
+
+    <div class="callout callout-amber">
+      <strong>&#x26A0;&#xFE0F; Conclusión:</strong> si no validamos <code>res.ok</code> o <code>res.status</code> dentro del <code>try</code>, los errores 400, 409 y 500 del servidor llegan silenciosamente como "datos normales" y el frontend nunca muestra el mensaje de error correcto.
+    </div>
+  </div>
+
+
+  <!-- ══════ 3. TABLA COMPARATIVA ══════ -->
+  <div class="section-title">
+    <span class="section-num">3</span>
+    Tabla comparativa: código HTTP · try · catch · mensaje recomendado
+  </div>
+
+  <div class="theory-block">
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr>
+            <th>Código HTTP</th>
+            <th>Significado</th>
+            <th>¿try o catch?</th>
+            <th>Causa del error</th>
+            <th>Mensaje recomendado al usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-200">200 OK</span></td>
+            <td>Usuario creado exitosamente</td>
+            <td><span class="badge badge-try">try ✓</span></td>
+            <td>&mdash;</td>
+            <td>«&#x2705; Usuario creado. Bienvenido, {username}.»</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-400">400 Bad Request</span></td>
+            <td>Datos inválidos o incompletos</td>
+            <td><span class="badge badge-try">try ✓</span></td>
+            <td>username vacío, email inválido, password corta</td>
+            <td>Mostrar <code>data.error</code> tal como llega del servidor:<br>
+              <small>«El nombre de usuario es obligatorio»</small><br>
+              <small>«Se requiere un email válido»</small><br>
+              <small>«La contraseña debe tener al menos 8 caracteres»</small>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-409">409 Conflict</span></td>
+            <td>Conflicto de unicidad en BD</td>
+            <td><span class="badge badge-try">try ✓</span></td>
+            <td>Email o username ya registrado</td>
+            <td>Mostrar <code>data.error</code>:<br>
+              <small>«El email ya está en uso»</small><br>
+              <small>«El nombre de usuario ya está en uso»</small>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="badge" style="background:#e0e7ff;color:#3730a3;">401 Unauthorized</span></td>
+            <td>No autenticado</td>
+            <td><span class="badge badge-try">try ✓</span></td>
+            <td>Token inválido o sesión expirada</td>
+            <td>«Tu sesión expiró. Inicia sesión nuevamente.»</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-500">500 Server Error</span></td>
+            <td>Error interno del servidor</td>
+            <td><span class="badge badge-try">try ✓</span></td>
+            <td>Fallo de BD, excepción no controlada</td>
+            <td>«Ocurrió un error en el servidor. Intenta más tarde.»</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-catch">Error de red</span></td>
+            <td>Sin conexión / CORS / DNS / timeout</td>
+            <td><span class="badge badge-catch">catch ✗</span></td>
+            <td>La solicitud nunca llegó al servidor</td>
+            <td>«Sin conexión. Verifica tu red e intenta de nuevo.»</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:1rem;">
+      <strong>&#x1F4A1; Regla mnemónica:</strong><br>
+      <code>catch</code> = el servidor <em>ni siquiera vio la petición</em> (red rota).<br>
+      <code>try</code>  = el servidor respondió algo — sea 200, 400, 409 o 500.
+    </div>
+  </div>
+
+
+  <!-- ══════ 4. IMPLEMENTACIÓN ══════ -->
+  <div class="section-title">
+    <span class="section-num">4</span>
+    Implementación recomendada — código JS completo
+  </div>
+
+  <div class="theory-block">
+    <h4>&#x2705; Versión corregida y profesional de <code>peticion()</code></h4>
+    <p>Incorpora: POST, <code>Content-Type: application/json</code>, <code>JSON.stringify</code>, lectura segura de la respuesta, manejo explícito por status y fallback para errores de red.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="lang">JavaScript &mdash; implementación recomendada</span>
+        <div class="dots"><span style="background:#ef4444"></span><span style="background:#f59e0b"></span><span style="background:#22c55e"></span></div>
+      </div>
+<pre><span class="cm">/**
+ * Crea un usuario llamando al endpoint de CI4.
+ * Maneja correctamente todas las respuestas HTTP posibles.
+ */</span>
+<span class="kw">async function</span> <span class="fn">crearUsuario</span>(formData) {
+  <span class="kw">try</span> {
+
+    <span class="cm">// 1. Realizar la petición POST con headers y body correctos</span>
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://miapi.com/api/users"</span>, {
+      <span class="prop">method</span>:  <span class="str">"POST"</span>,
+      <span class="prop">headers</span>: { <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span> },
+      <span class="prop">body</span>:    <span class="fn">JSON</span>.<span class="fn">stringify</span>({
+        <span class="prop">username</span>: formData.username,
+        <span class="prop">email</span>:    formData.email,
+        <span class="prop">password</span>: formData.password,
+        <span class="prop">nombres</span>:  formData.nombres  || <span class="str">""</span>,
+        <span class="prop">apellidos</span>: formData.apellidos || <span class="str">""</span>,
+      }),
+    });
+
+    <span class="cm">// 2. Leer el JSON de forma segura (aunque el servidor no envíe JSON válido)</span>
+    <span class="kw">let</span> data;
+    <span class="kw">try</span> {
+      data = <span class="kw">await</span> res.<span class="fn">json</span>();
+    } <span class="kw">catch</span> (_) {
+      data = {};  <span class="cm">// fallback si la respuesta no es JSON</span>
+    }
+
+    <span class="cm">// 3. Despachar por código HTTP — TODOS entran aquí (try), no al catch</span>
+    <span class="kw">if</span> (res.status === <span class="num">200</span>) {
+      <span class="cm">// ✅ Éxito: { "data": { "id": 7, "username": "ana", "email": "ana@..." } }</span>
+      <span class="fn">mostrarExito</span>(<span class="str">`✅ Usuario "${data.<span class="prop">data</span>.<span class="prop">username</span>}" creado con ID ${data.<span class="prop">data</span>.<span class="prop">id</span>}`</span>);
+      <span class="kw">return</span> data.<span class="prop">data</span>;
+    }
+
+    <span class="kw">if</span> (res.status === <span class="num">400</span>) {
+      <span class="cm">// ⚠️ Validación: { "error": "El nombre de usuario es obligatorio" }</span>
+      <span class="cm">//               { "error": "Se requiere un email válido" }</span>
+      <span class="cm">//               { "error": "La contraseña debe tener al menos 8 caracteres" }</span>
+      <span class="fn">mostrarError</span>(data.<span class="prop">error</span> || <span class="str">"Datos inválidos. Revisa el formulario."</span>);
+      <span class="kw">return</span> <span class="kw">null</span>;
+    }
+
+    <span class="kw">if</span> (res.status === <span class="num">409</span>) {
+      <span class="cm">// 🔴 Conflicto: { "error": "El email ya está en uso" }</span>
+      <span class="cm">//              { "error": "El nombre de usuario ya está en uso" }</span>
+      <span class="fn">mostrarError</span>(data.<span class="prop">error</span> || <span class="str">"Ya existe un usuario con esos datos."</span>);
+      <span class="kw">return</span> <span class="kw">null</span>;
+    }
+
+    <span class="kw">if</span> (res.status === <span class="num">401</span>) {
+      <span class="cm">// 🔒 No autenticado</span>
+      <span class="fn">mostrarError</span>(<span class="str">"Tu sesión expiró. Inicia sesión nuevamente."</span>);
+      window.<span class="prop">location</span>.<span class="prop">href</span> = <span class="str">"/login"</span>;
+      <span class="kw">return</span> <span class="kw">null</span>;
+    }
+
+    <span class="kw">if</span> (res.status === <span class="num">500</span>) {
+      <span class="cm">// 💥 Error interno: { "error": "No se pudo crear el usuario" }</span>
+      <span class="fn">mostrarError</span>(<span class="str">"Ocurrió un error en el servidor. Intenta más tarde."</span>);
+      <span class="kw">return</span> <span class="kw">null</span>;
+    }
+
+    <span class="cm">// Cualquier otro código no contemplado</span>
+    <span class="fn">mostrarError</span>(<span class="str">`Error inesperado del servidor (HTTP ${res.status})`</span>);
+    <span class="kw">return</span> <span class="kw">null</span>;
+
+  } <span class="kw">catch</span> (error) {
+    <span class="cm">// 📡 Solo llega aquí si FALLÓ LA RED (sin conexión, CORS, DNS, timeout)</span>
+    <span class="cm">// Un 400 o 409 NUNCA llega aquí</span>
+    <span class="fn">mostrarError</span>(<span class="str">"Sin conexión. Verifica tu red e intenta de nuevo."</span>);
+    <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"[red]"</span>, error);
+    <span class="kw">return</span> <span class="kw">null</span>;
+  }
+}
+
+<span class="cm">// ── Helpers de UI de ejemplo ─────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">mostrarExito</span>(msg) {
+  document.<span class="fn">getElementById</span>(<span class="str">"resultado"</span>).<span class="fn">innerHTML</span> =
+    <span class="str">`&lt;p style="color:#059669"&gt;${msg}&lt;/p&gt;`</span>;
+}
+<span class="kw">function</span> <span class="fn">mostrarError</span>(msg) {
+  document.<span class="fn">getElementById</span>(<span class="str">"resultado"</span>).<span class="fn">innerHTML</span> =
+    <span class="str">`&lt;p style="color:#dc2626"&gt;${msg}&lt;/p&gt;`</span>;
+}</pre>
+    </div>
+  </div>
+
+
+  <!-- ══════ 5. DEMO INTERACTIVO ══════ -->
+  <div class="section-title">
+    <span class="section-num">5</span>
+    Demostración interactiva — simula las respuestas del servidor
+  </div>
+
+  <div class="sandbox">
+    <div class="sandbox-header">
+      <div class="title">&#x1F9EA; Simulador de respuestas HTTP</div>
+      <span style="font-size:.75rem;color:#7c3aed;font-weight:600;">Demo sin servidor real</span>
+    </div>
+    <div class="sandbox-body">
+      <p style="font-size:.88rem;color:#374151;margin-bottom:1rem;">
+        Estos botones simulan exactamente qué pasaría en cada escenario real. Observa qué bloque del código se ejecuta y qué datos llegan.
+      </p>
+      <div class="run-btn-row">
+        <button class="run-btn" style="background:#059669" onclick="simular(200)">
+          &#x25B6; Simular 200 OK
+        </button>
+        <button class="run-btn" style="background:#d97706" onclick="simular(400)">
+          &#x25B6; Simular 400 Bad Request
+        </button>
+        <button class="run-btn" style="background:#dc2626" onclick="simular(409)">
+          &#x25B6; Simular 409 Conflict
+        </button>
+        <button class="run-btn" style="background:#991b1b" onclick="simular(500)">
+          &#x25B6; Simular 500 Server Error
+        </button>
+        <button class="run-btn" style="background:#4b5563" onclick="simularRedError()">
+          &#x25B6; Simular Error de Red
+        </button>
+      </div>
+
+      <div class="output-area" id="out-sim">
+        <span style="color:#64748b">← Haz clic en un botón para ver el resultado...</span>
+      </div>
+
+      <div style="margin-top:1rem;">
+        <div class="code-block">
+          <div class="code-header">
+            <span class="lang">Respuesta JSON simulada</span>
+          </div>
+          <pre id="out-json" style="margin:0;padding:1rem;font-size:.8rem;color:#e2e8f0;min-height:40px;font-family:'Cascadia Code',monospace;">
+<span style="color:#64748b">// La respuesta JSON del servidor aparecerá aquí</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════ 6. ERRORES COMUNES ══════ -->
+  <div class="section-title">
+    <span class="section-num">6</span>
+    Errores comunes en la integración frontend-backend
+  </div>
+
+  <div class="error-card">
+    <div class="ec-title">&#x274C; Error 1 — «Creer que un 400 o 409 cae en catch»</div>
+    <div class="ec-body">
+      El error de validación llega al <code>try</code>, no al <code>catch</code>. Si verificas los errores solo en el <code>catch</code>, nunca verás los mensajes del servidor para 400/409.
+      <div class="code-block" style="margin-top:.75rem;">
+        <div class="code-header"><span class="lang">&#x274C; Incorrecto</span></div>
+<pre><span class="kw">try</span> {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(...);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="fn">mostrar</span>(data); <span class="cm">// ← data puede ser { error: "El email ya está en uso" }</span>
+                 <span class="cm">//   pero lo mostramos como si fuera éxito</span>
+} <span class="kw">catch</span> (error) {
+  <span class="fn">mostrarError</span>(<span class="str">"Error"</span>); <span class="cm">// ← aquí NUNCA llega un 400, 409 o 500</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-card" style="border-left-color:#f59e0b;">
+    <div class="ec-title" style="color:#b45309;">&#x26A0;&#xFE0F; Error 2 — No leer el JSON de la respuesta de error</div>
+    <div class="ec-body">
+      Cuando el servidor responde 400 o 409, el cuerpo de la respuesta contiene el mensaje de error útil para el usuario (<code>data.error</code>). Si no llamas <code>await res.json()</code>, pierdes ese mensaje.
+      <div class="code-block" style="margin-top:.75rem;">
+        <div class="code-header"><span class="lang">&#x274C; Incorrecto vs &#x2705; Correcto</span></div>
+<pre><span class="cm">// ✗ Pierdes el mensaje del servidor</span>
+<span class="kw">if</span> (!res.ok) {
+  <span class="fn">mostrarError</span>(<span class="str">"Algo salió mal"</span>); <span class="cm">// mensaje genérico e inútil</span>
+}
+
+<span class="cm">// ✓ Lees y muestras el mensaje exacto del servidor</span>
+<span class="kw">if</span> (!res.ok) {
+  <span class="kw">const</span> err = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="fn">mostrarError</span>(err.<span class="prop">error</span>); <span class="cm">// "El email ya está en uso" ← útil para el usuario</span>
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-card" style="border-left-color:#8b5cf6;">
+    <div class="ec-title" style="color:#5b21b6;">&#x1F4A1; Error 3 — Olvidar el segundo <code>await</code> para <code>.json()</code></div>
+    <div class="ec-body">
+      <code>res.json()</code> retorna una <strong>Promesa</strong>, no el objeto final. Sin <code>await</code>, <code>data</code> es una Promesa y <code>data.error</code> será <code>undefined</code>.
+      <div class="code-block" style="margin-top:.75rem;">
+        <div class="code-header"><span class="lang">&#x274C; Incorrecto vs &#x2705; Correcto</span></div>
+<pre><span class="cm">// ✗ data es una Promesa, no el objeto JSON</span>
+<span class="kw">const</span> data = res.<span class="fn">json</span>();            <span class="cm">// falta await ← bug silencioso</span>
+<span class="fn">console</span>.<span class="fn">log</span>(data.<span class="prop">error</span>);          <span class="cm">// undefined</span>
+
+<span class="cm">// ✓ data es el objeto JavaScript real</span>
+<span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();     <span class="cm">// correcto</span>
+<span class="fn">console</span>.<span class="fn">log</span>(data.<span class="prop">error</span>);          <span class="cm">// "El email ya está en uso"</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-card" style="border-left-color:#6ee7b7; border-left-width:4px;">
+    <div class="ec-title" style="color:#065f46;">&#x1F4AC; Error 4 — Usar <code>res.ok</code> como único control (sin leer el status)</div>
+    <div class="ec-body">
+      <code>res.ok</code> es <code>true</code> solo para códigos 200–299. Esto te dice que algo falló, pero <strong>no te dice qué tipo de error fue</strong>.
+      Siempre es mejor disparchar por <code>res.status</code> para dar mensajes específicos.
+      <div class="code-block" style="margin-top:.75rem;">
+        <div class="code-header"><span class="lang">&#x26A0;&#xFE0F; Funciona pero es genérico vs &#x2705; Específico y útil</span></div>
+<pre><span class="cm">// ⚠️ Funciona, pero mensaje genérico para cualquier error</span>
+<span class="kw">if</span> (!res.ok) {
+  <span class="fn">mostrarError</span>(<span class="str">"Error del servidor"</span>); <span class="cm">// igual para 400, 409, 500, 401...</span>
+}
+
+<span class="cm">// ✓ Específico por código → mejor UX</span>
+<span class="kw">if</span>      (res.status === <span class="num">400</span>) <span class="fn">mostrarError</span>(data.<span class="prop">error</span>);
+<span class="kw">else if</span> (res.status === <span class="num">409</span>) <span class="fn">mostrarConflicto</span>(data.<span class="prop">error</span>);
+<span class="kw">else if</span> (res.status === <span class="num">500</span>) <span class="fn">mostrarError</span>(<span class="str">"Error interno del servidor"</span>);</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════ 7. CHECKLIST ══════ -->
+  <div class="section-title">
+    <span class="section-num">7</span>
+    Checklist de integración frontend &harr; backend
+  </div>
+
+  <div class="theory-block">
+    <h4>&#x1F4CB; Antes de dar por terminada la integración, verifica:</h4>
+    <ul class="checklist">
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>Usas <code>method: "POST"</code> y <code>headers: { "Content-Type": "application/json" }</code> en la petición.</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>El <code>body</code> está serializado con <code>JSON.stringify({...})</code> y contiene todos los campos obligatorios.</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>Llamas <code>await res.json()</code> (con los <strong>dos</strong> <code>await</code>: uno para fetch y otro para .json()).</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>Dentro del <code>try</code> validas <code>res.status</code> explícitamente para 200, 400, 409, 401 y 500.</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>Para 400 y 409 muestras <code>data.error</code> directamente al usuario (es el mensaje del servidor).</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>El bloque <code>catch</code> solo maneja errores de red (sin conexión, timeout) con un mensaje genérico de conectividad.</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>Probaste el endpoint con Postman/Insomnia enviando datos inválidos y verificaste que el JSON de error llega correctamente.</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>Verificaste en la pestaña Network de DevTools que los status codes 400 y 409 aparecen en rojo (son respuestas reales, no errores de red).</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>El formulario muestra el mensaje de error del servidor junto al campo correspondiente (no solo en un alert genérico).</span>
+      </li>
+      <li>
+        <span class="chk">&#x2713;</span>
+        <span>El CI4 responde con la cabecera <code>Content-Type: application/json</code> en todos los casos (incluyendo los errores). Esto lo maneja automáticamente el método <code>$this->respond()</code>.</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="callout callout-green" style="max-width:700px;">
+    <strong>&#x1F3C6; Flujo de depuración recomendado cuando algo falla:</strong><br>
+    1. Abre DevTools → pestaña <strong>Network</strong> → haz la petición.<br>
+    2. Haz clic en la petición → revisa <strong>Status</strong> (¿es 400? ¿409? ¿500?).<br>
+    3. Pestaña <strong>Response</strong> → verifica el JSON que devolvió el servidor.<br>
+    4. Si el status está ahí, el problema está en tu código JS (no en el servidor).<br>
+    5. Si no llegó petición, revisa la URL y el CORS.
+  </div>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="page-footer">
+  Diplomado FullStack con Arquitectura Moderna &mdash; Nota de Clase &mdash; Códigos HTTP &amp; fetch API
+</footer>
+
+<script>
+/* ═══════════════════════════════════════
+   SIMULADOR DE RESPUESTAS HTTP
+═══════════════════════════════════════ */
+
+// Respuestas simuladas (iguales a las reales del backend CI4)
+const mockResponses = {
+  200: {
+    status: 200,
+    body: { data: { id: 7, username: "ana_garcia", email: "ana@empresa.com" } }
+  },
+  400: {
+    status: 400,
+    body: { error: "Se requiere un email válido" }
+  },
+  409: {
+    status: 409,
+    body: { error: "El email ya está en uso" }
+  },
+  500: {
+    status: 500,
+    body: { error: "No se pudo crear el usuario" }
+  }
+};
+
+// Simula fetch con una respuesta predefinida
+function fakeFetch(statusCode) {
+  const mock = mockResponses[statusCode];
+  return Promise.resolve({
+    status: mock.status,
+    ok: mock.status >= 200 && mock.status < 300,
+    json: () => Promise.resolve(mock.body)
+  });
+}
+
+function logLine(html) {
+  const out = document.getElementById('out-sim');
+  if (out.querySelector('span[style]')) out.innerHTML = ''; // limpiar placeholder
+  out.innerHTML += html + '\n';
+}
+
+function clearOutput() {
+  document.getElementById('out-sim').innerHTML = '';
+  document.getElementById('out-json').innerHTML = '<span style="color:#64748b">// procesando...</span>';
+}
+
+function showJson(obj) {
+  document.getElementById('out-json').innerHTML =
+    '<span style="color:#c4b5fd">// respuesta JSON del servidor:</span>\n' +
+    JSON.stringify(obj, null, 2)
+      .replace(/"([^"]+)":/g, '<span style="color:#c4b5fd">"$1"</span>:')
+      .replace(/: "([^"]+)"/g, ': <span style="color:#fca5a5">"$1"</span>')
+      .replace(/: (\d+)/g, ': <span style="color:#fdba74">$1</span>');
+}
+
+async function simular(statusCode) {
+  clearOutput();
+
+  try {
+    logLine('<span class="out-ok">→ Ejecutando fetch("https://miapi.com/api/users", { method: "POST" })...</span>');
+
+    const res = await fakeFetch(statusCode);
+
+    logLine('<span class="out-ok">→ La petición llegó al servidor. Leyendo res.status...</span>');
+    logLine('<span class="out-warn">→ res.status = ' + res.status + ' | res.ok = ' + res.ok + '</span>');
+    logLine('<span class="out-ok">→ Llamando await res.json()...</span>');
+
+    let data;
+    try {
+      data = await res.json();
+    } catch (_) {
+      data = {};
+    }
+
+    showJson(data);
+
+    if (res.status === 200) {
+      logLine('<span class="out-ok">✅ [try] Entró al bloque if (res.status === 200)</span>');
+      logLine('<span class="out-ok">✅ Usuario creado: "' + data.data.username + '" con ID ' + data.data.id + '</span>');
+    } else if (res.status === 400) {
+      logLine('<span class="out-warn">⚠️ [try] Entró al bloque if (res.status === 400)</span>');
+      logLine('<span class="out-warn">⚠️ Error de validación → mostrarError("' + data.error + '")</span>');
+      logLine('<span style="color:#94a3b8">ℹ️  No llegó al catch — el servidor SÍ respondió, la red funcionó</span>');
+    } else if (res.status === 409) {
+      logLine('<span class="out-err">🔴 [try] Entró al bloque if (res.status === 409)</span>');
+      logLine('<span class="out-err">🔴 Conflicto de unicidad → mostrarError("' + data.error + '")</span>');
+      logLine('<span style="color:#94a3b8">ℹ️  No llegó al catch — el servidor SÍ respondió, la red funcionó</span>');
+    } else if (res.status === 500) {
+      logLine('<span class="out-err">💥 [try] Entró al bloque if (res.status === 500)</span>');
+      logLine('<span class="out-err">💥 Error del servidor → "' + data.error + '"</span>');
+      logLine('<span style="color:#94a3b8">ℹ️  No llegó al catch — el servidor SÍ respondió con 500</span>');
+    }
+
+  } catch (networkError) {
+    // Este bloque solo se ejecuta en el simulador de error de red
+    showJson({ tipo: "error_de_red", mensaje: networkError.message });
+    logLine('<span class="out-err">📡 [catch] Error de red — la petición nunca llegó al servidor</span>');
+    logLine('<span class="out-err">📡 ' + networkError.message + '</span>');
+  }
+}
+
+async function simularRedError() {
+  clearOutput();
+  logLine('<span class="out-ok">→ Ejecutando fetch("https://esta-url-no-existe.xyz/api/users")...</span>');
+
+  try {
+    // Forzar un error que lleva al catch
+    throw new TypeError("Failed to fetch — net::ERR_NAME_NOT_RESOLVED");
+  } catch (networkError) {
+    showJson({ tipo: "TypeError", mensaje: networkError.message });
+    logLine('<span class="out-err">📡 [catch] Error de red — la petición NUNCA llegó al servidor</span>');
+    logLine('<span class="out-err">📡 ' + networkError.message + '</span>');
+    logLine('<span style="color:#94a3b8">ℹ️  Este es el ÚNICO caso donde catch se ejecuta en fetch</span>');
+    logLine('<span style="color:#94a3b8">ℹ️  Mostrar: "Sin conexión. Verifica tu red e intenta de nuevo."</span>');
+  }
+}
+</script>
+
+</body>
+</html>

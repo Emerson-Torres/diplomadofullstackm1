@@ -1,0 +1,3099 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 4 — TypeScript Esencial</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #06b6d4;
+      --accent-dark: #0891b2;
+      --accent-faint: #ecfeff;
+      --accent-border: #a5f3fc;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
+      color: #1e293b;
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 270px;
+      height: 100vh;
+      background: #0f172a;
+      color: #e2e8f0;
+      overflow-y: auto;
+      z-index: 1000;
+      padding-bottom: 2rem;
+      border-right: 1px solid #1e293b;
+    }
+
+    #sidebar .brand {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    #sidebar .brand .badge-mod {
+      background: var(--accent);
+      color: #fff;
+      font-size: .7rem;
+      padding: .25rem .6rem;
+      border-radius: 20px;
+      letter-spacing: .05em;
+      font-weight: 700;
+    }
+
+    #sidebar .brand h6 {
+      color: #f8fafc;
+      font-weight: 700;
+      margin-top: .5rem;
+      font-size: 1rem;
+    }
+
+    #sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      padding: .55rem 1.25rem;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: .83rem;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+
+    #sidebar nav a:hover,
+    #sidebar nav a.active {
+      color: #f8fafc;
+      background: #1e293b;
+      border-left-color: var(--accent);
+    }
+
+    #sidebar .section-label {
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #475569;
+      padding: 1.1rem 1.25rem .35rem;
+      font-weight: 700;
+    }
+
+    #sidebar .progress-wrap {
+      padding: .5rem 1.25rem 0;
+    }
+
+    #sidebar .progress {
+      height: 4px;
+      background: #1e293b;
+    }
+
+    #sidebar .progress-bar {
+      background: var(--accent);
+      transition: width .4s ease;
+    }
+
+    /* ── MAIN ── */
+    #main {
+      margin-left: 270px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar .breadcrumb {
+      margin: 0;
+      font-size: .8rem;
+    }
+
+    /* ── SECTIONS ── */
+    .content-section {
+      display: none;
+      padding: 2rem;
+      animation: fadeIn .25s ease;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── HERO ── */
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #0c2a30 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: 2.5rem 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .hero-card .clase-badge {
+      background: rgba(6, 182, 212, .25);
+      border: 1px solid rgba(6, 182, 212, .5);
+      color: #67e8f9;
+      font-size: .75rem;
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .hero-card h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .hero-card p {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .hero-meta span {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 8px;
+      padding: .4rem .9rem;
+      font-size: .82rem;
+      margin-right: .5rem;
+      color: #e2e8f0;
+    }
+
+    /* ── BLOCKS ── */
+    .theory-block {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .theory-block h4 {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .theory-block p,
+    .theory-block li {
+      font-size: .9rem;
+      color: #374151;
+      line-height: 1.75;
+    }
+
+    .theory-block ul,
+    .theory-block ol {
+      padding-left: 1.4rem;
+    }
+
+    .info-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem;
+      height: 100%;
+    }
+
+    .info-card .ic-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-card h5 {
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: .5rem;
+    }
+
+    .info-card p {
+      font-size: .85rem;
+      color: #64748b;
+      margin: 0;
+    }
+
+    /* ── CALLOUTS ── */
+    .callout {
+      border-left: 4px solid;
+      border-radius: 0 8px 8px 0;
+      padding: .9rem 1.2rem;
+      margin: 1rem 0;
+      font-size: .88rem;
+    }
+
+    .callout-blue {
+      border-color: #3b82f6;
+      background: #eff6ff;
+      color: #1e40af;
+    }
+
+    .callout-green {
+      border-color: #10b981;
+      background: #f0fdf4;
+      color: #065f46;
+    }
+
+    .callout-amber {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    .callout-red {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .callout-purple {
+      border-color: #8b5cf6;
+      background: #f5f3ff;
+      color: #4c1d95;
+    }
+
+    .callout-cyan {
+      border-color: #06b6d4;
+      background: #ecfeff;
+      color: #164e63;
+    }
+
+    /* ── CODE ── */
+    .code-block {
+      background: #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-block .code-header {
+      background: #1e293b;
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .code-block .code-header span {
+      font-size: .75rem;
+      color: #64748b;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .code-block .code-header .lang-badge {
+      font-size: .68rem;
+      padding: .15rem .55rem;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    .lang-ts {
+      background: rgba(6, 182, 212, .2);
+      color: #67e8f9;
+    }
+
+    .lang-js {
+      background: rgba(245, 158, 11, .2);
+      color: #fcd34d;
+    }
+
+    .lang-bash {
+      background: rgba(16, 185, 129, .2);
+      color: #6ee7b7;
+    }
+
+    .code-block pre {
+      margin: 0;
+      padding: 1.25rem;
+      color: #e2e8f0;
+      font-size: .82rem;
+      line-height: 1.75;
+      overflow-x: auto;
+    }
+
+    .kw {
+      color: #93c5fd;
+    }
+
+    .fn {
+      color: #86efac;
+    }
+
+    .str {
+      color: #fca5a5;
+    }
+
+    .cm {
+      color: #475569;
+      font-style: italic;
+    }
+
+    .num {
+      color: #fdba74;
+    }
+
+    .prop {
+      color: #c4b5fd;
+    }
+
+    .bool {
+      color: #f9a8d4;
+    }
+
+    .typ {
+      color: #67e8f9;
+      font-weight: 600;
+    }
+
+    /* tipos TS */
+    .err {
+      color: #ef4444;
+      text-decoration: underline wavy #ef4444;
+    }
+
+    /* ── SANDBOX ── */
+    .sandbox {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .sandbox-header {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .sandbox-header .title {
+      font-weight: 600;
+      font-size: .9rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .sandbox-body {
+      padding: 1.5rem;
+    }
+
+    .run-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .45rem 1.1rem;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      transition: background .15s;
+    }
+
+    .run-btn:hover {
+      background: var(--accent-dark);
+    }
+
+    .run-btn.green {
+      background: #10b981;
+    }
+
+    .run-btn.green:hover {
+      background: #059669;
+    }
+
+    .run-btn.blue {
+      background: #3b82f6;
+    }
+
+    .run-btn.blue:hover {
+      background: #2563eb;
+    }
+
+    .run-btn.red {
+      background: #ef4444;
+    }
+
+    .run-btn.red:hover {
+      background: #dc2626;
+    }
+
+    .run-btn.amber {
+      background: #f59e0b;
+      color: #1e293b;
+    }
+
+    .run-btn.amber:hover {
+      background: #d97706;
+    }
+
+    .run-btn.purple {
+      background: #8b5cf6;
+    }
+
+    .run-btn.purple:hover {
+      background: #7c3aed;
+    }
+
+    .output-area {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 70px;
+      font-size: .82rem;
+      margin-top: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2e8f0;
+      line-height: 1.8;
+    }
+
+    .output-area .ok {
+      color: #86efac;
+    }
+
+    .output-area .er {
+      color: #fca5a5;
+    }
+
+    .output-area .info {
+      color: #67e8f9;
+    }
+
+    .output-area .warn {
+      color: #fcd34d;
+    }
+
+    .output-area .typ {
+      color: #c4b5fd;
+    }
+
+    .output-area .dim {
+      color: #475569;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: .55rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #e2e8f0;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: .35rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .timeline-item .t-time {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .timeline-item .t-title {
+      font-weight: 600;
+      font-size: .95rem;
+    }
+
+    .timeline-item .t-desc {
+      font-size: .85rem;
+      color: #64748b;
+    }
+
+    /* ── COMPARE ── */
+    .compare-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .compare-col {
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    /* ── STEP PILLS ── */
+    .step-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin: 1rem 0;
+    }
+
+    .step-pill {
+      background: var(--accent-faint);
+      border: 1px solid var(--accent-border);
+      color: #164e63;
+      border-radius: 30px;
+      padding: .4rem 1rem;
+      font-size: .82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .step-pill .num {
+      background: var(--accent);
+      color: #fff;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+    }
+
+    /* ── ERROR BOX ── */
+    .error-box {
+      background: #0f172a;
+      border: 1px solid #ef4444;
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      line-height: 1.75;
+      color: #fca5a5;
+    }
+
+    .error-box .file {
+      color: #94a3b8;
+      margin-bottom: .5rem;
+    }
+
+    .error-box .fix {
+      background: #134e0a;
+      border: 1px solid #16a34a;
+      border-radius: 6px;
+      padding: .75rem;
+      margin-top: .75rem;
+      color: #86efac;
+      font-size: .78rem;
+    }
+
+    /* ── TIPO PILLS ── */
+    .tipo-pill {
+      display: inline-block;
+      background: #ecfeff;
+      border: 1px solid #a5f3fc;
+      color: #164e63;
+      border-radius: 6px;
+      padding: .2rem .65rem;
+      font-size: .78rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      margin: .15rem;
+    }
+
+    /* ── INTERFACE VISUAL ── */
+    .interface-visual {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem;
+      line-height: 1.9;
+      color: #e2e8f0;
+    }
+
+    .interface-visual .field {
+      display: flex;
+      align-items: baseline;
+      gap: .5rem;
+      padding: .1rem 0;
+    }
+
+    .interface-visual .field-name {
+      color: #c4b5fd;
+    }
+
+    .interface-visual .field-type {
+      color: #67e8f9;
+    }
+
+    .interface-visual .field-opt {
+      color: #475569;
+    }
+
+    /* ── STRUCTURE TREE ── */
+    .file-tree {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem;
+      line-height: 2;
+      color: #94a3b8;
+    }
+
+    .file-tree .dir {
+      color: #67e8f9;
+    }
+
+    .file-tree .file {
+      color: #e2e8f0;
+    }
+
+    .file-tree .ts {
+      color: #c4b5fd;
+    }
+
+    .file-tree .note {
+      color: #475569;
+      font-style: italic;
+    }
+
+    @media(max-width:768px) {
+      #sidebar {
+        transform: translateX(-100%);
+      }
+
+      #main {
+        margin-left: 0;
+      }
+
+      .compare-cols {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <nav id="sidebar">
+    <div class="brand">
+      <div class="badge-mod">Módulo 1 · Clase 4</div>
+      <h6>Frontend con Angular</h6>
+      <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
+    </div>
+    <div class="progress-wrap">
+      <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+        <span>Progreso de la clase</span><span id="progress-pct">10%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" id="progress-bar" style="width:10%"></div>
+      </div>
+      <div
+        style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">
+        Clase 4 de 7 · Módulo 1</div>
+    </div>
+    <div class="section-label">Contenido</div>
+    <nav id="sidenav">
+      <a href="#" class="active" onclick="window.showSection('agenda',this)"> <i class="bi bi-calendar3"></i> Agenda</a>
+      <a href="#" onclick="window.showSection('problema',this)"> <i class="bi bi-exclamation-triangle"></i> El problema
+        que TS resuelve</a>
+      <a href="#" onclick="window.showSection('tipos-basicos',this)"> <i class="bi bi-tag"></i> Tipos básicos</a>
+      <a href="#" onclick="window.showSection('interfaces',this)"> <i class="bi bi-layout-text-sidebar"></i>
+        Interfaces</a>
+      <a href="#" onclick="window.showSection('funciones',this)"> <i class="bi bi-braces"></i> Funciones tipadas</a>
+      <a href="#" onclick="window.showSection('fetch-tipado',this)"> <i class="bi bi-arrow-left-right"></i> fetch() con
+        tipos</a>
+      <a href="#" onclick="window.showSection('jquery-ts',this)"> <i class="bi bi-box-seam"></i> jQuery + TypeScript</a>
+      <a href="#" onclick="window.showSection('ejercicio',this)"> <i class="bi bi-hammer"></i> Ejercicio:
+        mini-tienda</a>
+      <a href="#" onclick="window.showSection('setup-angular',this)"> <i class="bi bi-tools"></i> Setup Angular CLI</a>
+      <a href="#" onclick="window.showSection('qa',this)"> <i class="bi bi-patch-question"></i> Q&A y cierre</a>
+      <a href="#" onclick="window.showSection('conexion',this)"> <i class="bi bi-arrow-right-circle"></i> Conexión con
+        Clase 5</a>
+    </nav>
+    <div class="section-label">Navegación</div>
+    <nav>
+      <a href="clase3-jquery-ajax.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 3</a>
+      <a href="clase5-angular-intro.html"><i class="bi bi-arrow-right-circle"></i> Clase 5 →</a>
+    </nav>
+  </nav>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <div id="main">
+    <div class="topbar">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item text-muted">Módulo 1</li>
+          <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+          <li class="breadcrumb-item active fw-semibold">Clase 4 — TypeScript Esencial</li>
+        </ol>
+      </nav>
+      <span class="ms-auto badge" style="background:#ecfeff;color:#164e63;border:1px solid #a5f3fc">
+        <i class="bi bi-clock me-1"></i>2h efectivas
+      </span>
+    </div>
+
+    <!-- ══════════════════════════════
+       AGENDA
+  ══════════════════════════════ -->
+    <section id="agenda" class="content-section active">
+      <div class="hero-card">
+        <div class="clase-badge"><i class="bi bi-4-circle me-1"></i>Clase 4 de 7</div>
+        <h1>TypeScript Esencial</h1>
+        <p>No es un lenguaje nuevo. Es JavaScript con superpoderes. Aprenderás lo mínimo necesario para que Angular
+          tenga sentido cuando lo veas por primera vez.</p>
+        <div class="hero-meta mt-3">
+          <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
+          <span><i class="bi bi-shield-check me-1"></i>Tipado estático</span>
+          <span><i class="bi bi-lightning me-1"></i>Sin tsconfig</span>
+        </div>
+      </div>
+
+      <div class="callout callout-cyan mb-4">
+        <strong>Mensaje clave de esta clase:</strong> TypeScript no es difícil. Ya sabes JavaScript — TypeScript solo
+        agrega <em>anotaciones de tipo</em> encima. Todo lo que TS compila produce JS normal. Angular lo exige porque
+        los tipos permiten que el editor te ayude a no romper cosas.
+      </div>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#ecfeff"><i class="bi bi-shield-check"
+                style="color:#06b6d4;font-size:1.3rem"></i></div>
+            <h5>¿Qué problema resuelve?</h5>
+            <p>Los errores de typo (<code>data.titlee</code>) que en JS solo aparecen en producción, en TS los ve el
+              editor <strong>mientras escribes</strong>.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#ecfeff"><i class="bi bi-diagram-2"
+                style="color:#06b6d4;font-size:1.3rem"></i></div>
+            <h5>Lo que aprenderás</h5>
+            <p>Tipos básicos, interfaces para modelar la API de FakeStore, funciones tipadas, y fetch con
+              <code>Promise&lt;T&gt;</code>.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#ecfeff"><i class="bi bi-x-circle"
+                style="color:#06b6d4;font-size:1.3rem"></i></div>
+            <h5>Lo que NO veremos hoy</h5>
+            <p><code>tsconfig.json</code>, decoradores, genéricos avanzados, namespaces, ni nada que no necesites hasta
+              Angular. Hoy es lo mínimo viable.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-list-ol" style="color:var(--accent)"></i> Distribución del tiempo</h4>
+        <div class="timeline mt-3">
+          <div class="timeline-item">
+            <div class="t-time">10 min</div>
+            <div class="t-title">El problema: por qué TypeScript existe</div>
+            <div class="t-desc">Un bug de producción real que TypeScript previene. La diferencia entre JS y TS en una
+              imagen.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">30 min</div>
+            <div class="t-title">Práctica: Tipos básicos e interfaces</div>
+            <div class="t-desc"><code>string</code>, <code>number</code>, <code>boolean</code>, arrays. Crear
+              <code>interface Product</code> para modelar FakeStore.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">30 min</div>
+            <div class="t-title">Práctica: Funciones tipadas y fetch con tipos</div>
+            <div class="t-desc"><code>function mostrar(p: Product): void</code> y <code>fetch</code> que devuelve
+              <code>Promise&lt;Product[]&gt;</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">30 min</div>
+            <div class="t-title">Ejercicio: mini-tienda completamente tipada</div>
+            <div class="t-desc">Reescribir la galería de las clases anteriores con TypeScript. Compilar con
+              <code>tsc products.ts --target es2017</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">20 min</div>
+            <div class="t-title">Setup: Angular CLI y estructura del proyecto</div>
+            <div class="t-desc"><code>npm install -g @angular/cli</code>, <code>ng new mi-tienda</code>, explorar
+              carpetas.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">10 min</div>
+            <div class="t-title">Q&A y conexión con Clase 5</div>
+            <div class="t-desc">Preguntas y el puente: TypeScript en Angular tiene la misma sintaxis que TS puro, pero
+              dentro de <code>@Component</code>.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       EL PROBLEMA
+  ══════════════════════════════ -->
+    <section id="problema" class="content-section">
+      <h2 class="fw-bold mb-1">El problema que TypeScript resuelve</h2>
+      <p class="text-muted mb-4">Un bug que JavaScript no te avisa y TypeScript sí. Antes de aprender la sintaxis, hay
+        que entender el <em>por qué</em>.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-bug-fill text-danger"></i> El bug silencioso de JavaScript</h4>
+        <p>Este código se ve razonable. Corre sin errores de sintaxis. Pruébalo:</p>
+        <div class="code-block">
+          <div class="code-header"><span>bug-silencioso.js</span><span class="lang-badge lang-js">JavaScript</span>
+          </div>
+          <pre><span class="kw">async function</span> <span class="fn">mostrarProducto</span>() {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products/1"</span>);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+  document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>).textContent = <span class="str">"Título: "</span> + data.titlee;   <span class="cm">// ← typo</span>
+  document.<span class="fn">getElementById</span>(<span class="str">"precio"</span>).textContent = <span class="str">"Price: $"</span> + data.prce;     <span class="cm">// ← typo</span>
+  document.<span class="fn">getElementById</span>(<span class="str">"cat"</span>).textContent    = data.<span class="fn">categorya</span>();             <span class="cm">// ← no es función</span>
+}
+<span class="fn">mostrarProducto</span>();</pre>
+        </div>
+
+        <!-- Mini "pantalla" de producto donde se renderiza el bug -->
+        <p class="small text-muted mb-2 mt-3">Así lo vería el usuario en la página — haz clic en
+          <strong>Ejecutar</strong>:</p>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:1rem">
+          <div
+            style="background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:.5rem 1rem;font-size:.75rem;color:#64748b;display:flex;align-items:center;gap:.5rem">
+            <i class="bi bi-globe"></i> localhost/producto.html
+          </div>
+          <div style="padding:1.25rem;display:flex;align-items:center;gap:1rem;min-height:80px">
+        
+            <div>
+              <div id="bug-titulo" style="font-weight:600;font-size:.9rem;color:#1e293b">Esperando...</div>
+              <div id="bug-precio" style="font-size:.85rem;color:#64748b;margin-top:.2rem">—</div>
+              <div id="bug-cat" style="font-size:.75rem;color:#94a3b8;margin-top:.2rem">—</div>
+            </div>
+            <div class="ms-auto">
+              <button class="run-btn red" id="btn-bug" onclick="ejecutarBug()">
+                <i class="bi bi-play-fill"></i> Ejecutar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="bug-consola"
+          style="display:none;background:#0f172a;border-radius:8px;padding:.9rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;margin-bottom:1rem">
+          <div
+            style="color:#475569;margin-bottom:.4rem;font-family:'Inter',sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">
+            Consola del navegador</div>
+        </div>
+
+        <div class="callout callout-red" id="bug-explicacion" style="display:none">
+          <strong>¿Lo ves?</strong> La página cargó sin lanzar ningún error de sintaxis.
+          <code>data.titlee</code> y <code>data.prce</code> no existen → JavaScript devuelve <code>undefined</code>
+          silenciosamente.
+          <code>data.categorya()</code> no es una función → crash con <code>TypeError</code> que mata el resto del
+          código.
+          El usuario ve los campos en blanco o con "undefined" y nadie lo sabe hasta que alguien se queja.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-shield-check" style="color:var(--accent)"></i> El mismo código en TypeScript</h4>
+        <p>TypeScript detecta los tres errores <strong>mientras escribes</strong>, sin necesidad de ejecutar nada:</p>
+        <div class="code-block">
+          <div class="code-header"><span>fix-con-typescript.ts</span><span class="lang-badge lang-ts">TypeScript</span>
+          </div>
+          <pre><span class="kw">interface</span> <span class="typ">Product</span> {
+  id:          <span class="typ">number</span>;
+  title:       <span class="typ">string</span>;
+  price:       <span class="typ">number</span>;
+  category:    <span class="typ">string</span>;
+  description: <span class="typ">string</span>;
+  image:       <span class="typ">string</span>;
+}
+
+<span class="kw">async function</span> <span class="fn">mostrarProducto</span>(): Promise&lt;<span class="typ">void</span>&gt; {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products/1"</span>);
+  <span class="kw">const</span> data: <span class="typ">Product</span> = <span class="kw">await</span> res.<span class="fn">json</span>();
+
+  document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>)!.textContent = data.titlee;    <span class="cm">// ← ERROR: "titlee" no existe</span>
+  document.<span class="fn">getElementById</span>(<span class="str">"precio"</span>)!.textContent = <span class="str">"$"</span> + data.prce;    <span class="cm">// ← ERROR: "prce" no existe</span>
+  document.<span class="fn">getElementById</span>(<span class="str">"cat"</span>)!.textContent    = data.<span class="fn">categorya</span>();  <span class="cm">// ← ERROR: no es función</span>
+}</pre>
+        </div>
+        <div class="error-box">
+          <div class="file">products.ts:12:54</div>
+          <span style="color:#f9a8d4">error</span> TS2339: Property <span style="color:#fca5a5">'titlee'</span> does not
+          exist on type <span style="color:#67e8f9">'Product'</span>. Did you mean <span
+            style="color:#86efac">'title'</span>?
+          <div class="fix">✓ Fix: data.title — el editor ya te sugiere el nombre correcto con autocomplete</div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-diagram-2" style="color:var(--accent)"></i> JavaScript vs TypeScript — la relación real</h4>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fffbeb;border:1px solid #fde68a">
+            <h6 style="color:#92400e"><i class="bi bi-filetype-js me-2"></i>JavaScript</h6>
+            <ul style="font-size:.86rem;color:#374151;line-height:2.1;margin:0;padding-left:1.2rem">
+              <li>Tipado dinámico — los tipos se resuelven en ejecución</li>
+              <li>Los errores de tipo aparecen cuando el código corre</li>
+              <li>El navegador lo entiende directamente</li>
+              <li>Más flexible pero más peligroso</li>
+            </ul>
+          </div>
+          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <h6 style="color:#164e63"><i class="bi bi-filetype-tsx me-2"></i>TypeScript</h6>
+            <ul style="font-size:.86rem;color:#374151;line-height:2.1;margin:0;padding-left:1.2rem">
+              <li>Tipado estático — los tipos se verifican antes de ejecutar</li>
+              <li>Los errores aparecen en el editor, mientras escribes</li>
+              <li>Compila a JavaScript — el navegador nunca ve TS</li>
+              <li>Más verboso pero mucho más seguro</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout callout-cyan mt-3">
+          <strong>TypeScript es un superset de JavaScript.</strong> Todo el JS que escribiste en las clases 0–3 es
+          TypeScript válido. No empiezas desde cero — solo agregas anotaciones de tipo encima.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-gear" style="color:var(--accent)"></i> Cómo funciona el proceso</h4>
+        <div class="step-pills">
+          <div class="step-pill">
+            <div class="num">1</div> Escribes <code>products.ts</code>
+          </div>
+          <div class="step-pill">
+            <div class="num">2</div> <code>tsc products.ts --target es2017</code>
+          </div>
+          <div class="step-pill">
+            <div class="num">3</div> Se genera <code>products.js</code>
+          </div>
+          <div class="step-pill">
+            <div class="num">4</div> El navegador ejecuta el <code>.js</code> — nunca ve el <code>.ts</code>
+          </div>
+        </div>
+        <div class="code-block mt-3">
+          <div class="code-header"><span>compilar.bash</span><span class="lang-badge lang-bash">terminal</span></div>
+          <pre><span class="cm"># Instalar TypeScript globalmente (una sola vez)</span>
+npm install -g typescript
+
+<span class="cm"># Verificar versión</span>
+tsc --version
+
+<span class="cm"># Compilar un archivo</span>
+tsc products.ts --target es2017
+
+<span class="cm"># Resultado: se crea products.js en la misma carpeta</span>
+<span class="cm"># Todas las anotaciones de tipo desaparecen — queda JS puro</span></pre>
+        </div>
+      </div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-layout-split" style="color:var(--accent)"></i> Comparativa en vivo: mismos
+            datos, dos resultados</div>
+          <button class="run-btn" onclick="demoComparar()"><i class="bi bi-play-fill"></i> Cargar ambos</button>
+        </div>
+        <div class="sandbox-body">
+          <p class="small text-muted mb-3">El mismo fetch, los mismos datos de FakeStore. La diferencia: uno usa los
+            campos con typos, el otro con los nombres correctos.</p>
+
+          <div class="compare-cols">
+            <!-- LADO JS — bugueado -->
+            <div style="border-radius:10px;overflow:hidden;border:2px solid #ef4444">
+              <div
+                style="background:#fef2f2;padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid #fecaca">
+                <i class="bi bi-filetype-js" style="color:#ef4444"></i>
+                <span style="font-weight:700;font-size:.82rem;color:#991b1b">JavaScript — sin tipos</span>
+                <code style="font-size:.7rem;color:#ef4444;margin-left:auto">data.titlee / data.prce</code>
+              </div>
+              <div style="background:#fff;padding:1rem">
+                <div style="display:flex;gap:.75rem;align-items:center;min-height:70px">
+                  <img id="cmp-img-js" src=""
+                    style="width:50px;height:50px;object-fit:contain;display:none;border-radius:6px;border:1px solid #e2e8f0">
+                  <div id="cmp-img-placeholder-js"
+                    style="width:50px;height:50px;background:#f1f5f9;border-radius:6px;border:1px dashed #cbd5e1"></div>
+                  <div>
+                    <div id="cmp-titulo-js" style="font-size:.82rem;font-weight:600;color:#94a3b8">—</div>
+                    <div id="cmp-precio-js" style="font-size:.78rem;color:#94a3b8;margin-top:.2rem">—</div>
+                    <div id="cmp-cat-js" style="font-size:.7rem;color:#94a3b8;margin-top:.2rem">—</div>
+                    <div id="cmp-rating-js" style="font-size:.7rem;color:#94a3b8;margin-top:.2rem">—</div>
+                  </div>
+                </div>
+                <div id="cmp-error-js"
+                  style="display:none;background:#fef2f2;border-radius:6px;padding:.5rem .75rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;margin-top:.75rem">
+                </div>
+              </div>
+            </div>
+
+            <!-- LADO TS — correcto -->
+            <div style="border-radius:10px;overflow:hidden;border:2px solid #10b981">
+              <div
+                style="background:#f0fdf4;padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid #bbf7d0">
+                <i class="bi bi-filetype-tsx" style="color:#10b981"></i>
+                <span style="font-weight:700;font-size:.82rem;color:#065f46">TypeScript — con interface</span>
+                <code style="font-size:.7rem;color:#10b981;margin-left:auto">data.title / data.price</code>
+              </div>
+              <div style="background:#fff;padding:1rem">
+                <div style="display:flex;gap:.75rem;align-items:center;min-height:70px">
+                  <img id="cmp-img-ts" src=""
+                    style="width:50px;height:50px;object-fit:contain;display:none;border-radius:6px;border:1px solid #e2e8f0">
+                  <div id="cmp-img-placeholder-ts"
+                    style="width:50px;height:50px;background:#f1f5f9;border-radius:6px;border:1px dashed #cbd5e1"></div>
+                  <div>
+                    <div id="cmp-titulo-ts" style="font-size:.82rem;font-weight:600;color:#94a3b8">—</div>
+                    <div id="cmp-precio-ts" style="font-size:.78rem;color:#94a3b8;margin-top:.2rem">—</div>
+                    <div id="cmp-cat-ts" style="font-size:.7rem;color:#94a3b8;margin-top:.2rem">—</div>
+                    <div id="cmp-rating-ts" style="font-size:.7rem;color:#94a3b8;margin-top:.2rem">—</div>
+                  </div>
+                </div>
+                <div id="cmp-ok-ts"
+                  style="display:none;background:#f0fdf4;border-radius:6px;padding:.5rem .75rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;margin-top:.75rem">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="cmp-conclusion" style="display:none" class="callout callout-cyan mt-3">
+            <strong>Mismos datos, diferente resultado.</strong>
+            JS ejecutó sin quejarse y mostró <code>undefined</code> en todos los campos con typo.
+            TS hubiera marcado error en el editor <em>antes de ejecutar</em> — el alumno nunca llegaría a ver ese
+            resultado roto.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       TIPOS BÁSICOS
+  ══════════════════════════════ -->
+    <section id="tipos-basicos" class="content-section">
+      <h2 class="fw-bold mb-1">Tipos básicos</h2>
+      <p class="text-muted mb-4">La sintaxis central: <code>variable: tipo</code>. Nada más.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-tag" style="color:var(--accent)"></i> Anotar variables</h4>
+        <p>En TypeScript escribes el tipo después del nombre de la variable con <code>:</code>. Eso es todo el
+          "misterio":</p>
+        <div class="code-block">
+          <div class="code-header"><span>tipos-basicos.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// ── string ────────────────────────────────────────────────────</span>
+<span class="kw">let</span> nombre: <span class="typ">string</span>  = <span class="str">"María"</span>;
+<span class="kw">let</span> titulo: <span class="typ">string</span>  = <span class="str">"Fjallraven Backpack"</span>;
+
+nombre = <span class="str">"Carlos"</span>;         <span class="cm">// ✓ OK — sigue siendo string</span>
+nombre = <span class="num">42</span>;              <span class="cm">// ✗ ERROR: Type 'number' is not assignable to type 'string'</span>
+
+<span class="cm">// ── number ────────────────────────────────────────────────────</span>
+<span class="kw">let</span> precio: <span class="typ">number</span>  = <span class="num">109.95</span>;
+<span class="kw">let</span> cantidad: <span class="typ">number</span> = <span class="num">3</span>;
+<span class="kw">let</span> total: <span class="typ">number</span>   = precio * cantidad;  <span class="cm">// → 329.85</span>
+
+<span class="cm">// ── boolean ───────────────────────────────────────────────────</span>
+<span class="kw">let</span> activo: <span class="typ">boolean</span>    = <span class="bool">true</span>;
+<span class="kw">let</span> enCarrito: <span class="typ">boolean</span> = <span class="bool">false</span>;
+
+<span class="cm">// ── Arrays ────────────────────────────────────────────────────</span>
+<span class="kw">let</span> categorias: <span class="typ">string</span>[]  = [<span class="str">"electronics"</span>, <span class="str">"jewelery"</span>, <span class="str">"men's clothing"</span>];
+<span class="kw">let</span> precios: <span class="typ">number</span>[]     = [<span class="num">29.99</span>, <span class="num">52.50</span>, <span class="num">109.95</span>];
+
+categorias.<span class="fn">push</span>(<span class="str">"women's clothing"</span>);  <span class="cm">// ✓ OK</span>
+categorias.<span class="fn">push</span>(<span class="num">42</span>);                  <span class="cm">// ✗ ERROR: number no es string</span>
+
+<span class="cm">// ── any — la trampa ───────────────────────────────────────────</span>
+<span class="kw">let</span> cualquierCosa: <span class="typ">any</span> = <span class="str">"texto"</span>;
+cualquierCosa = <span class="num">42</span>;        <span class="cm">// ✓ compila — any desactiva el chequeo</span>
+cualquierCosa = <span class="bool">true</span>;      <span class="cm">// ✓ también compila</span>
+<span class="cm">// ⚠ Usar "any" es rendirse a TypeScript — úsalo solo en casos muy específicos</span></pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-lightbulb" style="color:var(--accent)"></i> Inferencia de tipos — TypeScript suele adivinar
+          solo</h4>
+        <p>Si asignas un valor en la misma línea en que declaras la variable, TypeScript <strong>infiere el tipo
+            automáticamente</strong>. No siempre necesitas escribirlo:</p>
+        <div class="code-block">
+          <div class="code-header"><span>inferencia.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// Con anotación explícita</span>
+<span class="kw">let</span> precio: <span class="typ">number</span> = <span class="num">29.99</span>;
+
+<span class="cm">// Sin anotación — TypeScript infiere "number" igual</span>
+<span class="kw">let</span> precio2 = <span class="num">29.99</span>;   <span class="cm">// TypeScript ya sabe que es number</span>
+precio2 = <span class="str">"caro"</span>;     <span class="cm">// ✗ ERROR — ya sabe que debería ser number</span>
+
+<span class="cm">// Con const, siempre infiere el valor exacto (literal type)</span>
+<span class="kw">const</span> API = <span class="str">"https://fakestoreapi.com"</span>;
+<span class="cm">// TypeScript infiere: const API: "https://fakestoreapi.com" (no solo string)</span>
+
+<span class="cm">// Cuándo SÍ conviene anotar explícitamente:</span>
+<span class="kw">let</span> producto: <span class="typ">Product</span>;      <span class="cm">// variable declarada sin valor inicial</span>
+<span class="kw">let</span> resultado: <span class="typ">string</span> | <span class="typ">null</span>; <span class="cm">// puede ser string o null</span></pre>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>Regla práctica:</strong> Deja que TypeScript infiera cuando asignas un valor simple
+          (<code>number</code>, <code>string</code>, <code>boolean</code>). Anota explícitamente cuando el tipo es
+          complejo (<code>Product</code>, <code>Product[]</code>), cuando declaras sin valor, o cuando la función puede
+          retornar dos cosas distintas.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-question-circle" style="color:var(--accent)"></i> undefined y null — el territorio peligroso
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>undefined-null.ts</span><span class="lang-badge lang-ts">TypeScript</span>
+          </div>
+          <pre><span class="cm">// document.getElementById puede devolver null si el elemento no existe</span>
+<span class="kw">const</span> titulo = document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>);
+titulo.textContent = <span class="str">"Hola"</span>;  <span class="cm">// ✗ ERROR: titulo puede ser null</span>
+
+<span class="cm">// Solución 1: el operador ! (non-null assertion) — "yo sé que existe"</span>
+document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>)!.textContent = <span class="str">"Hola"</span>;
+
+<span class="cm">// Solución 2: optional chaining ?. — "solo si existe"</span>
+document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>)?.textContent;
+
+<span class="cm">// Solución 3: verificar con if antes</span>
+<span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>);
+<span class="kw">if</span> (el) { el.textContent = <span class="str">"Hola"</span>; }  <span class="cm">// ✓ dentro del if, TS sabe que no es null</span>
+
+<span class="cm">// Union types — puede ser una cosa O otra</span>
+<span class="kw">let</span> valor: <span class="typ">string</span> | <span class="typ">null</span>    = <span class="bool">null</span>;
+<span class="kw">let</span> id:    <span class="typ">number</span> | <span class="typ">string</span>  = <span class="num">1</span>;
+id = <span class="str">"abc"</span>;   <span class="cm">// también válido</span></pre>
+        </div>
+      </div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: tipos en acción
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn" onclick="demoTipos()"> <i class="bi bi-play-fill"></i> Tipos básicos</button>
+            <button class="run-btn blue" onclick="demoInfer()"> <i class="bi bi-play-fill"></i> Inferencia</button>
+            <button class="run-btn amber" onclick="demoUnion()"> <i class="bi bi-play-fill"></i> Union types</button>
+            <button class="run-btn red" onclick="demoAny()"> <i class="bi bi-play-fill"></i> El peligro de any</button>
+          </div>
+          <div id="out-tipos" class="output-area">Elige un demo...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       INTERFACES
+  ══════════════════════════════ -->
+    <section id="interfaces" class="content-section">
+      <h2 class="fw-bold mb-1">Interfaces — Modelar los datos de la API</h2>
+      <p class="text-muted mb-4">Una interface es un contrato: define qué campos tiene un objeto y de qué tipo es cada
+        uno.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-layout-text-sidebar" style="color:var(--accent)"></i> De objeto JS a interface TypeScript
+        </h4>
+        <p>Mira la respuesta de FakeStore API. Ya conoces este objeto de las clases anteriores:</p>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fffbeb;border:1px solid #fde68a">
+            <h6 style="color:#92400e"><i class="bi bi-braces me-2"></i>Lo que devuelve la API (JSON)</h6>
+            <pre style="font-size:.78rem;color:#78350f;margin:0;line-height:1.8">{
+  <span class="prop">"id"</span>:          <span class="num">1</span>,
+  <span class="prop">"title"</span>:       <span class="str">"Fjallraven Backpack"</span>,
+  <span class="prop">"price"</span>:       <span class="num">109.95</span>,
+  <span class="prop">"category"</span>:    <span class="str">"men's clothing"</span>,
+  <span class="prop">"description"</span>: <span class="str">"Your perfect pack..."</span>,
+  <span class="prop">"image"</span>:       <span class="str">"https://fakestoreapi.com/img/..."</span>,
+  <span class="prop">"rating"</span>: {
+    <span class="prop">"rate"</span>:  <span class="num">3.9</span>,
+    <span class="prop">"count"</span>: <span class="num">120</span>
+  }
+}</pre>
+          </div>
+          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <h6 style="color:#164e63"><i class="bi bi-filetype-tsx me-2"></i>La interface TypeScript</h6>
+            <pre style="font-size:.78rem;color:#0e7490;margin:0;line-height:1.8"><span class="kw">interface</span> <span class="typ">Rating</span> {
+  rate:  <span class="typ">number</span>;
+  count: <span class="typ">number</span>;
+}
+
+<span class="kw">interface</span> <span class="typ">Product</span> {
+  id:          <span class="typ">number</span>;
+  title:       <span class="typ">string</span>;
+  price:       <span class="typ">number</span>;
+  category:    <span class="typ">string</span>;
+  description: <span class="typ">string</span>;
+  image:       <span class="typ">string</span>;
+  rating:      <span class="typ">Rating</span>;
+}</pre>
+          </div>
+        </div>
+        <div class="callout callout-cyan mt-3">
+          <strong>El proceso de trabajo real:</strong> Abres Postman, haces un GET a la API, miras la respuesta JSON, y
+          traduces cada campo a la interface. Es mecánico. El editor ya hará el resto.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-braces-asterisk" style="color:var(--accent)"></i> Usar la interface</h4>
+        <div class="code-block">
+          <div class="code-header"><span>usar-interface.ts</span><span class="lang-badge lang-ts">TypeScript</span>
+          </div>
+          <pre><span class="kw">interface</span> <span class="typ">Product</span> {
+  id:       <span class="typ">number</span>;
+  title:    <span class="typ">string</span>;
+  price:    <span class="typ">number</span>;
+  category: <span class="typ">string</span>;
+  image:    <span class="typ">string</span>;
+  rating:   { rate: <span class="typ">number</span>; count: <span class="typ">number</span> };
+}
+
+<span class="cm">// ── Variable tipada ───────────────────────────────────────────</span>
+<span class="kw">const</span> producto: <span class="typ">Product</span> = {
+  id:       <span class="num">1</span>,
+  title:    <span class="str">"Fjallraven Backpack"</span>,
+  price:    <span class="num">109.95</span>,
+  category: <span class="str">"men's clothing"</span>,
+  image:    <span class="str">"https://fakestoreapi.com/img/..."</span>,
+  rating:   { rate: <span class="num">3.9</span>, count: <span class="num">120</span> }
+};
+
+<span class="cm">// Ahora el editor tiene autocomplete completo:</span>
+producto.title        <span class="cm">// → "Fjallraven Backpack"</span>
+producto.rating.rate  <span class="cm">// → 3.9</span>
+producto.titlee       <span class="cm">// ✗ ERROR: Property 'titlee' does not exist</span>
+
+<span class="cm">// ── Array de interfaces ───────────────────────────────────────</span>
+<span class="kw">const</span> productos: <span class="typ">Product</span>[] = [];  <span class="cm">// array vacío tipado</span>
+productos.<span class="fn">push</span>(producto);          <span class="cm">// ✓ OK — producto es un Product</span>
+
+<span class="cm">// ── Campo opcional con ? ──────────────────────────────────────</span>
+<span class="kw">interface</span> <span class="typ">CartItem</span> {
+  product:  <span class="typ">Product</span>;
+  quantity: <span class="typ">number</span>;
+  note?:    <span class="typ">string</span>;   <span class="cm">// opcional — puede o no estar</span>
+}</pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-grid-3x3-gap" style="color:var(--accent)"></i> Las interfaces que usaremos en todo el módulo
+        </h4>
+        <p class="small text-muted mb-3">Crea este archivo <code>models.ts</code> — lo importarás en todas las clases
+          siguientes:</p>
+        <div class="code-block">
+          <div class="code-header"><span>models.ts — las interfaces del proyecto</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// Rating anidado dentro de Product</span>
+<span class="kw">export interface</span> <span class="typ">Rating</span> {
+  rate:  <span class="typ">number</span>;
+  count: <span class="typ">number</span>;
+}
+
+<span class="cm">// Producto de FakeStore API</span>
+<span class="kw">export interface</span> <span class="typ">Product</span> {
+  id:          <span class="typ">number</span>;
+  title:       <span class="typ">string</span>;
+  price:       <span class="typ">number</span>;
+  category:    <span class="typ">string</span>;
+  description: <span class="typ">string</span>;
+  image:       <span class="typ">string</span>;
+  rating:      <span class="typ">Rating</span>;
+}
+
+<span class="cm">// Item del carrito</span>
+<span class="kw">export interface</span> <span class="typ">CartItem</span> {
+  product:  <span class="typ">Product</span>;
+  quantity: <span class="typ">number</span>;
+}
+
+<span class="cm">// Para usar en otro archivo:</span>
+<span class="cm">// import { Product, CartItem } from './models';</span></pre>
+        </div>
+      </div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: interfaces en
+            acción</div>
+        </div>
+        <div class="sandbox-body">
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn" onclick="demoInterface()"> <i class="bi bi-play-fill"></i> Crear Product
+              tipado</button>
+            <button class="run-btn blue" onclick="demoInterfaceArr()"> <i class="bi bi-play-fill"></i> Array de
+              Products</button>
+            <button class="run-btn amber" onclick="demoInterfaceError()"> <i class="bi bi-bug"></i> Simular error de
+              campo</button>
+          </div>
+          <div id="out-interface" class="output-area">Elige un demo...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       FUNCIONES TIPADAS
+  ══════════════════════════════ -->
+    <section id="funciones" class="content-section">
+      <h2 class="fw-bold mb-1">Funciones tipadas</h2>
+      <p class="text-muted mb-4">Anotar los parámetros y el valor de retorno. El editor te avisa si usas mal la función.
+      </p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-braces" style="color:var(--accent)"></i> Anatomía de una función TypeScript</h4>
+        <div class="code-block">
+          <div class="code-header"><span>funciones.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// ── Función simple tipada ─────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">saludar</span>(nombre: <span class="typ">string</span>): <span class="typ">string</span> {
+  <span class="kw">return</span> <span class="str">`Hola, </span>${nombre}<span class="str">!`</span>;
+}
+<span class="fn">saludar</span>(<span class="str">"María"</span>);  <span class="cm">// ✓ → "Hola, María!"</span>
+<span class="fn">saludar</span>(<span class="num">42</span>);       <span class="cm">// ✗ ERROR: Argument of type 'number' is not assignable to 'string'</span>
+
+<span class="cm">// ── void: la función no retorna nada útil ─────────────────────</span>
+<span class="kw">function</span> <span class="fn">mostrarProducto</span>(producto: <span class="typ">Product</span>): <span class="typ">void</span> {
+  document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>)!.textContent = producto.title;
+  document.<span class="fn">getElementById</span>(<span class="str">"precio"</span>)!.textContent = <span class="str">"$"</span> + producto.price;
+  <span class="cm">// No retorna nada — como void en Java/C#</span>
+}
+
+<span class="cm">// ── Parámetros opcionales ─────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">formatPrecio</span>(precio: <span class="typ">number</span>, simbolo?: <span class="typ">string</span>): <span class="typ">string</span> {
+  <span class="kw">const</span> s = simbolo ?? <span class="str">"$"</span>;  <span class="cm">// ?? = "si es undefined, usa este valor"</span>
+  <span class="kw">return</span> <span class="str">`</span>${s}${precio.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">`</span>;
+}
+<span class="fn">formatPrecio</span>(<span class="num">29.99</span>);        <span class="cm">// → "$29.99"</span>
+<span class="fn">formatPrecio</span>(<span class="num">29.99</span>, <span class="str">"€"</span>);  <span class="cm">// → "€29.99"</span>
+
+<span class="cm">// ── Arrow function tipada ─────────────────────────────────────</span>
+<span class="kw">const</span> <span class="fn">filtrarPorCategoria</span> = (
+  productos: <span class="typ">Product</span>[],
+  categoria: <span class="typ">string</span>
+): <span class="typ">Product</span>[] => {
+  <span class="kw">return</span> productos.<span class="fn">filter</span>(p => p.category === categoria);
+};
+
+<span class="cm">// ── Función que recibe callback ───────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">procesarProductos</span>(
+  productos: <span class="typ">Product</span>[],
+  callback: (p: <span class="typ">Product</span>) => <span class="typ">void</span>
+): <span class="typ">void</span> {
+  productos.<span class="fn">forEach</span>(callback);
+}</pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-arrow-return-right" style="color:var(--accent)"></i> Funciones que usarás con FakeStore</h4>
+        <div class="code-block">
+          <div class="code-header"><span>helpers.ts — funciones reales del proyecto</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { <span class="typ">Product</span> } <span class="kw">from</span> <span class="str">"./models"</span>;
+
+<span class="cm">// Crear HTML de una tarjeta</span>
+<span class="kw">function</span> <span class="fn">crearTarjeta</span>(producto: <span class="typ">Product</span>): <span class="typ">string</span> {
+  <span class="kw">return</span> <span class="str">`
+    &lt;div class="card"&gt;
+      &lt;img src="</span>${producto.image}<span class="str"}" alt="</span>${producto.title}<span class="str"}"&gt;
+      &lt;h3&gt;</span>${producto.title.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">30</span>)}<span class="str">...&lt;/h3&gt;
+      &lt;p&gt;$</span>${producto.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
+      &lt;small&gt;</span>${producto.category}<span class="str">&lt;/small&gt;
+    &lt;/div&gt;
+  `</span>;
+}
+
+<span class="cm">// Calcular precio total del carrito</span>
+<span class="kw">function</span> <span class="fn">totalCarrito</span>(items: <span class="typ">CartItem</span>[]): <span class="typ">number</span> {
+  <span class="kw">return</span> items.<span class="fn">reduce</span>((acc, item) => {
+    <span class="kw">return</span> acc + item.product.price * item.quantity;
+  }, <span class="num">0</span>);
+}
+
+<span class="cm">// Filtrar productos baratos</span>
+<span class="kw">function</span> <span class="fn">productosBaratos</span>(
+  productos: <span class="typ">Product</span>[],
+  maxPrecio: <span class="typ">number</span> = <span class="num">50</span>         <span class="cm">// parámetro con valor por defecto</span>
+): <span class="typ">Product</span>[] {
+  <span class="kw">return</span> productos.<span class="fn">filter</span>(p => p.price <= maxPrecio);
+}</pre>
+        </div>
+      </div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: funciones tipadas
+            con datos reales</div>
+        </div>
+        <div class="sandbox-body">
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn" onclick="demoFn1()"> <i class="bi bi-play-fill"></i> formatPrecio()</button>
+            <button class="run-btn blue" onclick="demoFn2()"> <i class="bi bi-play-fill"></i> filtrar por
+              categoría</button>
+            <button class="run-btn green" onclick="demoFn3()"> <i class="bi bi-play-fill"></i> total del
+              carrito</button>
+            <button class="run-btn red" onclick="demoFn4()"> <i class="bi bi-bug"></i> error de tipo simulado</button>
+          </div>
+          <div id="out-fn" class="output-area">Elige un demo...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       FETCH TIPADO
+  ══════════════════════════════ -->
+    <section id="fetch-tipado" class="content-section">
+      <h2 class="fw-bold mb-1">fetch() con tipos — Promise&lt;T&gt;</h2>
+      <p class="text-muted mb-4">Combinar lo que ya sabes hacer (fetch + async/await) con lo que aprendiste hoy
+        (interfaces).</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-arrow-left-right" style="color:var(--accent)"></i> fetch tipado paso a paso</h4>
+        <div class="code-block">
+          <div class="code-header"><span>fetch-tipado.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { <span class="typ">Product</span> } <span class="kw">from</span> <span class="str">"./models"</span>;
+
+<span class="cm">// ── Un solo producto ──────────────────────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">getProducto</span>(id: <span class="typ">number</span>): Promise&lt;<span class="typ">Product</span>&gt; {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://fakestoreapi.com/products/</span>${id}<span class="str">`</span>);
+  <span class="kw">const</span> data: <span class="typ">Product</span> = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="kw">return</span> data;
+}
+
+<span class="cm">// ── Todos los productos ───────────────────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">getProductos</span>(limit: <span class="typ">number</span> = <span class="num">10</span>): Promise&lt;<span class="typ">Product</span>[]&gt; {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://fakestoreapi.com/products?limit=</span>${limit}<span class="str">`</span>);
+  <span class="kw">const</span> data: <span class="typ">Product</span>[] = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="kw">return</span> data;
+}
+
+<span class="cm">// ── Con manejo de errores ─────────────────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">getProductosSeguro</span>(): Promise&lt;<span class="typ">Product</span>[]&gt; {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://fakestoreapi.com/products?limit=6"</span>);
+
+    <span class="cm">// Verificar que la respuesta fue exitosa</span>
+    <span class="kw">if</span> (!res.ok) {
+      <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP error: </span>${res.status}<span class="str">`</span>);
+    }
+
+    <span class="kw">const</span> productos: <span class="typ">Product</span>[] = <span class="kw">await</span> res.<span class="fn">json</span>();
+    <span class="kw">return</span> productos;
+
+  } <span class="kw">catch</span> (error: <span class="typ">unknown</span>) {
+    <span class="cm">// "unknown" es más seguro que "any" para errores</span>
+    <span class="kw">if</span> (error <span class="kw">instanceof</span> <span class="fn">Error</span>) {
+      <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Error al cargar productos:"</span>, error.message);
+    }
+    <span class="kw">return</span> [];  <span class="cm">// retorna array vacío en caso de error</span>
+  }
+}
+
+<span class="cm">// ── Usar la función ───────────────────────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">iniciar</span>(): Promise&lt;<span class="typ">void</span>&gt; {
+  <span class="kw">const</span> productos = <span class="kw">await</span> <span class="fn">getProductos</span>(<span class="num">6</span>);
+  <span class="cm">// ↑ TypeScript sabe que "productos" es Product[]</span>
+
+  productos.<span class="fn">forEach</span>(p => {
+    <span class="fn">console</span>.<span class="fn">log</span>(p.title);   <span class="cm">// autocomplete ✓</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(p.price);   <span class="cm">// autocomplete ✓</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(p.titlee);  <span class="cm">// ✗ ERROR inmediato</span>
+  });
+}
+<span class="fn">iniciar</span>();</pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-layers" style="color:var(--accent)"></i> El patrón completo — archivo products.ts</h4>
+        <p class="small text-muted mb-2">Así queda el archivo completo que compilarás con
+          <code>tsc products.ts --target es2017</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>products.ts — el archivo que entregas como tarea</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// ═══════════════════════════════════════════════════
+//  TypeScript + FakeStore API — Clase 4
+// ═══════════════════════════════════════════════════</span>
+
+<span class="cm">// 1. Interfaces</span>
+<span class="kw">interface</span> <span class="typ">Rating</span> { rate: <span class="typ">number</span>; count: <span class="typ">number</span>; }
+
+<span class="kw">interface</span> <span class="typ">Product</span> {
+  id: <span class="typ">number</span>; title: <span class="typ">string</span>; price: <span class="typ">number</span>;
+  category: <span class="typ">string</span>; image: <span class="typ">string</span>; rating: <span class="typ">Rating</span>;
+}
+
+<span class="cm">// 2. Función de fetch tipada</span>
+<span class="kw">async function</span> <span class="fn">getProductos</span>(limit: <span class="typ">number</span> = <span class="num">6</span>): Promise&lt;<span class="typ">Product</span>[]&gt; {
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://fakestoreapi.com/products?limit=</span>${limit}<span class="str">`</span>);
+  <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP </span>${res.status}<span class="str">`</span>);
+  <span class="kw">return</span> res.<span class="fn">json</span>() <span class="kw">as</span> Promise&lt;<span class="typ">Product</span>[]&gt;;
+}
+
+<span class="cm">// 3. Función que renderiza una tarjeta</span>
+<span class="kw">function</span> <span class="fn">crearTarjeta</span>(p: <span class="typ">Product</span>): <span class="typ">string</span> {
+  <span class="kw">return</span> <span class="str">`&lt;div class="card"&gt;
+    &lt;img src="</span>${p.image}<span class="str"}" loading="lazy"&gt;
+    &lt;h3&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">30</span>)}<span class="str">...&lt;/h3&gt;
+    &lt;p&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
+    &lt;span&gt;</span>${p.category}<span class="str">&lt;/span&gt;
+  &lt;/div&gt;`</span>;
+}
+
+<span class="cm">// 4. Función principal: orquesta todo</span>
+<span class="kw">async function</span> <span class="fn">iniciar</span>(): Promise&lt;<span class="typ">void</span>&gt; {
+  <span class="kw">const</span> galeria = document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>)!;
+  galeria.innerHTML = <span class="str">"&lt;p&gt;Cargando...&lt;/p&gt;"</span>;
+  <span class="kw">try</span> {
+    <span class="kw">const</span> productos: <span class="typ">Product</span>[] = <span class="kw">await</span> <span class="fn">getProductos</span>();
+    galeria.innerHTML = productos.<span class="fn">map</span>(<span class="fn">crearTarjeta</span>).<span class="fn">join</span>(<span class="str">""</span>);
+  } <span class="kw">catch</span> (e: <span class="typ">unknown</span>) {
+    galeria.innerHTML = <span class="str">"&lt;p&gt;Error al cargar&lt;/p&gt;"</span>;
+  }
+}
+
+<span class="fn">iniciar</span>();</pre>
+        </div>
+      </div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo en vivo: fetch
+            tipado con FakeStore</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn" onclick="demoFetch1()"> <i class="bi bi-play-fill"></i> getProducto(1)</button>
+            <button class="run-btn blue" onclick="demoFetch2()"> <i class="bi bi-play-fill"></i>
+              getProductos(4)</button>
+            <button class="run-btn green" onclick="demoFetch3()"> <i class="bi bi-play-fill"></i> filtrar
+              baratos</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-fetch" class="output-area">Elige un demo para hacer una petición tipada a FakeStore...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       JQUERY + TYPESCRIPT
+  ══════════════════════════════ -->
+    <section id="jquery-ts" class="content-section">
+      <h2 class="fw-bold mb-1">jQuery + TypeScript</h2>
+      <p class="text-muted mb-4">Todo lo que aprendiste en Clase 3 sigue funcionando. Solo le agregas tipos encima.</p>
+
+      <div class="callout callout-cyan mb-4">
+        <strong>¿Por qué tiene sentido?</strong> En el trabajo real vas a encontrar proyectos con jQuery. Si ese
+        proyecto también usa TypeScript (cada vez más común), necesitas saber combinarlos. Y para practicar: es la mejor
+        forma de ver que TypeScript no rompe nada — solo agrega capas de seguridad encima del código que ya conoces.
+      </div>
+
+      <!-- ── DECLARE VAR ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-plugin" style="color:var(--accent)"></i> Paso previo: decirle a TypeScript que
+          <code>$</code> existe</h4>
+        <p>TypeScript no sabe que cargaste jQuery por CDN. Si intentas usar <code>$</code> directamente obtienes:</p>
+        <div class="error-box">
+          <div class="file">products.ts:1:1</div>
+          error TS2304: Cannot find name <span style="color:#fca5a5">'$'</span>.
+          <div class="fix">Fix: declara $ al inicio del archivo — le dices a TS "confía en mí, esto existe en el
+            navegador"</div>
+        </div>
+        <div class="code-block mt-3">
+          <div class="code-header"><span>inicio de cualquier .ts que use jQuery</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// Opción A — la más simple para proyectos legacy</span>
+<span class="kw">declare var</span> $: <span class="typ">any</span>;
+
+<span class="cm">// Opción B — tipos completos de jQuery (proyectos serios)</span>
+<span class="cm">// npm install --save-dev @types/jquery</span>
+<span class="cm">// y luego ya puedes usar $ con autocomplete completo</span>
+
+<span class="cm">// Para esta clase usamos la Opción A — es lo que verás en proyectos legacy</span></pre>
+        </div>
+      </div>
+
+      <!-- ── $.ajax TIPADO ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-arrow-left-right" style="color:var(--accent)"></i> <code>$.ajax</code> con TypeScript — el
+          patrón de Clase 3, tipado</h4>
+        <p>La llamada <code>$.ajax</code> que aprendiste en Clase 3, exactamente igual, pero ahora <code>response</code>
+          tiene tipo:</p>
+        <div class="code-block">
+          <div class="code-header"><span>ajax-tipado.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">declare var</span> $: <span class="typ">any</span>;
+
+<span class="kw">interface</span> <span class="typ">Product</span> {
+  id:       <span class="typ">number</span>;
+  title:    <span class="typ">string</span>;
+  price:    <span class="typ">number</span>;
+  category: <span class="typ">string</span>;
+  image:    <span class="typ">string</span>;
+  rating:   { rate: <span class="typ">number</span>; count: <span class="typ">number</span> };
+}
+
+<span class="cm">// ── $.ajax de Clase 3 — ahora con tipos ───────────────────────</span>
+$.<span class="fn">ajax</span>({
+  type:     <span class="str">"GET"</span>,
+  url:      <span class="str">"https://fakestoreapi.com/products?limit=4"</span>,
+  dataType: <span class="str">"json"</span>,
+  success: <span class="kw">function</span>(response: <span class="typ">Product</span>[]) {   <span class="cm">// ← esto es lo nuevo</span>
+    response.<span class="fn">forEach</span>(<span class="kw">function</span>(producto: <span class="typ">Product</span>) {
+      <span class="fn">console</span>.<span class="fn">log</span>(producto.title);   <span class="cm">// autocomplete ✓</span>
+      <span class="fn">console</span>.<span class="fn">log</span>(producto.price);   <span class="cm">// autocomplete ✓</span>
+      <span class="fn">console</span>.<span class="fn">log</span>(producto.titlee);  <span class="cm">// ✗ ERROR — TypeScript atrapó el typo</span>
+    });
+  },
+  error: <span class="kw">function</span>(xhr: <span class="typ">any</span>, status: <span class="typ">string</span>, err: <span class="typ">string</span>): <span class="typ">void</span> {
+    <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">"Error:"</span>, status, err);
+  }
+});
+
+<span class="cm">// ── Un solo producto por ID ────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">cargarProducto</span>(id: <span class="typ">number</span>): <span class="typ">void</span> {
+  $.<span class="fn">ajax</span>({
+    type:     <span class="str">"GET"</span>,
+    url:      <span class="str">`https://fakestoreapi.com/products/</span>${id}<span class="str">`</span>,
+    dataType: <span class="str">"json"</span>,
+    success: <span class="kw">function</span>(response: <span class="typ">Product</span>) {
+      <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`</span>${response.title}<span class="str"> — $</span>${response.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">`</span>);
+    }
+  });
+}
+<span class="fn">cargarProducto</span>(<span class="num">1</span>);
+<span class="fn">cargarProducto</span>(<span class="str">"uno"</span>);  <span class="cm">// ✗ ERROR: Argument of type 'string' is not assignable to 'number'</span></pre>
+        </div>
+      </div>
+
+      <!-- ── EVENTOS TIPADOS ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-cursor-fill" style="color:var(--accent)"></i> Eventos jQuery con tipos</h4>
+        <p>Los event handlers de jQuery también se pueden tipar. El objeto <code>event</code> ya no es un misterio:</p>
+        <div class="code-block">
+          <div class="code-header"><span>eventos-tipados.ts</span><span class="lang-badge lang-ts">TypeScript</span>
+          </div>
+          <pre><span class="kw">declare var</span> $: <span class="typ">any</span>;
+
+<span class="cm">// ── Click con tipo de evento ───────────────────────────────────</span>
+$(<span class="str">"#btn-cargar"</span>).<span class="fn">on</span>(<span class="str">"click"</span>, <span class="kw">function</span>(event: <span class="typ">JQuery.ClickEvent</span>): <span class="typ">void</span> {
+  event.<span class="fn">preventDefault</span>();
+  <span class="fn">cargarProductos</span>();
+});
+
+<span class="cm">// ── Input con tipo — capturar lo que escribe el usuario ─────────</span>
+<span class="kw">let</span> busqueda: <span class="typ">string</span> = <span class="str">""</span>;
+
+$(<span class="str">"#input-buscar"</span>).<span class="fn">on</span>(<span class="str">"keyup"</span>, <span class="kw">function</span>(): <span class="typ">void</span> {
+  busqueda = $(<span class="kw">this</span>).<span class="fn">val</span>() <span class="kw">as</span> <span class="typ">string</span>;  <span class="cm">// .val() devuelve any → casteamos a string</span>
+  <span class="fn">filtrarPorNombre</span>(busqueda);
+});
+
+<span class="cm">// ── Delegación de eventos — botón dentro de tarjeta dinámica ──</span>
+$(<span class="str">"#galeria"</span>).<span class="fn">on</span>(<span class="str">"click"</span>, <span class="str">".btn-fav"</span>, <span class="kw">function</span>(): <span class="typ">void</span> {
+  <span class="kw">const</span> id: <span class="typ">number</span> = <span class="kw">parseInt</span>($(<span class="kw">this</span>).<span class="fn">data</span>(<span class="str">"id"</span>), <span class="num">10</span>);
+  <span class="cm">// .data("id") devuelve any → parseInt lo convierte a number</span>
+  <span class="fn">toggleFavorito</span>(id);
+});
+
+<span class="cm">// ── $(document).ready() tipado ────────────────────────────────</span>
+$(<span class="kw">function</span>(): <span class="typ">void</span> {
+  <span class="fn">cargarProductos</span>();
+  <span class="fn">actualizarContador</span>();
+});</pre>
+        </div>
+        <div class="callout callout-amber">
+          <strong>El cast <code>as string</code>:</strong> jQuery tiene sus propios tipos que a veces devuelven
+          <code>any</code> porque no saben qué hay dentro del DOM. En esos casos usas <code>as string</code> o
+          <code>as number</code> para decirle a TypeScript el tipo real. Es el único punto de fricción frecuente con
+          jQuery + TS.
+        </div>
+      </div>
+
+      <!-- ── PATRÓN COMPLETO ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-layers" style="color:var(--accent)"></i> Patrón completo: galería con favoritos — jQuery +
+          TypeScript</h4>
+        <p class="small text-muted mb-2">El mismo ejercicio de Clase 3 pero con todas las funciones tipadas. Nota que la
+          estructura es idéntica — solo se agregan los tipos:</p>
+        <div class="code-block">
+          <div class="code-header"><span>galeria-jquery.ts — Clase 3 + tipos de Clase 4</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">declare var</span> $: <span class="typ">any</span>;
+
+<span class="kw">interface</span> <span class="typ">Product</span> {
+  id: <span class="typ">number</span>; title: <span class="typ">string</span>; price: <span class="typ">number</span>; image: <span class="typ">string</span>; category: <span class="typ">string</span>;
+}
+
+<span class="cm">// ── Storage tipado ─────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">getFavoritos</span>(): <span class="typ">number</span>[] {
+  <span class="kw">return</span> <span class="fn">JSON</span>.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">"favs"</span>) ?? <span class="str">"[]"</span>) <span class="kw">as</span> <span class="typ">number</span>[];
+}
+<span class="kw">function</span> <span class="fn">toggleFav</span>(id: <span class="typ">number</span>): <span class="typ">void</span> {
+  <span class="kw">const</span> favs: <span class="typ">number</span>[] = <span class="fn">getFavoritos</span>();
+  <span class="kw">const</span> idx:  <span class="typ">number</span>  = favs.<span class="fn">indexOf</span>(id);
+  idx === -<span class="num">1</span> ? favs.<span class="fn">push</span>(id) : favs.<span class="fn">splice</span>(idx, <span class="num">1</span>);
+  localStorage.<span class="fn">setItem</span>(<span class="str">"favs"</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(favs));
+}
+
+<span class="cm">// ── Render tipado ──────────────────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">crearTarjeta</span>(p: <span class="typ">Product</span>): <span class="typ">string</span> {
+  <span class="kw">const</span> fav: <span class="typ">boolean</span> = <span class="fn">getFavoritos</span>().<span class="fn">includes</span>(p.id);
+  <span class="kw">return</span> <span class="str">`
+    &lt;div class="card"&gt;
+      &lt;img src="</span>${p.image}<span class="str"}"&gt;
+      &lt;p&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">30</span>)}<span class="str">...&lt;/p&gt;
+      &lt;b&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/b&gt;
+      &lt;button class="btn-fav" data-id="</span>${p.id}<span class="str">"&gt;
+        </span>${fav ? <span class="str">"❤"</span> : <span class="str">"♡"</span>}<span class="str"> Favorito
+      &lt;/button&gt;
+    &lt;/div&gt;
+  `</span>;
+}
+
+<span class="cm">// ── $.ajax con tipos — igual que Clase 3 ──────────────────────</span>
+<span class="kw">function</span> <span class="fn">cargarProductos</span>(): <span class="typ">void</span> {
+  $(<span class="str">"#galeria"</span>).<span class="fn">html</span>(<span class="str">"&lt;p&gt;Cargando...&lt;/p&gt;"</span>);
+
+  $.<span class="fn">ajax</span>({
+    type:     <span class="str">"GET"</span>,
+    url:      <span class="str">"https://fakestoreapi.com/products?limit=6"</span>,
+    dataType: <span class="str">"json"</span>,
+    success: <span class="kw">function</span>(response: <span class="typ">Product</span>[]): <span class="typ">void</span> {     <span class="cm">// ← tipo aquí</span>
+      <span class="kw">const</span> html: <span class="typ">string</span> = response.<span class="fn">map</span>(<span class="fn">crearTarjeta</span>).<span class="fn">join</span>(<span class="str">""</span>);
+      $(<span class="str">"#galeria"</span>).<span class="fn">html</span>(html);
+    },
+    error: <span class="kw">function</span>(xhr: <span class="typ">any</span>, status: <span class="typ">string</span>): <span class="typ">void</span> {
+      $(<span class="str">"#galeria"</span>).<span class="fn">html</span>(<span class="str">`&lt;p&gt;Error: </span>${status}<span class="str">&lt;/p&gt;`</span>);
+    }
+  });
+}
+
+<span class="cm">// ── Delegación de eventos — tipada ────────────────────────────</span>
+$(<span class="str">"#galeria"</span>).<span class="fn">on</span>(<span class="str">"click"</span>, <span class="str">".btn-fav"</span>, <span class="kw">function</span>(): <span class="typ">void</span> {
+  <span class="kw">const</span> id: <span class="typ">number</span> = <span class="kw">parseInt</span>($(<span class="kw">this</span>).<span class="fn">data</span>(<span class="str">"id"</span>), <span class="num">10</span>);
+  <span class="fn">toggleFav</span>(id);
+  $(<span class="kw">this</span>).<span class="fn">text</span>(<span class="fn">getFavoritos</span>().<span class="fn">includes</span>(id) ? <span class="str">"❤ Favorito"</span> : <span class="str">"♡ Favorito"</span>);
+});
+
+$(<span class="kw">function</span>(): <span class="typ">void</span> { <span class="fn">cargarProductos</span>(); });  <span class="cm">// $(document).ready tipado</span></pre>
+        </div>
+      </div>
+
+      <!-- ── COMPARATIVA ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-layout-split" style="color:var(--accent)"></i> La diferencia real entre Clase 3 y Clase 4
+        </h4>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fffbeb;border:1px solid #fde68a">
+            <h6 style="color:#92400e;font-size:.82rem">Clase 3 — jQuery puro</h6>
+            <pre style="font-size:.76rem;color:#78350f;margin:0;line-height:1.9">$.<span class="fn">ajax</span>({
+  type:    <span class="str">"GET"</span>,
+  url:     <span class="str">"...products"</span>,
+  success: <span class="kw">function</span>(response) {
+    <span class="cm">// response: any — no sabes qué hay</span>
+    response.<span class="fn">forEach</span>(<span class="kw">function</span>(p) {
+      console.log(p.titlee); <span class="cm">// undefined</span>
+      <span class="cm">// nadie te avisa</span>
+    });
+  }
+});</pre>
+          </div>
+          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <h6 style="color:#164e63;font-size:.82rem">Clase 3 + Clase 4 — jQuery + tipos ✓</h6>
+            <pre style="font-size:.76rem;color:#0e7490;margin:0;line-height:1.9">$.<span class="fn">ajax</span>({
+  type:    <span class="str">"GET"</span>,
+  url:     <span class="str">"...products"</span>,
+  success: <span class="kw">function</span>(response: <span class="typ">Product</span>[]) {
+    <span class="cm">// response: Product[] — sabes exactamente qué hay</span>
+    response.<span class="fn">forEach</span>(<span class="kw">function</span>(p: <span class="typ">Product</span>) {
+      console.log(p.titlee); <span class="cm">// ✗ ERROR inmediato</span>
+      <span class="cm">// el editor te avisa antes de ejecutar</span>
+    });
+  }
+});</pre>
+          </div>
+        </div>
+        <p class="small text-muted mt-3 mb-0">La lógica es idéntica. La sintaxis es idéntica. Solo se agregan
+          <code>: Product[]</code> y <code>: Product</code>. Eso es exactamente lo que es TypeScript: JavaScript con
+          tipos.</p>
+      </div>
+
+      <!-- ── DEMO EN VIVO ── -->
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: $.ajax con tipos —
+            en vivo</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn" onclick="demoJQTS1()"> <i class="bi bi-play-fill"></i> $.ajax GET lista</button>
+            <button class="run-btn blue" onclick="demoJQTS2()"> <i class="bi bi-play-fill"></i> $.ajax GET por
+              ID</button>
+            <button class="run-btn green" onclick="demoJQTS3()"> <i class="bi bi-play-fill"></i> evento
+              delegado</button>
+            <button class="run-btn red" onclick="demoJQTS4()"> <i class="bi bi-bug"></i> simular error de tipo</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-jqts" class="output-area">Elige un demo para ver $.ajax con TypeScript...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       EJERCICIO
+  ══════════════════════════════ -->
+    <section id="ejercicio" class="content-section">
+      <h2 class="fw-bold mb-1">Ejercicio: mini-tienda con favoritos</h2>
+      <p class="text-muted mb-4">Aplicar todo lo aprendido: interfaces, fetch tipado, funciones, y localStorage — todo
+        con TypeScript.</p>
+
+      <!-- ── ESTRUCTURA ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-folder2-open" style="color:var(--accent)"></i> Estructura de archivos</h4>
+        <div class="file-tree">
+          <div><span class="dir">mi-tienda-ts/</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">products.ts</span> &nbsp;&nbsp;<span class="note">← Paso 1: aquí escribes
+              TypeScript</span></div>
+          <div>&nbsp;&nbsp;<span class="file">products.js</span> &nbsp;&nbsp;<span class="note">← Paso 2: se genera al
+              compilar — NO editar</span></div>
+          <div>&nbsp;&nbsp;<span class="file">index.html</span> &nbsp;&nbsp;&nbsp;<span class="note">← Paso 3: la página
+              que usa el .js compilado</span></div>
+        </div>
+        <div class="callout callout-cyan mt-3">
+          <strong>El flujo es siempre:</strong> escribir en <code>.ts</code> → compilar → el navegador usa el
+          <code>.js</code>. En Angular, el CLI hace los pasos 2 y 3 automáticamente. Hoy lo hacemos manual para que
+          quede claro qué pasa por dentro.
+        </div>
+      </div>
+
+      <!-- ── PASO 1: products.ts ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-filetype-tsx" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
+          Crear <code>products.ts</code>
+        </h4>
+        <p style="font-size:.9rem;color:#374151">Este archivo contiene <strong>todas las interfaces y toda la
+            lógica</strong>. Nota cómo cada función tiene sus tipos declarados — eso es lo único nuevo respecto a las
+          clases anteriores:</p>
+
+        <div class="code-block">
+          <div class="code-header"><span>products.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// ═══════════════════════════════════════════════════════════════
+//  Mini-tienda con favoritos — TypeScript Clase 4
+//  Interfaces + fetch tipado + localStorage tipado
+// ═══════════════════════════════════════════════════════════════</span>
+
+<span class="cm">// ── 1. INTERFACES ─────────────────────────────────────────────</span>
+<span class="kw">interface</span> <span class="typ">Rating</span> {
+  rate:  <span class="typ">number</span>;
+  count: <span class="typ">number</span>;
+}
+
+<span class="kw">interface</span> <span class="typ">Product</span> {
+  id:          <span class="typ">number</span>;
+  title:       <span class="typ">string</span>;
+  price:       <span class="typ">number</span>;
+  category:    <span class="typ">string</span>;
+  description: <span class="typ">string</span>;
+  image:       <span class="typ">string</span>;
+  rating:      <span class="typ">Rating</span>;
+}
+
+<span class="cm">// ── 2. FAVORITOS — localStorage tipado ────────────────────────</span>
+<span class="kw">const</span> STORAGE_KEY = <span class="str">"favoritos"</span>;
+
+<span class="kw">function</span> <span class="fn">getFavoritos</span>(): <span class="typ">number</span>[] {
+  <span class="kw">const</span> raw = localStorage.<span class="fn">getItem</span>(STORAGE_KEY);
+  <span class="kw">return</span> raw ? <span class="fn">JSON</span>.<span class="fn">parse</span>(raw) <span class="kw">as</span> <span class="typ">number</span>[] : [];
+  <span class="cm">// retorna array de IDs: [1, 4, 7]</span>
+}
+
+<span class="kw">function</span> <span class="fn">toggleFavorito</span>(id: <span class="typ">number</span>): <span class="typ">void</span> {
+  <span class="kw">const</span> favs: <span class="typ">number</span>[] = <span class="fn">getFavoritos</span>();
+  <span class="kw">const</span> idx:  <span class="typ">number</span>  = favs.<span class="fn">indexOf</span>(id);
+
+  <span class="kw">if</span> (idx === -<span class="num">1</span>) {
+    favs.<span class="fn">push</span>(id);                <span class="cm">// no está → agregar</span>
+  } <span class="kw">else</span> {
+    favs.<span class="fn">splice</span>(idx, <span class="num">1</span>);          <span class="cm">// ya está → quitar</span>
+  }
+
+  localStorage.<span class="fn">setItem</span>(STORAGE_KEY, <span class="fn">JSON</span>.<span class="fn">stringify</span>(favs));
+  <span class="fn">actualizarContador</span>();
+  <span class="fn">actualizarBoton</span>(id, favs.<span class="fn">includes</span>(id));
+}
+
+<span class="kw">function</span> <span class="fn">esFavorito</span>(id: <span class="typ">number</span>): <span class="typ">boolean</span> {
+  <span class="kw">return</span> <span class="fn">getFavoritos</span>().<span class="fn">includes</span>(id);
+}
+
+<span class="kw">function</span> <span class="fn">actualizarContador</span>(): <span class="typ">void</span> {
+  <span class="kw">const</span> n   = <span class="fn">getFavoritos</span>().length;
+  <span class="kw">const</span> el  = document.<span class="fn">getElementById</span>(<span class="str">"contador-favs"</span>)!;
+  el.textContent  = <span class="str">`❤ </span>${n}<span class="str"> favorito</span>${n !== <span class="num">1</span> ? <span class="str">"s"</span> : <span class="str">""</span>}<span class="str">`</span>;
+  el.style.display = n > <span class="num">0</span> ? <span class="str">"inline-block"</span> : <span class="str">"none"</span>;
+}
+
+<span class="kw">function</span> <span class="fn">actualizarBoton</span>(id: <span class="typ">number</span>, activo: <span class="typ">boolean</span>): <span class="typ">void</span> {
+  <span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">`fav-</span>${id}<span class="str">`</span>);
+  <span class="kw">if</span> (!btn) <span class="kw">return</span>;
+  btn.textContent   = activo ? <span class="str">"❤ Guardado"</span> : <span class="str">"♡ Guardar"</span>;
+  btn.style.background = activo ? <span class="str">"#ef4444"</span> : <span class="str">"#f1f5f9"</span>;
+  btn.style.color      = activo ? <span class="str">"#fff"</span>     : <span class="str">"#475569"</span>;
+}
+
+<span class="cm">// ── 3. RENDER — crearTarjeta tipada ───────────────────────────</span>
+<span class="kw">function</span> <span class="fn">crearTarjeta</span>(producto: <span class="typ">Product</span>): <span class="typ">string</span> {
+  <span class="kw">const</span> fav:  <span class="typ">boolean</span> = <span class="fn">esFavorito</span>(producto.id);
+  <span class="kw">const</span> label: <span class="typ">string</span> = fav ? <span class="str">"❤ Guardado"</span> : <span class="str">"♡ Guardar"</span>;
+  <span class="kw">const</span> bgBtn: <span class="typ">string</span> = fav ? <span class="str">"#ef4444"</span>    : <span class="str">"#f1f5f9"</span>;
+  <span class="kw">const</span> colBtn:<span class="typ">string</span> = fav ? <span class="str">"#fff"</span>        : <span class="str">"#475569"</span>;
+
+  <span class="kw">return</span> <span class="str">`
+    &lt;div class="tarjeta"&gt;
+      &lt;img src="</span>${producto.image}<span class="str"}" loading="lazy" alt="</span>${producto.title}<span class="str">"&gt;
+      &lt;div class="tarjeta-body"&gt;
+        &lt;p class="titulo"&gt;</span>${producto.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">40</span>)}<span class="str">...&lt;/p&gt;
+        &lt;p class="precio"&gt;$</span>${producto.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
+        &lt;small class="cat"&gt;</span>${producto.category}<span class="str">&lt;/small&gt;
+        &lt;div class="rating"&gt;⭐ </span>${producto.rating.rate}<span class="str"> (</span>${producto.rating.count}<span class="str">)&lt;/div&gt;
+        &lt;button
+          id="fav-</span>${producto.id}<span class="str">"
+          onclick="toggleFavorito(</span>${producto.id}<span class="str">)"
+          style="background:</span>${bgBtn}<span class="str">;color:</span>${colBtn}<span class="str">;border:none;
+                 border-radius:6px;padding:.3rem .8rem;font-size:.78rem;
+                 cursor:pointer;margin-top:.5rem;width:100%"
+        &gt;</span>${label}<span class="str">&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  `</span>;
+}
+
+<span class="cm">// ── 4. FETCH tipado ────────────────────────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">getProductos</span>(limit: <span class="typ">number</span> = <span class="num">8</span>): Promise&lt;<span class="typ">Product</span>[]&gt; {
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`https://fakestoreapi.com/products?limit=</span>${limit}<span class="str">`</span>);
+  <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">`HTTP </span>${res.status}<span class="str">`</span>);
+  <span class="kw">return</span> res.<span class="fn">json</span>() <span class="kw">as</span> Promise&lt;<span class="typ">Product</span>[]&gt;;
+}
+
+<span class="cm">// ── 5. INICIAR — orquesta todo ─────────────────────────────────</span>
+<span class="kw">async function</span> <span class="fn">iniciar</span>(): Promise&lt;<span class="typ">void</span>&gt; {
+  <span class="kw">const</span> galeria = document.<span class="fn">getElementById</span>(<span class="str">"galeria"</span>)!;
+  galeria.innerHTML = <span class="str">"&lt;p style='color:#94a3b8'&gt;Cargando...&lt;/p&gt;"</span>;
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> productos: <span class="typ">Product</span>[] = <span class="kw">await</span> <span class="fn">getProductos</span>();
+    galeria.innerHTML = productos.<span class="fn">map</span>(<span class="fn">crearTarjeta</span>).<span class="fn">join</span>(<span class="str">""</span>);
+    <span class="fn">actualizarContador</span>();
+  } <span class="kw">catch</span> (e: <span class="typ">unknown</span>) {
+    <span class="kw">if</span> (e <span class="kw">instanceof</span> <span class="fn">Error</span>) {
+      galeria.innerHTML = <span class="str">`&lt;p style='color:#ef4444'&gt;Error: </span>${e.message}<span class="str">&lt;/p&gt;`</span>;
+    }
+  }
+}
+
+<span class="fn">iniciar</span>();</pre>
+        </div>
+      </div>
+
+      <!-- ── PASO 2: compilar ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 2</span>
+          Compilar con <code>tsc</code>
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>terminal — dentro de la carpeta mi-tienda-ts/</span><span
+              class="lang-badge lang-bash">bash</span></div>
+          <pre>tsc products.ts --target es2017
+
+<span class="cm"># Sin errores → se crea products.js en la misma carpeta</span>
+<span class="cm"># Verás esto en tu carpeta:</span>
+<span class="cm">#   mi-tienda-ts/</span>
+<span class="cm">#     products.ts   ← tu código original</span>
+<span class="cm">#     products.js   ← generado — interfaces eliminadas, JS puro</span></pre>
+        </div>
+
+        <p class="mt-3 mb-2" style="font-size:.88rem;font-weight:600">¿Qué hace el compilador? Elimina todo lo que es
+          TypeScript y deja solo JavaScript:</p>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <h6 style="color:#4c1d95;font-size:.8rem">products.ts (lo que escribiste)</h6>
+            <pre style="font-size:.76rem;color:#3b0764;margin:0;line-height:1.8"><span class="kw">interface</span> <span class="typ">Product</span> {   <span class="cm">← desaparece</span>
+  id:    <span class="typ">number</span>;       <span class="cm">← desaparece</span>
+  title: <span class="typ">string</span>;       <span class="cm">← desaparece</span>
+}
+<span class="kw">function</span> <span class="fn">getFavoritos</span>(): <span class="typ">number</span>[] {
+  <span class="kw">const</span> raw = localStorage.<span class="fn">getItem</span>(...);
+  <span class="kw">return</span> raw ? <span class="fn">JSON</span>.<span class="fn">parse</span>(raw) <span class="kw">as</span> <span class="typ">number</span>[] : [];
+}</pre>
+          </div>
+          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <h6 style="color:#164e63;font-size:.8rem">products.js (lo que genera el compilador)</h6>
+            <pre style="font-size:.76rem;color:#0e7490;margin:0;line-height:1.8"><span class="cm">// interface → eliminada completamente</span>
+<span class="cm">// tipos :number[] → eliminados</span>
+<span class="cm">// as number[] → eliminado</span>
+
+<span class="kw">function</span> <span class="fn">getFavoritos</span>() {
+  <span class="kw">const</span> raw = localStorage.<span class="fn">getItem</span>(...);
+  <span class="kw">return</span> raw ? <span class="fn">JSON</span>.<span class="fn">parse</span>(raw) : [];
+}</pre>
+          </div>
+        </div>
+
+        <div class="callout callout-cyan mt-2">
+          El navegador <strong>nunca ve TypeScript</strong>. Solo ejecuta el <code>.js</code> generado. Las interfaces y
+          los tipos son solo para el editor y el compilador — son documentación con dientes.
+        </div>
+
+        <p class="fw-semibold small mb-2 mt-3">Errores comunes al compilar:</p>
+        <div class="error-box">
+          <div class="file">products.ts — error más frecuente</div>
+          <span style="color:#f9a8d4">error</span> TS2741: Property <span style="color:#fca5a5">'image'</span> is
+          missing in type <span style="color:#67e8f9">'{ id: number; title: string; }'</span> but required in type <span
+            style="color:#c4b5fd">'Product'</span>.
+          <div class="fix">Fix: Tu objeto literal no tiene todos los campos de la interface. Agrégalos o márcalos
+            opcionales con <code>?</code>.</div>
+        </div>
+        <div class="error-box mt-2">
+          <div class="file">terminal</div>
+          'tsc' is not recognized as an internal or external command
+          <div class="fix">Fix: <code>npm install -g typescript</code> y reinicia la terminal.</div>
+        </div>
+      </div>
+
+      <!-- ── PASO 3: index.html ── -->
+      <div class="theory-block">
+        <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 3</span>
+          Crear <code>index.html</code> — usa el <code>.js</code> compilado
+        </h4>
+        <p style="font-size:.88rem;color:#374151">El HTML referencia <code>products.js</code> (no el <code>.ts</code>).
+          Solo incluye la estructura y los estilos básicos — toda la lógica ya está en el archivo TypeScript que
+          compilaste:</p>
+
+        <div class="code-block">
+          <div class="code-header"><span>index.html</span><span class="lang-badge lang-js">HTML</span></div>
+          <pre><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html</span> <span class="prop">lang</span>=<span class="str">"es"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;head&gt;</span>
+  <span class="kw">&lt;meta</span> <span class="prop">charset</span>=<span class="str">"UTF-8"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;title&gt;</span>Mini Tienda — TypeScript<span class="kw">&lt;/title&gt;</span>
+  <span class="kw">&lt;style&gt;</span>
+    <span class="fn">body</span>        { font-family: sans-serif; background: #f0f2f5; padding: 1.5rem; }
+    <span class="fn">h1</span>          { color: #0891b2; }
+    <span class="fn">.header</span>     { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    <span class="fn">#contador-favs</span> {
+      background: #ef4444; color: #fff; border-radius: 20px;
+      padding: .3rem .9rem; font-size: .82rem; font-weight: 700; display: none;
+    }
+    <span class="fn">#galeria</span>    { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+    <span class="fn">.tarjeta</span>    { background: #fff; border-radius: 10px; border: 1px solid #e2e8f0;
+                  overflow: hidden; transition: box-shadow .2s; }
+    <span class="fn">.tarjeta:hover</span> { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+    <span class="fn">.tarjeta img</span>  { width: 100%; height: 120px; object-fit: contain; padding: .5rem; }
+    <span class="fn">.tarjeta-body</span> { padding: .75rem; }
+    <span class="fn">.titulo</span>     { font-size: .78rem; font-weight: 600; margin: 0 0 .25rem; line-height: 1.3; }
+    <span class="fn">.precio</span>     { color: #0891b2; font-weight: 700; font-size: .9rem; margin: 0; }
+    <span class="fn">.cat</span>        { color: #94a3b8; font-size: .7rem; }
+    <span class="fn">.rating</span>     { font-size: .72rem; color: #64748b; margin-top: .2rem; }
+  <span class="kw">&lt;/style&gt;</span>
+<span class="kw">&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+
+  <span class="kw">&lt;div</span> <span class="prop">class</span>=<span class="str">"header"</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;h1&gt;</span>🛒 Mi Tienda<span class="kw">&lt;/h1&gt;</span>
+    <span class="cm">&lt;!-- El contador lo llena TypeScript: actualizarContador() --&gt;</span>
+    <span class="kw">&lt;span</span> <span class="prop">id</span>=<span class="str">"contador-favs"</span><span class="kw">&gt;&lt;/span&gt;</span>
+  <span class="kw">&lt;/div&gt;</span>
+
+  <span class="cm">&lt;!-- La galería la llena TypeScript: iniciar() → crearTarjeta() --&gt;</span>
+  <span class="kw">&lt;div</span> <span class="prop">id</span>=<span class="str">"galeria"</span><span class="kw">&gt;&lt;/div&gt;</span>
+
+  <span class="cm">&lt;!-- ⚠ Siempre products.js (el compilado), NUNCA products.ts --&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"products.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></pre>
+        </div>
+
+        <div class="callout callout-amber">
+          <strong>¿Por qué <code>toggleFavorito()</code> funciona desde el HTML?</strong> Porque las funciones
+          declaradas con <code>function</code> en el <code>.ts</code> quedan en el scope global del <code>.js</code>
+          compilado. Por eso el botón del HTML puede llamarla con <code>onclick="toggleFavorito(1)"</code>. En Angular
+          esto cambia — los eventos se declaran diferente — pero eso lo verás en Clase 5.
+        </div>
+      </div>
+
+      <!-- ── DEMO EN VIVO ── -->
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Resultado final —
+            mini-tienda con favoritos</div>
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <span id="contador-favs-demo"
+              style="background:#ef4444;color:#fff;border-radius:20px;padding:.2rem .75rem;font-size:.78rem;font-weight:700;display:none"></span>
+            <button class="run-btn" id="btn-tienda" onclick="demoTienda()"><i class="bi bi-play-fill"></i> Cargar
+              tienda</button>
+            <button class="run-btn red" onclick="demoTiendaReset()"><i class="bi bi-trash"></i> Limpiar favs</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="mini-tienda-output">
+            <div class="text-center text-muted py-4">
+              <i class="bi bi-shop" style="font-size:2rem;color:#a5f3fc"></i>
+              <p class="mt-2 small">Clic en "Cargar tienda" para ver el resultado — los favoritos persisten aunque
+                recargues</p>
+            </div>
+          </div>
+          <div id="ts-log"
+            style="display:none;margin-top:1rem;background:#0f172a;border-radius:8px;padding:.75rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       SETUP ANGULAR
+  ══════════════════════════════ -->
+    <section id="setup-angular" class="content-section">
+      <h2 class="fw-bold mb-1">Setup: Angular CLI</h2>
+      <p class="text-muted mb-4">Instalar Angular, crear el proyecto <code>mi-tienda</code> y explorar la estructura que
+        genera.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-terminal" style="color:var(--accent)"></i> Instalación paso a paso</h4>
+        <div class="code-block">
+          <div class="code-header"><span>terminal — requisito: Node.js instalado</span><span
+              class="lang-badge lang-bash">bash</span></div>
+          <pre><span class="cm"># 1. Verificar que Node.js está instalado</span>
+node --version    <span class="cm"># debe mostrar v18.x o superior</span>
+npm --version     <span class="cm"># debe mostrar 9.x o superior</span>
+
+<span class="cm"># 2. Instalar Angular CLI globalmente</span>
+npm install -g @angular/cli
+
+<span class="cm"># 3. Verificar la instalación</span>
+ng version
+
+<span class="cm"># 4. Crear el proyecto</span>
+ng new mi-tienda
+
+<span class="cm"># El CLI te pregunta:
+# ? Which stylesheet format? → CSS (Enter)
+# ? Enable SSR? → No (N + Enter)</span>
+
+<span class="cm"># 5. Entrar al proyecto y arrancarlo</span>
+cd mi-tienda
+ng serve
+
+<span class="cm"># Abre http://localhost:4200 — verás la app default de Angular</span></pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-folder-tree" style="color:var(--accent)"></i> La estructura que genera Angular — qué es qué
+        </h4>
+        <div class="file-tree">
+          <div><span class="dir">mi-tienda/</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">src/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="dir">app/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="note">← tu código vive aquí</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="ts">app.component.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">← el componente raíz
+              (TypeScript)</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">app.component.html</span>&nbsp;&nbsp;&nbsp;<span
+              class="note">← la plantilla HTML del componente</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="file">app.component.css</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">← estilos del
+              componente</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="ts">app.config.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">←
+              configuración de la app</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="ts">app.routes.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">←
+              definición de rutas</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="file">index.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="note">← el único HTML — Angular lo maneja</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="ts">main.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="note">← punto de entrada de la app</span></div>
+          <div>&nbsp;&nbsp;<span
+              class="file">package.json</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="note">← dependencias del proyecto</span></div>
+          <div>&nbsp;&nbsp;<span
+              class="file">tsconfig.json</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="note">← configuración TS (Angular lo genera)</span></div>
+          <div>&nbsp;&nbsp;<span
+              class="file">angular.json</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="note">← configuración del CLI</span></div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-eye" style="color:var(--accent)"></i> Tu primer vistazo a un componente Angular</h4>
+        <p>Abre <code>src/app/app.component.ts</code>. Verás algo así:</p>
+        <div class="code-block">
+          <div class="code-header"><span>app.component.ts — Angular usa TypeScript exactamente igual</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+
+<span class="cm">// @Component es un "decorador" — lo estudiarás en Clase 5</span>
+@<span class="fn">Component</span>({
+  selector:    <span class="str">'app-root'</span>,
+  templateUrl: <span class="str">'./app.component.html'</span>,
+  styleUrl:    <span class="str">'./app.component.css'</span>
+})
+<span class="kw">export class</span> <span class="typ">AppComponent</span> {
+  <span class="cm">// Aquí puedes usar EXACTAMENTE el mismo TypeScript de hoy</span>
+  title:   <span class="typ">string</span>  = <span class="str">'mi-tienda'</span>;         <span class="cm">// ← tipo string</span>
+  precio:  <span class="typ">number</span>  = <span class="num">29.99</span>;               <span class="cm">// ← tipo number</span>
+  activo:  <span class="typ">boolean</span> = <span class="bool">true</span>;                 <span class="cm">// ← tipo boolean</span>
+  productos: <span class="typ">Product</span>[] = [];               <span class="cm">// ← la interface que creaste hoy</span>
+}</pre>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>¿Ves?</strong> El TypeScript dentro de un componente Angular es idéntico al que acabas de aprender. La
+          diferencia es el decorador <code>@Component</code> — y eso es exactamente lo que aprenderás en la Clase 5.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-lightning" style="color:var(--accent)"></i> Comandos CLI que usarás siempre</h4>
+        <div class="code-block">
+          <div class="code-header"><span>comandos-angular.bash</span><span class="lang-badge lang-bash">bash</span>
+          </div>
+          <pre>ng serve                    <span class="cm"># levantar servidor de desarrollo</span>
+ng serve --open             <span class="cm"># levanta Y abre el navegador</span>
+ng generate component nombre <span class="cm"># crear un nuevo componente</span>
+ng generate service nombre   <span class="cm"># crear un servicio</span>
+ng build                    <span class="cm"># compilar para producción</span>
+ng --help                   <span class="cm"># ver todos los comandos</span>
+
+<span class="cm"># Atajos:</span>
+ng g c nombre               <span class="cm"># = ng generate component nombre</span>
+ng g s nombre               <span class="cm"># = ng generate service nombre</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       Q&A
+  ══════════════════════════════ -->
+    <section id="qa" class="content-section">
+      <h2 class="fw-bold mb-1">Q&A y cierre</h2>
+      <p class="text-muted mb-4">Resumen de TypeScript y lo que viene.</p>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <div class="theory-block h-100">
+            <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
+            <ul style="font-size:.9rem;line-height:2.2">
+              <li>El <strong>problema</strong> que TypeScript resuelve (bugs silenciosos)</li>
+              <li>TS es JS más anotaciones — compila a JS puro</li>
+              <li>Tipos básicos: <code>string</code>, <code>number</code>, <code>boolean</code>, arrays</li>
+              <li><strong>Inferencia de tipos</strong> — TS adivina cuando puede</li>
+              <li>Union types: <code>string | null</code></li>
+              <li><code>interface Product</code> para modelar FakeStore API</li>
+              <li>Funciones tipadas: parámetros, retorno, <code>void</code></li>
+              <li><strong>fetch tipado</strong> con <code>Promise&lt;Product[]&gt;</code></li>
+              <li>Errores comunes al compilar y cómo resolverlos</li>
+              <li>Setup de Angular CLI — <code>ng new</code>, <code>ng serve</code></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="theory-block h-100">
+            <h4><i class="bi bi-journal-check text-success"></i> Tarea para la Clase 5</h4>
+            <div class="callout callout-cyan">
+              <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2.3">
+                <li>Completar el ejercicio: <code>products.ts</code> con interface, fetch tipado y render</li>
+                <li>Compilar con <code>tsc products.ts --target es2017</code> sin errores</li>
+                <li><strong>Obligatorio:</strong> ejecutar <code>ng new mi-tienda</code> y <code>ng serve</code> —
+                  llegar con el proyecto corriendo</li>
+                <li>Abrir <code>app.component.ts</code> y agregar una propiedad
+                  <code>titulo: string = "Mi Tienda"</code></li>
+                <li><strong>Bonus:</strong> mover la interface <code>Product</code> a un archivo <code>models.ts</code>
+                  separado e importarla</li>
+              </ol>
+            </div>
+            <div class="callout callout-amber mt-3">
+              <strong>Clase 5 — Intro a Angular:</strong> Aprenderás qué es un componente, cómo funciona el decorador
+              <code>@Component</code>, y harás tu primer binding de datos: <code>{{ producto.title }}</code> en el
+              template.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-patch-question" style="color:var(--accent)"></i> Preguntas frecuentes de esta clase</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#ecfeff;border:1px solid #a5f3fc">
+              <p class="fw-semibold mb-1" style="font-size:.88rem;color:#164e63">¿Tengo que anotar el tipo de TODAS las
+                variables?</p>
+              <p class="small mb-0" style="color:#374151">No. Si asignas un valor en la misma línea, TypeScript infiere
+                el tipo. Anota explícitamente cuando el tipo no es obvio: <code>Product</code>, <code>Product[]</code>,
+                retornos de funciones.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#ecfeff;border:1px solid #a5f3fc">
+              <p class="fw-semibold mb-1" style="font-size:.88rem;color:#164e63">¿Puedo usar <code>any</code> cuando no
+                sé el tipo?</p>
+              <p class="small mb-0" style="color:#374151">Técnicamente sí, pero es rendirse. Es como decirle a TS "no me
+                ayudes aquí". Prefiere <code>unknown</code> para errores, o define la interface correctamente.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#ecfeff;border:1px solid #a5f3fc">
+              <p class="fw-semibold mb-1" style="font-size:.88rem;color:#164e63">¿La interface tiene que coincidir
+                exactamente con el JSON?</p>
+              <p class="small mb-0" style="color:#374151">No al 100%. Puedes poner solo los campos que vas a usar. Si el
+                JSON tiene más campos, TypeScript no se queja — solo marca error si usas un campo que <em>no
+                  declaraste</em> en la interface.</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#ecfeff;border:1px solid #a5f3fc">
+              <p class="fw-semibold mb-1" style="font-size:.88rem;color:#164e63">¿Por qué Angular no usa
+                <code>tsc</code> directamente?</p>
+              <p class="small mb-0" style="color:#374151">Angular CLI usa <code>tsc</code> internamente con una
+                configuración especial en <code>tsconfig.json</code>. Cuando corres <code>ng serve</code>, el CLI
+                compila TS automáticamente en background.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════
+       CONEXIÓN CON CLASE 5
+  ══════════════════════════════ -->
+    <section id="conexion" class="content-section">
+      <h2 class="fw-bold mb-1">Conexión con la Clase 5</h2>
+      <p class="text-muted mb-4">Tienes el lenguaje. Ahora aprenderás a usarlo dentro de Angular.</p>
+
+      <div
+        style="background:linear-gradient(135deg,#0f172a 0%,#0a1929 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;color:#fff">
+        <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem">El TypeScript de hoy dentro de un componente Angular
+          — nota que la sintaxis es <strong>exactamente igual</strong>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>products.component.ts — Clase 5</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { <span class="typ">Product</span> } <span class="kw">from</span> <span class="str">'./models'</span>;  <span class="cm">← la interface que creaste HOY</span>
+
+@<span class="fn">Component</span>({
+  selector:   <span class="str">'app-products'</span>,
+  templateUrl:<span class="str">'./products.component.html'</span>
+})
+<span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+
+  <span class="cm">// Variables tipadas — igual que en Clase 4</span>
+  productos:  <span class="typ">Product</span>[] = [];       <span class="cm">← igual que hoy</span>
+  cargando:   <span class="typ">boolean</span>  = <span class="bool">false</span>;     <span class="cm">← igual que hoy</span>
+  error:      <span class="typ">string</span>   = <span class="str">''</span>;         <span class="cm">← igual que hoy</span>
+
+  <span class="cm">// ngOnInit — se ejecuta al cargar el componente</span>
+  <span class="kw">async</span> <span class="fn">ngOnInit</span>(): Promise&lt;<span class="typ">void</span>&gt; {   <span class="cm">← igual que hoy</span>
+    this.cargando = <span class="bool">true</span>;
+    <span class="kw">try</span> {
+      <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://fakestoreapi.com/products'</span>);
+      this.productos = <span class="kw">await</span> res.<span class="fn">json</span>() <span class="kw">as</span> <span class="typ">Product</span>[];
+    } <span class="kw">catch</span>(e) {
+      this.error = <span class="str">'Error al cargar productos'</span>;
+    } <span class="kw">finally</span> {
+      this.cargando = <span class="bool">false</span>;
+    }
+  }
+}</pre>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="theory-block h-100" style="border-left:4px solid #06b6d4">
+            <h5 class="fw-bold" style="color:#06b6d4"><i class="bi bi-4-circle me-2"></i>Lo de hoy que usarás</h5>
+            <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+              <li>La interface <code>Product</code></li>
+              <li>Variables tipadas: <code>: string</code>, <code>: boolean</code></li>
+              <li>Arrays tipados: <code>Product[]</code></li>
+              <li>Funciones con <code>Promise&lt;void&gt;</code></li>
+              <li><code>try/catch/finally</code></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="theory-block h-100" style="border-left:4px solid #ef4444">
+            <h5 class="fw-bold" style="color:#ef4444"><i class="bi bi-5-circle me-2"></i>Lo nuevo en Clase 5</h5>
+            <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+              <li>El decorador <code>@Component</code></li>
+              <li>Data binding: <code>{{ producto.title }}</code></li>
+              <li>Directivas: <code>*ngFor</code>, <code>*ngIf</code></li>
+              <li><code>ngOnInit</code> — ciclo de vida</li>
+              <li>Estructura de componentes</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="theory-block h-100" style="border-left:4px solid #f59e0b">
+            <h5 class="fw-bold" style="color:#d97706"><i class="bi bi-stars me-2"></i>El insight clave</h5>
+            <p style="font-size:.88rem;line-height:1.75;color:#374151">Angular no es un lenguaje nuevo. Es TypeScript
+              dentro de una estructura llamada <strong>componente</strong>. Ya sabes TypeScript — Angular solo te enseña
+              <em>dónde poner ese código</em>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-check2-all text-success"></i> ¿Estás listo para la Clase 5?</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+              <p class="fw-semibold mb-2" style="color:#065f46">Deberías poder responder:</p>
+              <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+                <li>¿Para qué sirve una interface en TypeScript?</li>
+                <li>¿Qué tipo retorna <code>fetch()</code>?</li>
+                <li>¿Qué es inferencia de tipos?</li>
+                <li>¿Cuándo uso <code>void</code> como tipo de retorno?</li>
+                <li>¿Qué genera el compilador <code>tsc</code>?</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#ecfeff;border:1px solid #a5f3fc">
+              <p class="fw-semibold mb-2" style="color:#0891b2">Antes de llegar a Clase 5:</p>
+              <ul style="font-size:.85rem;line-height:2;color:#374151;padding-left:1.2rem;margin:0">
+                <li>✅ <code>ng new mi-tienda</code> ejecutado sin errores</li>
+                <li>✅ <code>ng serve</code> corriendo en <code>localhost:4200</code></li>
+                <li>✅ <code>products.ts</code> compilado sin errores de tipo</li>
+                <li>✅ <code>app.component.ts</code> abierto — reconoces la sintaxis</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <a href="clase3-jquery-ajax.html" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-2"></i>Clase 3
+        </a>
+        <a href="clase5-angular-intro.html" class="btn text-white" style="background:#ef4444;border-color:#ef4444">
+          Clase 5 — Intro a Angular <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+      </div>
+    </section>
+
+  </div><!-- /main -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    /* ══ NAVEGACIÓN + PROGRESO ══ */
+    const sections4 = ['agenda', 'problema', 'tipos-basicos', 'interfaces', 'funciones', 'fetch-tipado', 'jquery-ts', 'ejercicio', 'setup-angular', 'qa', 'conexion'];
+
+    function _upd(id) {
+      const pct = Math.round(((sections4.indexOf(id) + 1) / sections4.length) * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-pct').textContent = pct + '%';
+    }
+    window.showSection = function (id, el) {
+      event.preventDefault();
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      el.classList.add('active');
+      _upd(id);
+      window.scrollTo(0, 0);
+    };
+    _upd('agenda');
+
+    /* ══ HELPERS OUTPUT ══ */
+    function ok(t) { return `<div><span class="ok">✓</span> ${t}</div>`; }
+    function er(t) { return `<div><span class="er">✗</span> ${t}</div>`; }
+    function inf(t) { return `<div><span class="info">→</span> ${t}</div>`; }
+    function typ(t) { return `<div><span class="typ">:</span> ${t}</div>`; }
+    function dim(t) { return `<div><span class="dim">#</span> ${t}</div>`; }
+    function warn(t) { return `<div><span class="warn">⚠</span> ${t}</div>`; }
+
+    /* ══ BUG SILENCIOSO — botón "Ejecutar" en la pantalla de navegador ══ */
+    async function ejecutarBug() {
+      const btn = document.getElementById('btn-bug');
+      const tituloEl = document.getElementById('bug-titulo');
+      const precioEl = document.getElementById('bug-precio');
+      const catEl = document.getElementById('bug-cat');
+      const consola = document.getElementById('bug-consola');
+      const explain = document.getElementById('bug-explicacion');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cargando...';
+      tituloEl.style.color = '#94a3b8';
+      tituloEl.textContent = 'Cargando...';
+      precioEl.textContent = '—';
+      catEl.textContent = '—';
+      consola.style.display = 'none';
+      explain.style.display = 'none';
+
+      const logs = [];
+      const addLog = (tipo, msg) => logs.push({ tipo, msg });
+
+      try {
+        const res = await fetch('https://fakestoreapi.com/products/1');
+        const data = await res.json();
+
+        const titlee = data.titlee;
+        const prce = data.prce;
+        let catVal = null;
+        try { catVal = data.categorya(); }
+        catch (e) { addLog('error', 'Uncaught TypeError: data.categorya is not a function'); }
+
+        tituloEl.textContent = 'Título: ' + titlee;
+        precioEl.textContent = 'Price: $' + prce;
+        catEl.textContent = catVal !== null ? catVal : '(crash — ejecución detenida)';
+        tituloEl.style.color = '#ef4444';
+        precioEl.style.color = '#ef4444';
+        catEl.style.color = '#ef4444';
+
+        addLog('warn', `data.titlee → undefined  (¿quisiste decir data.title = "${data.title.substring(0, 28)}..."?)`);
+        addLog('warn', `data.prce   → undefined  (¿quisiste decir data.price = ${data.price}?)`);
+      } catch (e) { addLog('error', e.message); }
+
+      consola.style.display = 'block';
+      consola.innerHTML =
+        `<div style="color:#475569;margin-bottom:.5rem;font-family:'Inter',sans-serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">Consola del navegador</div>` +
+        logs.map(l => {
+          const color = l.tipo === 'error' ? '#fca5a5' : '#fcd34d';
+          const icon = l.tipo === 'error' ? '✗' : '⚠';
+          return `<div style="color:${color};line-height:1.7">${icon} ${l.msg}</div>`;
+        }).join('');
+
+      explain.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i> Repetir';
+    }
+
+    /* ══ COMPARATIVA JS vs TS — alimenta ambos lados con el mismo fetch ══ */
+    async function demoComparar() {
+      // Reset ambos lados
+      ['js', 'ts'].forEach(lado => {
+        document.getElementById(`cmp-titulo-${lado}`).textContent = 'Cargando...';
+        document.getElementById(`cmp-titulo-${lado}`).style.color = '#94a3b8';
+        document.getElementById(`cmp-precio-${lado}`).textContent = '—';
+        document.getElementById(`cmp-cat-${lado}`).textContent = '—';
+        document.getElementById(`cmp-rating-${lado}`).textContent = '—';
+        document.getElementById(`cmp-img-${lado}`).style.display = 'none';
+        document.getElementById(`cmp-img-placeholder-${lado}`).style.display = 'block';
+      });
+      document.getElementById('cmp-error-js').style.display = 'none';
+      document.getElementById('cmp-ok-ts').style.display = 'none';
+      document.getElementById('cmp-conclusion').style.display = 'none';
+
+      try {
+        const res = await fetch('https://fakestoreapi.com/products/1');
+        const data = await res.json();
+
+        // ── LADO JS — typos, sin verificación ────────────────────────
+        const tituloJS = data.titlee;          // undefined
+        const precioJS = data.prce;            // undefined
+        let catJS = null;
+        try { catJS = data.categorya(); }
+        catch (e) { catJS = '(TypeError: categorya is not a function)'; }
+
+        document.getElementById('cmp-titulo-js').textContent = 'Título: ' + tituloJS;
+        document.getElementById('cmp-titulo-js').style.color = '#ef4444';
+        document.getElementById('cmp-precio-js').textContent = 'Price: $' + precioJS;
+        document.getElementById('cmp-precio-js').style.color = '#ef4444';
+        document.getElementById('cmp-cat-js').textContent = catJS;
+        document.getElementById('cmp-cat-js').style.color = '#ef4444';
+        document.getElementById('cmp-rating-js').textContent = 'Rating: ' + data.rating?.rate;
+        document.getElementById('cmp-rating-js').style.color = '#94a3b8';
+
+        // mostrar imagen igualmente
+        const imgJS = document.getElementById('cmp-img-js');
+        imgJS.src = data.image; imgJS.style.display = 'block';
+        document.getElementById('cmp-img-placeholder-js').style.display = 'none';
+
+        const errEl = document.getElementById('cmp-error-js');
+        errEl.style.display = 'block';
+        errEl.innerHTML =
+          `<div style="color:#fcd34d">⚠ data.titlee → <strong>undefined</strong></div>` +
+          `<div style="color:#fcd34d">⚠ data.prce   → <strong>undefined</strong></div>` +
+          `<div style="color:#fca5a5">✗ TypeError: data.categorya is not a function</div>`;
+
+        // ── LADO TS — campos correctos (como TypeScript te obligaría) ─
+        document.getElementById('cmp-titulo-ts').textContent = data.title.substring(0, 28) + '...';
+        document.getElementById('cmp-titulo-ts').style.color = '#1e293b';
+        document.getElementById('cmp-precio-ts').textContent = 'Price: $' + data.price.toFixed(2);
+        document.getElementById('cmp-precio-ts').style.color = '#065f46';
+        document.getElementById('cmp-cat-ts').textContent = data.category;
+        document.getElementById('cmp-cat-ts').style.color = '#0891b2';
+        document.getElementById('cmp-rating-ts').textContent = `⭐ ${data.rating.rate} (${data.rating.count} reseñas)`;
+        document.getElementById('cmp-rating-ts').style.color = '#92400e';
+
+        const imgTS = document.getElementById('cmp-img-ts');
+        imgTS.src = data.image; imgTS.style.display = 'block';
+        document.getElementById('cmp-img-placeholder-ts').style.display = 'none';
+
+        const okEl = document.getElementById('cmp-ok-ts');
+        okEl.style.display = 'block';
+        okEl.innerHTML =
+          `<div style="color:#86efac">✓ data.title    → OK</div>` +
+          `<div style="color:#86efac">✓ data.price    → OK</div>` +
+          `<div style="color:#86efac">✓ data.category → OK  <span style="color:#475569">(TS hubiera detectado "categorya" antes de ejecutar)</span></div>`;
+
+        document.getElementById('cmp-conclusion').style.display = 'block';
+
+      } catch (e) {
+        ['js', 'ts'].forEach(l => {
+          document.getElementById(`cmp-titulo-${l}`).textContent = 'Error de red';
+          document.getElementById(`cmp-titulo-${l}`).style.color = '#ef4444';
+        });
+      }
+    }
+
+    function demoJSBug() { ejecutarBug(); }
+    function demoTSCheck() { demoComparar(); }
+
+    /* ══ DEMO TIPOS BÁSICOS ══ */
+    function demoTipos() {
+      const out = document.getElementById('out-tipos');
+      const nombre = 'María';
+      const precio = 109.95;
+      const activo = true;
+      const cats = ['electronics', 'jewelery', "men's clothing"];
+      out.innerHTML =
+        dim('// Tipos básicos en acción:') +
+        typ(`nombre: string  = <strong>"${nombre}"</strong>`) +
+        typ(`precio: number  = <strong>${precio}</strong>`) +
+        typ(`activo: boolean = <strong>${activo}</strong>`) +
+        typ(`categorias: string[] = <strong>[${cats.map(c => `"${c}"`).join(', ')}]</strong>`) +
+        ok(`total: number = precio * 3 = <strong>$${(precio * 3).toFixed(2)}</strong>`) +
+        warn('nombre = 42 → ✗ ERROR en TS: Type number is not assignable to string');
+    }
+    function demoInfer() {
+      const out = document.getElementById('out-tipos');
+      out.innerHTML =
+        dim('// Inferencia — TS adivina el tipo:') +
+        inf(`let precio2 = 29.99  → TS infiere: <span class="typ">number</span>`) +
+        inf(`let nombre2 = "Ana"  → TS infiere: <span class="typ">string</span>`) +
+        inf(`let flag    = true   → TS infiere: <span class="typ">boolean</span>`) +
+        inf(`let items   = []     → TS infiere: <span class="typ">never[]</span> (no sabe el tipo — aquí sí anota)`) +
+        ok('Cuando asignas valor + tipo es obvio → no necesitas anotarlo') +
+        warn('Cuando declaras sin valor o el tipo es complejo → anota explícitamente');
+    }
+    function demoUnion() {
+      const out = document.getElementById('out-tipos');
+      let valor = null;
+      out.innerHTML =
+        dim('// Union types — puede ser una cosa O otra:') +
+        inf(`let id: number | string → puede ser 1 o "abc"`) +
+        inf(`let result: string | null = null → puede ser null inicialmente`) +
+        inf(`document.getElementById() → devuelve HTMLElement | null`) +
+        ok('el operador ! → "sé que no es null" → getElementById("id")!') +
+        ok('el operador ?. → "solo si existe" → elemento?.textContent') +
+        warn('Sin el ! o ?., TypeScript da error al acceder a un posible null');
+    }
+    function demoAny() {
+      const out = document.getElementById('out-tipos');
+      out.innerHTML =
+        dim('// El peligro de "any":') +
+        warn('let x: any = "texto"') +
+        warn('x = 42        → ✓ compila (TypeScript ya no verifica)') +
+        warn('x = true      → ✓ compila') +
+        warn('x.noExiste()  → ✓ compila → pero crashea en producción') +
+        er('Con "any" volviste a JavaScript — perdiste toda la protección') +
+        ok('Alternativa: define la interface correcta, o usa "unknown" para errores');
+    }
+
+    /* ══ DEMO INTERFACES ══ */
+    function demoInterface() {
+      const out = document.getElementById('out-interface');
+      const producto = { id: 1, title: 'Fjallraven Backpack', price: 109.95, category: "men's clothing", image: '...', rating: { rate: 3.9, count: 120 } };
+      out.innerHTML =
+        dim('// Producto tipado con interface Product:') +
+        ok(`producto.id       → <strong>${producto.id}</strong>  <span class="typ">: number</span>`) +
+        ok(`producto.title    → <strong>"${producto.title.substring(0, 25)}..."</strong>  <span class="typ">: string</span>`) +
+        ok(`producto.price    → <strong>$${producto.price}</strong>  <span class="typ">: number</span>`) +
+        ok(`producto.category → <strong>"${producto.category}"</strong>  <span class="typ">: string</span>`) +
+        ok(`producto.rating.rate → <strong>${producto.rating.rate} ⭐</strong>  <span class="typ">: number</span>`) +
+        inf('Autocomplete disponible en el editor para todos los campos');
+    }
+    async function demoInterfaceArr() {
+      const out = document.getElementById('out-interface');
+      out.innerHTML = inf('Cargando array de Products tipados...');
+      try {
+        const res = await fetch('https://fakestoreapi.com/products?limit=4');
+        const productos = await res.json();
+        out.innerHTML =
+          ok(`productos: Product[] — ${productos.length} elementos:`) +
+          productos.map((p, i) =>
+            inf(`[${i}] id:<strong>${p.id}</strong> title:<strong>"${p.title.substring(0, 25)}..."</strong> price:<strong>$${p.price}</strong>`)
+          ).join('') +
+          dim('forEach, map, filter — todos con autocomplete en cada "p"');
+      } catch (e) { out.innerHTML = er('Error: ' + e.message); }
+    }
+    function demoInterfaceError() {
+      const out = document.getElementById('out-interface');
+      out.innerHTML =
+        er('TypeScript detectaría estos errores ANTES de ejecutar:') +
+        er(`producto.titlee   → Property 'titlee' does not exist on type 'Product'`) +
+        er(`producto.prce     → Property 'prce' does not exist on type 'Product'`) +
+        er(`producto.noFn()   → Property 'noFn' does not exist on type 'Product'`) +
+        warn(`producto.rating.ratee → Property 'ratee' does not exist on type 'Rating'`) +
+        ok('Con interface definida, el editor te avisa de TODOS estos errores');
+    }
+
+    /* ══ DEMO FUNCIONES ══ */
+    function demoFn1() {
+      const out = document.getElementById('out-fn');
+      const fmt = (precio, simbolo = '$') => `${simbolo}${precio.toFixed(2)}`;
+      out.innerHTML =
+        dim('// formatPrecio(precio: number, simbolo?: string): string') +
+        ok(`formatPrecio(29.99)         → <strong>"${fmt(29.99)}"</strong>`) +
+        ok(`formatPrecio(29.99, "€")    → <strong>"${fmt(29.99, '€')}"</strong>`) +
+        ok(`formatPrecio(109.95, "Q")   → <strong>"${fmt(109.95, 'Q')}"</strong>`) +
+        er('formatPrecio("caro")         → ✗ ERROR: string no es number') +
+        inf('El parámetro opcional "?" solo se valida si se pasa');
+    }
+    async function demoFn2() {
+      const out = document.getElementById('out-fn');
+      out.innerHTML = inf('Cargando y filtrando...');
+      try {
+        const res = await fetch('https://fakestoreapi.com/products?limit=10');
+        const productos = await res.json();
+        const categoria = "electronics";
+        const filtrados = productos.filter(p => p.category === categoria);
+        out.innerHTML =
+          dim(`// filtrarPorCategoria(productos: Product[], cat: string): Product[]`) +
+          inf(`Total cargados: <strong>${productos.length}</strong> productos`) +
+          inf(`Filtrados por "${categoria}": <strong>${filtrados.length}</strong> productos`) +
+          filtrados.map(p => ok(`[${p.id}] ${p.title.substring(0, 35)}... — $${p.price}`)).join('') +
+          dim('El tipo de retorno Product[] garantiza autocomplete en el resultado');
+      } catch (e) { out.innerHTML = er('Error: ' + e.message); }
+    }
+    function demoFn3() {
+      const out = document.getElementById('out-fn');
+      const carrito = [
+        { product: { id: 1, title: 'Backpack', price: 109.95 }, quantity: 1 },
+        { product: { id: 2, title: 'Jeans', price: 55.99 }, quantity: 2 },
+        { product: { id: 3, title: 'Belt', price: 29.95 }, quantity: 1 },
+      ];
+      const total = carrito.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+      out.innerHTML =
+        dim('// totalCarrito(items: CartItem[]): number') +
+        carrito.map(item =>
+          inf(`${item.product.title} × ${item.quantity} = $${(item.product.price * item.quantity).toFixed(2)}`)
+        ).join('') +
+        ok(`Total del carrito: <strong>$${total.toFixed(2)}</strong>  <span class="typ">: number</span>`) +
+        inf('El tipo de retorno number garantiza que puedes hacer operaciones con él');
+    }
+    function demoFn4() {
+      const out = document.getElementById('out-fn');
+      out.innerHTML =
+        er('TypeScript detectaría estos errores de uso de función:') +
+        er('mostrarProducto("texto")        → Arg of type string not assignable to Product') +
+        er('totalCarrito(producto)          → Arg of type Product not assignable to CartItem[]') +
+        er('const x: number = saludar("a") → Type string is not assignable to number') +
+        ok('---') +
+        ok('El sistema de tipos atrapa usos incorrectos de funciones ANTES de ejecutar');
+    }
+
+    /* ══ DEMO FETCH TIPADO ══ */
+    async function demoFetch1() {
+      const out = document.getElementById('out-fetch');
+      out.innerHTML = inf('getProducto(1) — fetch tipado...');
+      try {
+        const res = await fetch('https://fakestoreapi.com/products/1');
+        const data = await res.json(); // simulamos: const data: Product = ...
+        out.innerHTML =
+          dim('// getProducto(id: number): Promise<Product>') +
+          ok(`id:          <strong>${data.id}</strong>  <span class="typ">: number</span>`) +
+          ok(`title:       <strong>"${data.title.substring(0, 40)}..."</strong>  <span class="typ">: string</span>`) +
+          ok(`price:       <strong>$${data.price}</strong>  <span class="typ">: number</span>`) +
+          ok(`category:    <strong>"${data.category}"</strong>  <span class="typ">: string</span>`) +
+          ok(`rating.rate: <strong>${data.rating.rate} ⭐</strong>  <span class="typ">: number</span>`) +
+          inf('TypeScript sabe la forma exacta del objeto — autocomplete en cada campo');
+      } catch (e) { out.innerHTML = er('Error: ' + e.message); }
+    }
+    async function demoFetch2() {
+      const out = document.getElementById('out-fetch');
+      out.innerHTML = inf('getProductos(4) — fetch tipado...');
+      try {
+        const res = await fetch('https://fakestoreapi.com/products?limit=4');
+        const productos = await res.json(); // simulamos: const productos: Product[]
+        out.innerHTML =
+          dim('// getProductos(limit: number): Promise<Product[]>') +
+          ok(`${productos.length} productos cargados — tipo: <span class="typ">Product[]</span>`) +
+          productos.map(p =>
+            inf(`[${p.id}] ${p.title.substring(0, 30)}... → $${p.price.toFixed(2)}`)
+          ).join('') +
+          dim('.map(crearTarjeta) — cada "p" tiene autocomplete de Product');
+      } catch (e) { out.innerHTML = er('Error: ' + e.message); }
+    }
+    async function demoFetch3() {
+      const out = document.getElementById('out-fetch');
+      out.innerHTML = inf('Cargando y filtrando baratos (<$30)...');
+      try {
+        const res = await fetch('https://fakestoreapi.com/products');
+        const todos = await res.json();
+        const baratos = todos.filter(p => p.price < 30);
+        out.innerHTML =
+          dim('// productosBaratos(productos: Product[], max: number = 50): Product[]') +
+          ok(`Total: <strong>${todos.length}</strong> productos`) +
+          ok(`Baratos (< $30): <strong>${baratos.length}</strong> productos`) +
+          baratos.map(p => inf(`$${p.price.toFixed(2)} — ${p.title.substring(0, 35)}...`)).join('');
+      } catch (e) { out.innerHTML = er('Error: ' + e.message); }
+    }
+
+    /* ══ DEMO MINI-TIENDA ══ */
+    /* ══ MINI-TIENDA CON FAVORITOS — replica products.ts en el sandbox ══ */
+    const DEMO_KEY = 'demo_favoritos_clase4';
+
+    function demoGetFavs() { try { return JSON.parse(localStorage.getItem(DEMO_KEY) || '[]'); } catch (e) { return []; } }
+    function demoEsFav(id) { return demoGetFavs().includes(id); }
+
+    function demoActualizarContador() {
+      const n = demoGetFavs().length;
+      const el = document.getElementById('contador-favs-demo');
+      el.textContent = `❤ ${n} favorito${n !== 1 ? 's' : ''}`;
+      el.style.display = n > 0 ? 'inline-block' : 'none';
+    }
+
+    function demoToggleFav(id) {
+      const favs = demoGetFavs();
+      const idx = favs.indexOf(id);
+      if (idx === -1) favs.push(id); else favs.splice(idx, 1);
+      localStorage.setItem(DEMO_KEY, JSON.stringify(favs));
+      demoActualizarContador();
+      // re-render solo el botón — sin volver a cargar productos
+      const activo = favs.includes(id);
+      const btn = document.getElementById(`demo-fav-${id}`);
+      if (btn) {
+        btn.textContent = activo ? '❤ Guardado' : '♡ Guardar';
+        btn.style.background = activo ? '#ef4444' : '#f1f5f9';
+        btn.style.color = activo ? '#fff' : '#475569';
+      }
+      // actualizar log
+      const log = document.getElementById('ts-log');
+      if (log) {
+        const all = demoGetFavs();
+        log.style.display = 'block';
+        log.innerHTML =
+          `<span style="color:#475569">// localStorage["${DEMO_KEY}"]</span>\n` +
+          `<span style="color:#86efac">getFavoritos(): number[] → [${all.join(', ')}]</span>\n` +
+          `<span style="color:#67e8f9">toggleFavorito(${id}) → ${activo ? 'agregado' : 'quitado'}</span>\n` +
+          `<span style="color:#fcd34d">esFavorito(${id}): boolean → ${activo}</span>`;
+      }
+    }
+
+    function demoCrearTarjeta(p) {
+      const fav = demoEsFav(p.id);
+      const label = fav ? '❤ Guardado' : '♡ Guardar';
+      const bg = fav ? '#ef4444' : '#f1f5f9';
+      const col = fav ? '#fff' : '#475569';
+      return `
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;transition:box-shadow .2s"
+         onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,.08)'"
+         onmouseout="this.style.boxShadow=''">
+      <img src="${p.image}" style="width:100%;height:100px;object-fit:contain;padding:.5rem" loading="lazy">
+      <div style="padding:.75rem">
+        <div style="font-size:.75rem;font-weight:600;line-height:1.3;color:#1e293b;margin-bottom:.25rem">${p.title.substring(0, 32)}...</div>
+        <div style="color:#0891b2;font-weight:700;font-size:.88rem">$${p.price.toFixed(2)}</div>
+        <div style="font-size:.68rem;color:#94a3b8;margin:.2rem 0">⭐ ${p.rating.rate} (${p.rating.count}) · ${p.category}</div>
+        <button id="demo-fav-${p.id}" onclick="demoToggleFav(${p.id})"
+          style="width:100%;margin-top:.4rem;padding:.3rem;border:none;border-radius:6px;
+                 font-size:.75rem;cursor:pointer;background:${bg};color:${col};transition:all .15s">
+          ${label}
+        </button>
+      </div>
+    </div>`;
+    }
+
+    async function demoTienda() {
+      const cont = document.getElementById('mini-tienda-output');
+      const btn = document.getElementById('btn-tienda');
+      const log = document.getElementById('ts-log');
+      cont.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm" style="color:#06b6d4"></div><p class="text-muted mt-2 small">Ejecutando iniciar()...</p></div>';
+      log.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cargando...';
+      try {
+        const res = await fetch('https://fakestoreapi.com/products?limit=8');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const productos = await res.json();  // simula: const productos: Product[]
+
+        cont.innerHTML =
+          `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1rem">
+        ${productos.map(demoCrearTarjeta).join('')}
+      </div>`;
+        demoActualizarContador();
+
+        // log de tipos
+        const favs = demoGetFavs();
+        log.style.display = 'block';
+        log.innerHTML =
+          `<span style="color:#475569">// productos: Product[] — ${productos.length} items cargados</span>\n` +
+          `<span style="color:#86efac">getProductos(8): Promise&lt;Product[]&gt; ✓</span>\n` +
+          `<span style="color:#86efac">crearTarjeta(p: Product): string ✓</span>\n` +
+          `<span style="color:#86efac">iniciar(): Promise&lt;void&gt; ✓</span>\n` +
+          `<span style="color:#67e8f9">getFavoritos(): number[] → [${favs.join(', ') || 'vacío'}]  (localStorage persiste)</span>`;
+      } catch (e) {
+        cont.innerHTML = `<div class="alert alert-danger">${e.message}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i> Recargar';
+      }
+    }
+
+    function demoTiendaReset() {
+      localStorage.removeItem(DEMO_KEY);
+      demoActualizarContador();
+      const log = document.getElementById('ts-log');
+      log.style.display = 'block';
+      log.innerHTML = `<span style="color:#fcd34d">⚠ localStorage["${DEMO_KEY}"] eliminado — favoritos en []</span>`;
+      // re-render botones sin recargar
+      document.querySelectorAll('[id^="demo-fav-"]').forEach(btn => {
+        btn.textContent = '♡ Guardar';
+        btn.style.background = '#f1f5f9';
+        btn.style.color = '#475569';
+      });
+    }
+
+    /* ══ DEMO jQuery + TypeScript ══ */
+    function jqts(t) { return `<div><span class="typ">$</span> ${t}</div>`; }
+
+    function demoJQTS1() {
+      const out = document.getElementById('out-jqts');
+      out.innerHTML = jqts('$.ajax({ type:"GET", dataType:"json", success: (r: <span class="typ">Product[]</span>) }) ...');
+      $.ajax({
+        type: 'GET', url: 'https://fakestoreapi.com/products?limit=3', dataType: 'json',
+        success: function (response) {
+          out.innerHTML =
+            ok('$.ajax success — <code>response</code> tipado como <span class="typ">Product[]</span>:') +
+            response.map(p =>
+              ok(`[${p.id}] <strong>"${p.title.substring(0, 30)}..."</strong>  <span class="typ">: string</span>`) +
+              inf(`     $${p.price.toFixed(2)} <span class="typ">: number</span>  ·  ${p.rating.rate}⭐ <span class="typ">: number</span>  ·  "${p.category}" <span class="typ">: string</span>`)
+            ).join('') +
+            dim('// response.titlee → ✗ ERROR TS antes de llegar a este punto');
+        },
+        error: function (x, s) { out.innerHTML = er('Error: ' + s); }
+      });
+    }
+
+    function demoJQTS2() {
+      const out = document.getElementById('out-jqts');
+      const id = 5;
+      out.innerHTML = jqts(`cargarProducto(id: <span class="typ">number</span> = ${id}): <span class="typ">void</span>`);
+      $.ajax({
+        type: 'GET', url: `https://fakestoreapi.com/products/${id}`, dataType: 'json',
+        success: function (r) {
+          out.innerHTML =
+            ok(`$.ajax success — <code>response</code> tipado como <span class="typ">Product</span>:`) +
+            ok(`id:       <strong>${r.id}</strong>  <span class="typ">: number</span>`) +
+            ok(`title:    <strong>"${r.title.substring(0, 35)}..."</strong>  <span class="typ">: string</span>`) +
+            ok(`price:    <strong>$${r.price}</strong>  <span class="typ">: number</span>`) +
+            ok(`category: <strong>"${r.category}"</strong>  <span class="typ">: string</span>`) +
+            ok(`rating:   <strong>${r.rating.rate}⭐ (${r.rating.count})</strong>  <span class="typ">: Rating</span>`) +
+            er('cargarProducto("uno") → Argument of type \'string\' not assignable to \'number\'');
+        },
+        error: function (x, s) { out.innerHTML = er('Error: ' + s); }
+      });
+    }
+
+    function demoJQTS3() {
+      const out = document.getElementById('out-jqts');
+      out.innerHTML =
+        ok('Evento delegado tipado:') +
+        inf('$("#galeria").on("click", ".btn-fav", <span class="typ">function(): void</span> {') +
+        inf('  const id: <span class="typ">number</span> = parseInt($(this).data("id"), 10);') +
+        warn('  // .data("id") devuelve <span class="typ">any</span> → parseInt convierte a <span class="typ">number</span>') +
+        inf('  toggleFav(id: <span class="typ">number</span>): <span class="typ">void</span>  ← TS verifica que id sea number') +
+        inf('})') +
+        ok('') +
+        ok('$(function(): <span class="typ">void</span> { cargarProductos(); }) — $(document).ready tipado') +
+        ok('') +
+        ok('Simulación de clics:') +
+        inf('toggleFav(<span class="typ">1</span>)  → <span class="typ">number</span> ✓ — agregado a favoritos') +
+        inf('toggleFav(<span class="typ">4</span>)  → <span class="typ">number</span> ✓ — agregado a favoritos') +
+        er('toggleFav(<span class="typ">"cinco"</span>) → Argument of type \'string\' not assignable to \'number\'');
+    }
+
+    function demoJQTS4() {
+      const out = document.getElementById('out-jqts');
+      out.innerHTML =
+        er('Errores que TypeScript detecta en tu código $.ajax:') +
+        er('') +
+        er('① response.titlee  → Property \'titlee\' does not exist on type \'Product\'. Did you mean \'title\'?') +
+        er('') +
+        er('② cargarProducto("abc") → Argument of type \'string\' not assignable to type \'number\'') +
+        er('') +
+        er('③ const precio: string = response.price → Type \'number\' not assignable to type \'string\'') +
+        ok('─────────────────────────────────────────────────') +
+        ok('Con tipos: los 3 errores aparecen en el editor, antes de ejecutar') +
+        warn('Sin tipos (jQuery puro, Clase 3): los 3 llegan a producción sin aviso');
+    }
+
+  </script>
+</body>
+
+</html>
