@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js"></script>
 </head>
 <body>
+  
+  <script>
     
+dayjs.extend(window.dayjs_plugin_relativeTime);
+    alert(dayjs().add(7, "day").fromNow());
+  </script>
 </body>
-<script>
-    async function mal() {
-  const res  = await fetch("https://fakestoreapi.com/products");
-  const data = await res.json(); 
-  console.log(data); // undefined
-}
-mal();
-
- 
-</script>
 </html>

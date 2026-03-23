@@ -837,186 +837,245 @@ document.<span class="fn">addEventListener</span>(<span class="str">"DOMContentL
 
   <!-- ══ DATATABLES & SELECT2 ══ -->
   <section id="librerias-jq" class="content-section">
-    <h2 class="fw-bold mb-1">DataTables & Select2 en la práctica</h2>
+    <h2 class="fw-bold mb-1">DataTables &amp; Select2 en la práctica</h2>
     <p class="text-muted mb-4">Las dos librerías que más explican por qué jQuery sigue instalado en el 75% de la web. Ejemplo completo paso a paso.</p>
 
     <div class="callout callout-purple mb-4">
-      <strong>El punto clave:</strong> DataTables y Select2 son librerías que <em>dependen de jQuery</em>. No funcionan sin él. Por eso, cuando un proyecto necesita tablas con filtros/paginación o selects enriquecidos, jQuery entra aunque nadie lo haya pedido explícitamente.
+      <strong>El punto clave:</strong> DataTables y Select2 son librerías que <em>dependen de jQuery</em>. No funcionan sin él. Por eso cuando un proyecto necesita tablas con filtros/paginación o selects enriquecidos, jQuery entra aunque nadie lo haya pedido explícitamente.
     </div>
 
-    <!-- ── CDNs ── -->
+    <!-- ── PASO 1: CDNs ── -->
     <div class="theory-block">
-      <h4><i class="bi bi-cloud-download" style="color:#8b5cf6"></i> Paso 1 — CDNs que necesitas</h4>
-      <p style="font-size:.9rem">El orden importa: primero los CSS en el <code>&lt;head&gt;</code>, luego los JS antes del <code>&lt;/body&gt;</code> — y siempre jQuery antes que las librerías que dependen de él.</p>
-
-      <p class="fw-semibold small mt-3 mb-1">En el <code>&lt;head&gt;</code> — los estilos:</p>
+      <h4><i class="bi bi-cloud-download" style="color:#8b5cf6"></i> Paso 1 — CDNs: qué incluir y en qué orden</h4>
+      <p style="font-size:.9rem">El orden importa. Los CSS y los scripts pueden ir todos en el <code>&lt;head&gt;</code> siempre que jQuery vaya primero — DataTables y Select2 lo necesitan disponible cuando se cargan.</p>
       <div class="code-block">
-        <div class="code-header"><span>index.html — &lt;head&gt;</span></div>
-        <pre><span class="cm">&lt;!-- 1. Bootstrap CSS --&gt;</span>
-<span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span>
+        <div class="code-header"><span>index.html — &lt;head&gt; completo</span></div>
+        <pre><span class="kw">&lt;head&gt;</span>
+  <span class="cm">&lt;!-- CSS --&gt;</span>
+  <span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span>
 
-<span class="cm">&lt;!-- 2. DataTables CSS (con tema Bootstrap 5) --&gt;</span>
-<span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span>
-
-<span class="cm">&lt;!-- 3. Select2 CSS --&gt;</span>
-<span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span>
-
-<span class="cm">&lt;!-- 4. Select2 tema Bootstrap 5 (opcional pero recomendado) --&gt;</span>
-<span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"</span> <span class="prop">rel</span>=<span class="str">"stylesheet"</span><span class="kw">&gt;</span></pre>
-      </div>
-
-      <p class="fw-semibold small mt-3 mb-1">Antes del <code>&lt;/body&gt;</code> — los scripts <strong>(el orden es obligatorio):</strong></p>
-      <div class="code-block">
-        <div class="code-header"><span>index.html — antes de &lt;/body&gt;</span></div>
-        <pre><span class="cm">&lt;!-- 1. jQuery PRIMERO — DataTables y Select2 dependen de él --&gt;</span>
-<span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://code.jquery.com/jquery-3.6.0.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
-
-<span class="cm">&lt;!-- 2. Bootstrap JS --&gt;</span>
-<span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
-
-<span class="cm">&lt;!-- 3. DataTables core + integración Bootstrap 5 --&gt;</span>
-<span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
-<span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
-
-<span class="cm">&lt;!-- 4. Select2 --&gt;</span>
-<span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
-
-<span class="cm">&lt;!-- 5. Tu código — siempre al final --&gt;</span>
-<span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;&lt;/script&gt;</span></pre>
+  <span class="cm">&lt;!-- Scripts — jQuery SIEMPRE PRIMERO --&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://code.jquery.com/jquery-3.6.0.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;/head&gt;</span></pre>
       </div>
       <div class="callout callout-red">
-        <strong>Error frecuente:</strong> si cargas DataTables o Select2 <em>antes</em> de jQuery, obtienes <code>jQuery is not defined</code> o <code>$ is not a function</code>. El orden de los <code>&lt;script&gt;</code> no es negociable.
+        <strong>Error frecuente:</strong> si DataTables o Select2 cargan antes que jQuery obtienes <code>jQuery is not defined</code>. El orden no es negociable — jQuery siempre primero.
       </div>
     </div>
 
-    <!-- ── DATATABLES ── -->
+    <!-- ── PASO 2: HTML ── -->
     <div class="theory-block">
-      <h4><i class="bi bi-table" style="color:#8b5cf6"></i> Paso 2 — DataTables: tabla estática → tabla interactiva</h4>
-      <p style="font-size:.9rem">DataTables convierte cualquier <code>&lt;table&gt;</code> HTML en una tabla con búsqueda, paginación y ordenamiento con <strong>una sola línea de jQuery</strong>:</p>
-
+      <h4><i class="bi bi-filetype-html" style="color:#8b5cf6"></i> Paso 2 — El HTML: solo estructura, sin lógica</h4>
+      <p style="font-size:.9rem">El HTML declara el <code>&lt;select&gt;</code> y la <code>&lt;table&gt;</code> vacíos. jQuery y las librerías los llenan dinámicamente. Las opciones y las filas las carga el script, no el HTML.</p>
       <div class="code-block">
-        <div class="code-header"><span>app.js — activar DataTables en una tabla estática</span></div>
-        <pre><span class="cm">// Paso 1: tienes una tabla normal en el HTML con id="mi-tabla"</span>
-<span class="cm">// Paso 2: una línea la convierte en DataTable</span>
-$(<span class="kw">function</span>() {
-  $(<span class="str">"#mi-tabla"</span>).<span class="fn">DataTable</span>();
-});
+        <div class="code-header"><span>index.html — &lt;body&gt;</span></div>
+        <pre><span class="kw">&lt;body</span> <span class="prop">class</span>=<span class="str">"container"</span><span class="kw">&gt;</span>
 
-<span class="cm">// Con opciones — control completo</span>
-$(<span class="kw">function</span>() {
-  $(<span class="str">"#mi-tabla"</span>).<span class="fn">DataTable</span>({
-    <span class="prop">language</span>: {
-      <span class="prop">url</span>: <span class="str">"https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json"</span>
-    },
-    <span class="prop">pageLength</span>:  <span class="num">5</span>,              <span class="cm">// filas por página</span>
-    <span class="prop">order</span>:       [[<span class="num">2</span>, <span class="str">"asc"</span>]],    <span class="cm">// ordenar por columna 2 ascendente</span>
-    <span class="prop">columnDefs</span>: [
-      { <span class="prop">orderable</span>: <span class="bool">false</span>, <span class="prop">targets</span>: -<span class="num">1</span> }  <span class="cm">// última columna no ordenable</span>
-    ]
-  });
-});</pre>
-      </div>
+  <span class="kw">&lt;h1&gt;</span>Catálogo de productos<span class="kw">&lt;/h1&gt;</span>
 
-      <p class="fw-semibold small mt-3 mb-1">Paso 3 — cargar datos desde una API con <code>$.ajax</code> y pintarlos en DataTables:</p>
-      <div class="code-block">
-        <div class="code-header"><span>app.js — DataTables + $.ajax + FakeStore API</span></div>
-        <pre><span class="kw">var</span> tabla; <span class="cm">// referencia global para poder limpiar/recargar</span>
+  <span class="kw">&lt;div</span> <span class="prop">class</span>=<span class="str">"table-responsive"</span><span class="kw">&gt;</span>
 
-$(<span class="kw">function</span>() {
+    <span class="cm">&lt;!-- Select2 convierte este select en un componente con búsqueda --&gt;</span>
+    <span class="kw">&lt;div</span> <span class="prop">class</span>=<span class="str">"mb-3"</span><span class="kw">&gt;</span>
+      <span class="kw">&lt;label</span> <span class="prop">class</span>=<span class="str">"form-label"</span><span class="kw">&gt;</span>Categories:<span class="kw">&lt;/label&gt;</span>
+      <span class="kw">&lt;select</span> <span class="prop">class</span>=<span class="str">"form-select form-select-lg"</span> <span class="prop">id</span>=<span class="str">"slvCategories"</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;option</span> <span class="prop">selected</span><span class="kw">&gt;</span>Select one<span class="kw">&lt;/option&gt;</span>
+        <span class="cm">&lt;!-- Las opciones las agrega $.ajax en el script --&gt;</span>
+      <span class="kw">&lt;/select&gt;</span>
+    <span class="kw">&lt;/div&gt;</span>
 
-  <span class="cm">// 1. Inicializar DataTable con columnas vacías</span>
-  tabla = $(<span class="str">"#tabla-productos"</span>).<span class="fn">DataTable</span>({
-    <span class="prop">columns</span>: [
-      { <span class="prop">title</span>: <span class="str">"ID"</span>         },
-      { <span class="prop">title</span>: <span class="str">"Producto"</span>   },
-      { <span class="prop">title</span>: <span class="str">"Precio"</span>     },
-      { <span class="prop">title</span>: <span class="str">"Categoría"</span>  },
-      { <span class="prop">title</span>: <span class="str">"Rating"</span>     }
-    ],
-    <span class="prop">pageLength</span>: <span class="num">5</span>,
-    <span class="prop">language</span>:   { <span class="prop">search</span>: <span class="str">"Buscar:"</span>, <span class="prop">paginate</span>: { <span class="prop">next</span>: <span class="str">"›"</span>, <span class="prop">previous</span>: <span class="str">"‹"</span> } }
-  });
+    <span class="cm">&lt;!-- DataTables convierte esta tabla en tabla interactiva --&gt;</span>
+    <span class="kw">&lt;table</span> <span class="prop">class</span>=<span class="str">"table table-light table-hover"</span> <span class="prop">id</span>=<span class="str">"tblProducts"</span><span class="kw">&gt;</span>
+      <span class="kw">&lt;thead&gt;</span>
+        <span class="kw">&lt;tr&gt;</span>
+          <span class="kw">&lt;th&gt;</span>Id<span class="kw">&lt;/th&gt;</span>  <span class="kw">&lt;th&gt;</span>Title<span class="kw">&lt;/th&gt;</span>  <span class="kw">&lt;th&gt;</span>Price<span class="kw">&lt;/th&gt;</span>
+          <span class="kw">&lt;th&gt;</span>Description<span class="kw">&lt;/th&gt;</span>  <span class="kw">&lt;th&gt;</span>Img<span class="kw">&lt;/th&gt;</span>
+        <span class="kw">&lt;/tr&gt;</span>
+      <span class="kw">&lt;/thead&gt;</span>
+      <span class="cm">&lt;!-- El tbody lo llena DataTables automáticamente --&gt;</span>
+    <span class="kw">&lt;/table&gt;</span>
 
-  <span class="cm">// 2. Cargar datos con $.ajax y agregarlos a la tabla</span>
-  $.<span class="fn">ajax</span>({
-    <span class="prop">url</span>:     <span class="str">"https://fakestoreapi.com/products"</span>,
-    <span class="prop">method</span>:  <span class="str">"GET"</span>,
-    <span class="prop">success</span>: <span class="kw">function</span>(productos) {
-      productos.<span class="fn">forEach</span>(<span class="kw">function</span>(p) {
-        tabla.<span class="fn">row</span>.<span class="fn">add</span>([
-          p.id,
-          p.title.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">35</span>) + <span class="str">"..."</span>,
-          <span class="str">"$"</span> + p.price.<span class="fn">toFixed</span>(<span class="num">2</span>),
-          p.category,
-          p.rating.rate + <span class="str">" ⭐"</span>
-        ]).<span class="fn">draw</span>(<span class="bool">false</span>);  <span class="cm">// draw(false) = no reset de paginación</span>
-      });
-    },
-    <span class="prop">error</span>: <span class="kw">function</span>() {
-      <span class="fn">alert</span>(<span class="str">"Error al cargar productos"</span>);
-    }
-  });
-
-});</pre>
+  <span class="kw">&lt;/div&gt;</span>
+<span class="kw">&lt;/body&gt;</span></pre>
       </div>
     </div>
 
-    <!-- ── SELECT2 ── -->
+    <!-- ── PASO 3: Select2 ── -->
     <div class="theory-block">
-      <h4><i class="bi bi-ui-checks-grid" style="color:#8b5cf6"></i> Paso 4 — Select2: <code>&lt;select&gt;</code> con búsqueda y carga dinámica</h4>
-      <p style="font-size:.9rem">Select2 transforma cualquier <code>&lt;select&gt;</code> en un componente con búsqueda integrada, selección múltiple y la posibilidad de cargar opciones desde una API:</p>
-
+      <h4><i class="bi bi-ui-checks-grid" style="color:#8b5cf6"></i> Paso 3 — Select2: activar y llenar desde la API</h4>
+      <p style="font-size:.9rem">Primero se activa Select2 sobre el select vacío, luego <code>$.ajax</code> trae las categorías y llena las opciones dinámicamente:</p>
       <div class="code-block">
-        <div class="code-header"><span>app.js — Select2 básico y con datos de la API</span></div>
-        <pre><span class="cm">// ── Select2 básico — mejorar un select estático ───────────────</span>
-$(<span class="str">"#select-categoria"</span>).<span class="fn">select2</span>({
+        <div class="code-header"><span>app.js — Select2 + $.ajax de categorías</span></div>
+        <pre><span class="cm">// 1. Activar Select2 sobre el select vacío</span>
+$(<span class="str">"#slvCategories"</span>).<span class="fn">select2</span>({
   <span class="prop">theme</span>:       <span class="str">"bootstrap-5"</span>,
   <span class="prop">placeholder</span>: <span class="str">"Elige una categoría..."</span>,
   <span class="prop">allowClear</span>:  <span class="bool">true</span>
 });
 
-<span class="cm">// ── Select2 con datos dinámicos desde $.ajax ──────────────────</span>
+<span class="cm">// 2. Cargar las categorías desde la API y llenar el select</span>
 $.<span class="fn">ajax</span>({
+  <span class="prop">type</span>:    <span class="str">"GET"</span>,
   <span class="prop">url</span>:     <span class="str">"https://fakestoreapi.com/products/categories"</span>,
-  <span class="prop">method</span>:  <span class="str">"GET"</span>,
-  <span class="prop">success</span>: <span class="kw">function</span>(categorias) {
+  <span class="prop">success</span>: <span class="kw">function</span>(response) {
+    <span class="kw">let</span> $select = $(<span class="str">"#slvCategories"</span>);
 
-    <span class="cm">// Construir las opciones del &lt;select&gt;</span>
-    <span class="kw">var</span> $select = $(<span class="str">"#select-categoria"</span>);
-    $select.<span class="fn">empty</span>(); <span class="cm">// limpiar opciones previas</span>
+    $select.<span class="fn">empty</span>(); <span class="cm">// quitar "Select one" inicial</span>
 
-    categorias.<span class="fn">forEach</span>(<span class="kw">function</span>(cat) {
-      $select.<span class="fn">append</span>(
-        $(<span class="str">"&lt;option&gt;"</span>).<span class="fn">val</span>(cat).<span class="fn">text</span>(cat)
-      );
+    <span class="cm">// Agregar "All" primero como opción para ver todos</span>
+    $select.<span class="fn">append</span>($(<span class="str">"&lt;option&gt;"</span>).<span class="fn">val</span>(<span class="str">"All"</span>).<span class="fn">text</span>(<span class="str">"Select all"</span>));
+
+    <span class="cm">// Agregar cada categoría que devuelve la API:</span>
+    <span class="cm">// response = ["electronics", "jewelery", "men's clothing", "women's clothing"]</span>
+    response.<span class="fn">forEach</span>(element => {
+      $select.<span class="fn">append</span>($(<span class="str">"&lt;option&gt;"</span>).<span class="fn">val</span>(element).<span class="fn">text</span>(element));
     });
+  }
+});</pre>
+      </div>
+      <div class="callout callout-purple">
+        <strong><code>$select.empty()</code></strong> limpia las opciones previas antes de agregar las nuevas. Sin esto, al recargar las opciones se acumularían.
+      </div>
+    </div>
 
-    <span class="cm">// Activar Select2 después de cargar las opciones</span>
-    $select.<span class="fn">select2</span>({
-      <span class="prop">theme</span>:       <span class="str">"bootstrap-5"</span>,
-      <span class="prop">placeholder</span>: <span class="str">"Filtra por categoría..."</span>,
-      <span class="prop">allowClear</span>:  <span class="bool">true</span>
-    });
+    <!-- ── PASO 4: listarProductos ── -->
+    <div class="theory-block">
+      <h4><i class="bi bi-table" style="color:#8b5cf6"></i> Paso 4 — <code>listarProductos(category)</code>: el corazón del ejemplo</h4>
+      <p style="font-size:.9rem">Esta función decide la URL según la categoría, destruye la tabla anterior si existe y crea una nueva DataTable que hace su propio <code>$.ajax</code> internamente:</p>
+      <div class="code-block">
+        <div class="code-header"><span>app.js — función listarProductos(category)</span></div>
+        <pre><span class="kw">function</span> <span class="fn">listarProductos</span>(category) {
+
+  <span class="cm">// 1. Decidir la URL según la categoría elegida</span>
+  <span class="kw">let</span> url;
+  <span class="kw">if</span> (category === <span class="str">"All"</span>) {
+    url = <span class="str">"https://fakestoreapi.com/products"</span>;
+  } <span class="kw">else</span> {
+    url = <span class="str">"https://fakestoreapi.com/products/category/"</span> + category;
+  }
+
+  <span class="cm">// 2. Destruir la tabla si ya existe una instancia activa</span>
+  <span class="cm">//    Sin esto DataTables lanza: "Cannot reinitialise DataTable"</span>
+  <span class="kw">if</span> ($.fn.DataTable.<span class="fn">isDataTable</span>(<span class="str">"#tblProducts"</span>)) {
+    $(<span class="str">"#tblProducts"</span>).<span class="fn">DataTable</span>().<span class="fn">destroy</span>();
+  }
+
+  <span class="cm">// 3. Crear la DataTable — ella misma hace el GET con ajax:{}</span>
+  $(<span class="str">"#tblProducts"</span>).<span class="fn">DataTable</span>({
+    <span class="prop">ajax</span>: {
+      <span class="prop">url</span>:     url,
+      <span class="prop">dataSrc</span>: <span class="str">""</span>  <span class="cm">// la API devuelve [] directo, no { data:[] }</span>
+    },
+    <span class="prop">columns</span>: [
+      { <span class="prop">data</span>: <span class="str">"id"</span>          },
+      { <span class="prop">data</span>: <span class="str">"title"</span>       },
+      { <span class="prop">data</span>: <span class="str">"price"</span>       },
+      { <span class="prop">data</span>: <span class="str">"description"</span> },
+      { <span class="prop">data</span>: <span class="str">"image"</span>       }
+    ],
+    <span class="prop">columnDefs</span>: [{
+      <span class="prop">targets</span>:   <span class="num">4</span>,             <span class="cm">// columna "image" (índice 4)</span>
+      <span class="prop">orderable</span>: <span class="bool">false</span>,         <span class="cm">// no ordenable</span>
+      <span class="prop">render</span>: <span class="kw">function</span>(data) {
+        <span class="kw">return</span> <span class="str">`&lt;img width="50px" src="</span>${data}<span class="str">"/&gt;`</span>;
+        <span class="cm">// render convierte la URL en una imagen visible</span>
+      }
+    }]
+  });
+}</pre>
+      </div>
+      <div class="row g-3 mt-2">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-1" style="color:#4c1d95;font-size:.82rem"><code>ajax: { url, dataSrc:&quot;&quot; }</code></div>
+            <p class="small mb-0" style="color:#374151">DataTables hace el fetch internamente. <code>dataSrc:""</code> indica que la respuesta es un array directo <code>[]</code>, no un objeto con propiedad <code>data</code>.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-1" style="color:#4c1d95;font-size:.82rem"><code>columns: [{data:"campo"}]</code></div>
+            <p class="small mb-0" style="color:#374151">Mapea cada propiedad del JSON a una columna. DataTables lee directamente el objeto — no hay que construir filas manualmente.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-1" style="color:#4c1d95;font-size:.82rem"><code>columnDefs: [{render}]</code></div>
+            <p class="small mb-0" style="color:#374151">Personaliza cómo se pinta una columna. Aquí convierte la URL de imagen en un <code>&lt;img&gt;</code>. Se usa también para botones, fechas y badges.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PASO 5: evento change ── -->
+    <div class="theory-block">
+      <h4><i class="bi bi-arrow-repeat" style="color:#8b5cf6"></i> Paso 5 — Conectar Select2 con <code>listarProductos()</code></h4>
+      <p style="font-size:.9rem">El evento <code>change</code> detecta cuándo el usuario elige una categoría y llama a <code>listarProductos()</code> con el nuevo valor. La tabla se destruye y se recrea con los datos del nuevo endpoint:</p>
+      <div class="code-block">
+        <div class="code-header"><span>app.js — script completo y ordenado</span></div>
+        <pre><span class="cm">// 1. Activar Select2</span>
+$(<span class="str">"#slvCategories"</span>).<span class="fn">select2</span>({
+  <span class="prop">theme</span>: <span class="str">"bootstrap-5"</span>, <span class="prop">placeholder</span>: <span class="str">"Elige una categoría..."</span>, <span class="prop">allowClear</span>: <span class="bool">true</span>
+});
+
+<span class="cm">// 2. Cargar categorías</span>
+$.<span class="fn">ajax</span>({
+  <span class="prop">type</span>: <span class="str">"GET"</span>, <span class="prop">url</span>: <span class="str">"https://fakestoreapi.com/products/categories"</span>,
+  <span class="prop">success</span>: <span class="kw">function</span>(response) {
+    <span class="kw">let</span> $select = $(<span class="str">"#slvCategories"</span>);
+    $select.<span class="fn">empty</span>();
+    $select.<span class="fn">append</span>($(<span class="str">"&lt;option&gt;"</span>).<span class="fn">val</span>(<span class="str">"All"</span>).<span class="fn">text</span>(<span class="str">"Select all"</span>));
+    response.<span class="fn">forEach</span>(element => $select.<span class="fn">append</span>($(<span class="str">"&lt;option&gt;"</span>).<span class="fn">val</span>(element).<span class="fn">text</span>(element)));
   }
 });
 
-<span class="cm">// ── Escuchar el cambio de selección para filtrar la tabla ─────</span>
-$(<span class="str">"#select-categoria"</span>).<span class="fn">on</span>(<span class="str">"change"</span>, <span class="kw">function</span>() {
-  <span class="kw">var</span> catSeleccionada = $(<span class="kw">this</span>).<span class="fn">val</span>(); <span class="cm">// string con la categoría elegida</span>
+<span class="cm">// 3. Cargar todos los productos al inicio</span>
+<span class="fn">listarProductos</span>(<span class="str">"All"</span>);
 
-  <span class="kw">if</span> (catSeleccionada) {
-    tabla.<span class="fn">column</span>(<span class="num">3</span>).<span class="fn">search</span>(catSeleccionada).<span class="fn">draw</span>();
-  } <span class="kw">else</span> {
-    tabla.<span class="fn">column</span>(<span class="num">3</span>).<span class="fn">search</span>(<span class="str">""</span>).<span class="fn">draw</span>(); <span class="cm">// limpiar filtro</span>
+<span class="cm">// 4. Re-cargar al cambiar la categoría</span>
+$(<span class="str">"#slvCategories"</span>).<span class="fn">on</span>(<span class="str">"change"</span>, <span class="kw">function</span>() {
+  <span class="kw">let</span> category = $(<span class="kw">this</span>).<span class="fn">val</span>(); <span class="cm">// valor de la opción elegida</span>
+  <span class="fn">listarProductos</span>(category);
+});
+
+<span class="cm">// 5. La función principal</span>
+<span class="kw">function</span> <span class="fn">listarProductos</span>(category) {
+  <span class="kw">let</span> url = category === <span class="str">"All"</span>
+    ? <span class="str">"https://fakestoreapi.com/products"</span>
+    : <span class="str">"https://fakestoreapi.com/products/category/"</span> + category;
+
+  <span class="kw">if</span> ($.fn.DataTable.<span class="fn">isDataTable</span>(<span class="str">"#tblProducts"</span>)) {
+    $(<span class="str">"#tblProducts"</span>).<span class="fn">DataTable</span>().<span class="fn">destroy</span>();
   }
-});</pre>
+
+  $(<span class="str">"#tblProducts"</span>).<span class="fn">DataTable</span>({
+    <span class="prop">ajax</span>: { <span class="prop">url</span>: url, <span class="prop">dataSrc</span>: <span class="str">""</span> },
+    <span class="prop">columns</span>: [
+      { <span class="prop">data</span>: <span class="str">"id"</span> }, { <span class="prop">data</span>: <span class="str">"title"</span> }, { <span class="prop">data</span>: <span class="str">"price"</span> },
+      { <span class="prop">data</span>: <span class="str">"description"</span> }, { <span class="prop">data</span>: <span class="str">"image"</span> }
+    ],
+    <span class="prop">columnDefs</span>: [{
+      <span class="prop">targets</span>: <span class="num">4</span>, <span class="prop">orderable</span>: <span class="bool">false</span>,
+      <span class="prop">render</span>: <span class="kw">function</span>(data) { <span class="kw">return</span> <span class="str">`&lt;img width="50px" src="</span>${data}<span class="str">"/&gt;`</span>; }
+    }]
+  });
+}</pre>
+      </div>
+      <div class="callout callout-amber">
+        <strong>¿Por qué <code>destroy()</code> antes de reinicializar?</strong> DataTables no permite crear dos instancias sobre el mismo elemento. <code>$.fn.DataTable.isDataTable("#id")</code> verifica si ya existe una antes de destruirla — evita el error <code>"Cannot reinitialise DataTable"</code> cuando la tabla todavía no se ha creado la primera vez.
       </div>
     </div>
 
     <!-- ── DEMO EN VIVO ── -->
     <div class="sandbox">
       <div class="sandbox-header">
-        <div class="title"><i class="bi bi-play-circle-fill" style="color:#8b5cf6"></i> Demo completo en vivo — DataTables + Select2 + FakeStore API</div>
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:#8b5cf6"></i> Demo completo — DataTables + Select2 + FakeStore API</div>
         <div class="d-flex gap-2">
           <button class="run-btn" id="btn-demo-libs" onclick="iniciarDemoLibs()"><i class="bi bi-play-fill"></i> Cargar demo</button>
           <button class="run-btn red" onclick="resetDemoLibs()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
@@ -1026,71 +1085,61 @@ $(<span class="str">"#select-categoria"</span>).<span class="fn">on</span>(<span
 
         <div id="demo-libs-placeholder" class="text-center text-muted py-4">
           <i class="bi bi-table" style="font-size:2rem;color:#ddd6fe"></i>
-          <p class="mt-2 small">Haz clic en <strong>Cargar demo</strong> para ver DataTables y Select2 juntos con datos reales de FakeStore</p>
+          <p class="mt-2 small">Haz clic en <strong>Cargar demo</strong> para ver el ejemplo con datos reales de FakeStore</p>
         </div>
 
         <div id="demo-libs-content" style="display:none">
-          <!-- Select2 filtro -->
-          <div class="mb-3 row align-items-center g-2">
-            <div class="col-auto">
-              <label class="fw-semibold small" style="color:#4c1d95">Filtrar por categoría:</label>
-            </div>
-            <div class="col-sm-4">
-              <select id="select2-demo" class="form-select form-select-sm">
-                <option value="">Todas las categorías</option>
-              </select>
-            </div>
-            <div class="col-auto">
-              <span id="demo-cat-badge" class="badge" style="background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe;display:none"></span>
-            </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small" style="color:#4c1d95">Categories:</label>
+            <select class="form-select form-select-lg" id="slvCategories-demo">
+              <option selected>Select one</option>
+            </select>
           </div>
-
-          <!-- DataTable -->
           <div class="table-responsive">
-            <table id="dt-demo" class="table table-hover table-bordered" style="width:100%">
-              <thead style="background:#0f172a;color:#e2e8f0">
+            <table class="table table-light table-hover" id="tblProducts-demo" style="width:100%">
+              <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Producto</th>
-                  <th>Precio</th>
-                  <th>Categoría</th>
-                  <th>Rating</th>
+                  <th>Id</th><th>Title</th><th>Price</th><th>Description</th><th>Img</th>
                 </tr>
               </thead>
-              <tbody></tbody>
             </table>
           </div>
         </div>
 
-        <div id="demo-libs-log" style="display:none;margin-top:1rem" class="output-area"></div>
       </div>
     </div>
 
     <!-- ── RESUMEN ── -->
     <div class="theory-block">
-      <h4><i class="bi bi-lightbulb" style="color:#8b5cf6"></i> Lo que acaba de pasar — repaso del código</h4>
+      <h4><i class="bi bi-lightbulb" style="color:#8b5cf6"></i> Lo que acaba de pasar — flujo completo</h4>
       <div class="row g-3">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.85rem"><i class="bi bi-1-circle me-1"></i>CDNs en orden</div>
-            <p class="small mb-0" style="color:#374151">jQuery → DataTables JS → Select2 JS. Si cambias el orden, nada funciona. El CSS va siempre en el <code>&lt;head&gt;</code>.</p>
+            <div class="fw-bold mb-1" style="color:#4c1d95;font-size:.83rem"><i class="bi bi-1-circle me-1"></i>CDNs en orden</div>
+            <p class="small mb-0" style="color:#374151">jQuery → DataTables → Select2. Orden obligatorio en el <code>&lt;head&gt;</code>.</p>
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.85rem"><i class="bi bi-2-circle me-1"></i>DataTable inicializada vacía</div>
-            <p class="small mb-0" style="color:#374151"><code>$('#tabla').DataTable({columns:[...]})</code> — primero la estructura, luego <code>$.ajax</code> llena las filas con <code>row.add([...]).draw()</code>.</p>
+            <div class="fw-bold mb-1" style="color:#4c1d95;font-size:.83rem"><i class="bi bi-2-circle me-1"></i>Select2 activo</div>
+            <p class="small mb-0" style="color:#374151"><code>.select2()</code> primero. Luego <code>$.ajax</code> llena el select con las categorías de la API.</p>
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.85rem"><i class="bi bi-3-circle me-1"></i>Select2 conectado a DataTable</div>
-            <p class="small mb-0" style="color:#374151"><code>.on("change")</code> escucha el select. <code>tabla.column(3).search(val).draw()</code> filtra la tabla por la columna Categoría.</p>
+            <div class="fw-bold mb-1" style="color:#4c1d95;font-size:.83rem"><i class="bi bi-3-circle me-1"></i>DataTable con ajax</div>
+            <p class="small mb-0" style="color:#374151"><code>ajax:{url, dataSrc:""}</code> hace el GET solo. <code>columns:[{data}]</code> mapea el JSON automáticamente.</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-1" style="color:#4c1d95;font-size:.83rem"><i class="bi bi-4-circle me-1"></i>destroy + reinit</div>
+            <p class="small mb-0" style="color:#374151"><code>isDataTable()</code> + <code>.destroy()</code> antes de recrear la tabla al cambiar categoría.</p>
           </div>
         </div>
       </div>
       <div class="callout callout-purple mt-3">
-        <strong>Por qué esto justifica jQuery en proyectos reales:</strong> con 3 líneas de jQuery tienes búsqueda, paginación, ordenamiento por columna y un select enriquecido. Hacer lo mismo desde cero en JS puro tomaría días. Por eso estas librerías siguen siendo estándar en proyectos legacy — y por eso jQuery sigue instalado.
+        <strong>Por qué esto justifica jQuery en proyectos reales:</strong> con menos de 30 líneas tienes búsqueda, paginación, ordenamiento por columna, filtrado por categoría desde la API y un select enriquecido. Replicar esto desde cero en JS puro tomaría días — por eso estas librerías siguen siendo estándar en proyectos legacy.
       </div>
     </div>
   </section>
@@ -1242,7 +1291,7 @@ $(<span class="str">"#select-categoria"</span>).<span class="fn">on</span>(<span
 
 </div><!-- /main -->
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- DataTables — siempre después de jQuery -->
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
@@ -1425,130 +1474,97 @@ async function demoComparativaFetch() {
   } catch(e){ g.innerHTML='<div class="alert alert-danger">'+e.message+'</div>'; }
 }
 
-/* ══ DEMO DATATABLES + SELECT2 ══ */
-var _dtInstance  = null;
-var _dtCargada   = false;
-
-function logLib(msg, tipo) {
-  const log = document.getElementById('demo-libs-log');
-  const color = tipo==='ok' ? '#86efac' : tipo==='warn' ? '#fcd34d' : '#67e8f9';
-  const icon  = tipo==='ok' ? '✓' : tipo==='warn' ? '⚠' : '→';
-  log.style.display = 'block';
-  log.innerHTML += `<div style="color:${color}">${icon} ${msg}</div>`;
-}
-
-/* ══ DEMO DATATABLES + SELECT2 — variables de estado ══ */
-var _dtInstance = null;
-var _dtCargada  = false;
-
-function logLib(msg, tipo) {
-  var log = document.getElementById('demo-libs-log');
-  log.style.display = 'block';
-  var color = tipo === 'ok' ? '#86efac' : tipo === 'warn' ? '#fcd34d' : '#67e8f9';
-  var icon  = tipo === 'ok' ? '✓' : tipo === 'warn' ? '⚠' : '→';
-  log.innerHTML += '<div style="color:' + color + ';line-height:1.8">' + icon + ' ' + msg + '</div>';
-}
-
+/* ══ DEMO DATATABLES + SELECT2 — lógica del profesor ══ */
 function iniciarDemoLibs() {
-  if (_dtCargada) return; // no reinicializar si ya está activa
+  document.getElementById('demo-libs-placeholder').style.display = 'none';
+  document.getElementById('demo-libs-content').style.display     = 'block';
 
-  const btn = document.getElementById('btn-demo-libs');
+  var btn = document.getElementById('btn-demo-libs');
   btn.disabled = true;
   btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cargando...';
 
-  document.getElementById('demo-libs-placeholder').style.display = 'none';
-  document.getElementById('demo-libs-content').style.display     = 'block';
-  document.getElementById('demo-libs-log').innerHTML              = '';
-
-  logLib('$("table").DataTable({ columns:[...], pageLength:5 }) — inicializando...', 'info');
-
-  // ── 1. Inicializar DataTable vacía ──────────────────────────
-  _dtInstance = $('#dt-demo').DataTable({
-    pageLength: 5,
-    language: { search: 'Buscar:', paginate: { next: '›', previous: '‹' },
-                lengthMenu: 'Mostrar _MENU_ filas', info: '_START_–_END_ de _TOTAL_' },
-    columnDefs: [{ orderable: false, targets: 4 }],
-    destroy: true
+  // 1. Activar Select2 sobre el select vacío
+  $('#slvCategories-demo').select2({
+    theme:       'bootstrap-5',
+    placeholder: 'Elige una categoría...',
+    allowClear:  true
   });
 
-  logLib('DataTable inicializada — columnas listas, esperando datos...', 'ok');
-
-  // ── 2. Cargar productos con $.ajax ──────────────────────────
+  // 2. Cargar categorías con $.ajax y llenar el select
   $.ajax({
-    url:    'https://fakestoreapi.com/products',
-    method: 'GET',
-    success: function(productos) {
-      productos.forEach(function(p) {
-        _dtInstance.row.add([
-          p.id,
-          p.title.substring(0, 38) + '...',
-          '$' + p.price.toFixed(2),
-          p.category,
-          p.rating.rate + ' ⭐ (' + p.rating.count + ')'
-        ]).draw(false);
+    type: 'GET',
+    url:  'https://fakestoreapi.com/products/categories',
+    success: function(response) {
+      var $select = $('#slvCategories-demo');
+      $select.empty();
+      $select.append($('<option>').val('All').text('Select all'));
+      response.forEach(function(element) {
+        $select.append($('<option>').val(element).text(element));
       });
-
-      logLib('$.ajax success — ' + productos.length + ' filas añadidas con row.add().draw(false)', 'ok');
-
-      // ── 3. Cargar categorías en Select2 ─────────────────────
-      $.ajax({
-        url:    'https://fakestoreapi.com/products/categories',
-        method: 'GET',
-        success: function(cats) {
-          var $sel = $('#select2-demo');
-          $sel.empty().append('<option value="">Todas las categorías</option>');
-          cats.forEach(function(c) { $sel.append($('<option>').val(c).text(c)); });
-
-          $sel.select2({
-            theme: 'bootstrap-5',
-            placeholder: 'Filtra por categoría...',
-            allowClear: true,
-            width: '100%'
-          });
-
-          logLib('$.ajax categories — Select2 inicializado con ' + cats.length + ' opciones', 'ok');
-          logLib('select2.on("change") → tabla.column(3).search(val).draw() — listo', 'ok');
-
-          // ── 4. Conectar Select2 con DataTable ────────────────
-          $sel.on('change', function() {
-            var val = $(this).val() || '';
-            _dtInstance.column(3).search(val).draw();
-            var badge = document.getElementById('demo-cat-badge');
-            if (val) {
-              badge.textContent = 'Filtrando: ' + val;
-              badge.style.display = 'inline-block';
-            } else {
-              badge.style.display = 'none';
-            }
-          });
-
-          btn.disabled = false;
-          btn.innerHTML = '<i class="bi bi-check-circle"></i> Cargado';
-          _dtCargada = true;
-        }
-      });
-    },
-    error: function(x, s) {
-      logLib('Error: ' + s, 'warn');
-      btn.disabled = false;
-      btn.innerHTML = '<i class="bi bi-play-fill"></i> Cargar demo';
     }
+  });
+
+  // 3. Cargar todos los productos al inicio
+  listarProductosDemo('All');
+
+  // 4. Re-cargar al cambiar la categoría
+  $('#slvCategories-demo').on('change', function() {
+    var category = $(this).val();
+    listarProductosDemo(category);
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="bi bi-check-circle"></i> Cargado';
+}
+
+function listarProductosDemo(category) {
+  // Decidir la URL según la categoría elegida
+  var url;
+  if (category === 'All') {
+    url = 'https://fakestoreapi.com/products';
+  } else {
+    url = 'https://fakestoreapi.com/products/category/' + category;
+  }
+
+  // Destruir instancia previa para evitar "Cannot reinitialise DataTable"
+  if ($.fn.DataTable.isDataTable('#tblProducts-demo')) {
+    $('#tblProducts-demo').DataTable().destroy();
+  }
+
+  // Inicializar DataTable — ella misma hace el GET con ajax:{}
+  $('#tblProducts-demo').DataTable({
+    ajax: {
+      url:     url,
+      dataSrc: ''   // la API devuelve [] directo, no { data:[] }
+    },
+    columns: [
+      { data: 'id'          },
+      { data: 'title'       },
+      { data: 'price'       },
+      { data: 'description' },
+      { data: 'image'       }
+    ],
+    columnDefs: [{
+      targets:   4,
+      orderable: false,
+      render: function(data) {
+        return '<img width="50px" src="' + data + '"/>';
+      }
+    }]
   });
 }
 
 function resetDemoLibs() {
-  if (_dtInstance) { _dtInstance.destroy(); _dtInstance = null; }
-  $('#select2-demo').select2('destroy');
-  _dtCargada = false;
+  if ($.fn.DataTable.isDataTable('#tblProducts-demo')) {
+    $('#tblProducts-demo').DataTable().destroy();
+  }
+  try { $('#slvCategories-demo').select2('destroy'); } catch(e) {}
+  $('#slvCategories-demo').off('change');
 
   document.getElementById('demo-libs-placeholder').style.display = 'block';
   document.getElementById('demo-libs-content').style.display     = 'none';
-  document.getElementById('demo-libs-log').style.display         = 'none';
-  document.getElementById('demo-libs-log').innerHTML             = '';
-  document.getElementById('demo-cat-badge').style.display        = 'none';
   document.getElementById('btn-demo-libs').disabled              = false;
   document.getElementById('btn-demo-libs').innerHTML             = '<i class="bi bi-play-fill"></i> Cargar demo';
-  $('#dt-demo tbody').empty();
 }
 </script>
 </body>
