@@ -97,16 +97,20 @@
           <p>${producto.description}</p>
           <p><b><p>$ ${producto.price}</p></b></p>
           <img src="${producto.image}">
-          <button>${obtenerFavorito(producto.id) ? "No me gusta ❤️" : "Me gusta 🤍" }</button>
+            <button onclick="agregarFavorito(${producto.id}, this)">${obtenerFavorito(producto.id) ? "No me gusta ❤️" : "Me gusta 🤍" }</button>
         </div>
         `
       });
       console.log(data);
     }
+    function getLocalStorage(){
+      return  JSON.parse(localStorage.getItem("favoritos") || []); //evitamos errores en caso no exiate favoritos para la primera vez
+    }
+
 
    //localStorage.setItem("favoritos", JSON.stringify([1,2]) );Seteamos el arreglo de ids
     function obtenerFavorito(idProduto){
-      let favoritos = JSON.parse(localStorage.getItem("favoritos"));
+      let favoritos = getLocalStorage();
       let bandera = false;
       if(favoritos){
         favoritos.forEach(idFavorito => {
@@ -120,6 +124,25 @@
       return bandera;
     }
 
+    function agregarFavorito(idProduto, btn){
+      let favoritosActuales = getLocalStorage() ; 
+      let esLike;
+
+      if (favoritosActuales && favoritosActuales.includes(idProduto)) {//verificamos primero si el arreglo no es null y luego con inlcude si existe idProducto, ejemplo: [1,2].includes(2) = true;
+        //Filter es la mejor opcion porque crea un nuevo array, NO MODIFICA EL ORIGINAL (Usamos condicional) 
+        // con la condicional excluimos aquellos que sean distintos a idProducto haciendo que el nuevo arreglo sean todos aquellos que no son idProducto.
+        favoritosActuales = favoritosActuales.filter((id) => id !== idProduto); 
+        
+        esLike=false;
+      } else {
+        favoritosActuales.push(idProduto);
+        esLike=true;
+      } 
+      
+      localStorage.setItem("favoritos", JSON.stringify(favoritosActuales));
+      btn.textContent = esLike?  "No me gusta ❤️":"Me gusta 🤍" ;
+      
+    }
     
 
 
