@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clase 5 — Componentes y Binding en Angular</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root { --accent:#ef4444; --accent-dark:#dc2626; --accent-faint:#fef2f2; --accent-border:#fecaca; }
+    body { font-family:'Inter',sans-serif; background:#f0f2f5; color:#1e293b; }
+
+    /* ── SIDEBAR ── */
+    #sidebar { position:fixed;top:0;left:0;width:270px;height:100vh;background:#0f172a;color:#e2e8f0;overflow-y:auto;z-index:1000;padding-bottom:2rem;border-right:1px solid #1e293b; }
+    #sidebar .brand { padding:1.5rem 1.25rem 1rem;border-bottom:1px solid #1e293b; }
+    #sidebar .brand .badge-mod { background:var(--accent);color:#fff;font-size:.7rem;padding:.25rem .6rem;border-radius:20px;letter-spacing:.05em;font-weight:700; }
+    #sidebar .brand h6 { color:#f8fafc;font-weight:700;margin-top:.5rem;font-size:1rem; }
+    #sidebar nav a { display:flex;align-items:center;gap:.65rem;padding:.55rem 1.25rem;color:#94a3b8;text-decoration:none;font-size:.83rem;border-left:3px solid transparent;transition:all .15s; }
+    #sidebar nav a:hover, #sidebar nav a.active { color:#f8fafc;background:#1e293b;border-left-color:var(--accent); }
+    #sidebar .section-label { font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:#475569;padding:1.1rem 1.25rem .35rem;font-weight:700; }
+    #sidebar .progress-wrap { padding:.5rem 1.25rem 0; }
+    #sidebar .progress { height:4px;background:#1e293b; }
+    #sidebar .progress-bar { background:var(--accent);transition:width .4s ease; }
+
+    /* ── MAIN ── */
+    #main { margin-left:270px;min-height:100vh; }
+    .topbar { background:#fff;border-bottom:1px solid #e2e8f0;padding:.75rem 2rem;position:sticky;top:0;z-index:900;display:flex;align-items:center;gap:1rem; }
+    .topbar .breadcrumb { margin:0;font-size:.8rem; }
+    .content-section { display:none;padding:2rem;animation:fadeIn .25s ease; }
+    .content-section.active { display:block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
+
+    /* ── HERO ── */
+    .hero-card { background:linear-gradient(135deg,#0f172a 0%,#2d0a0a 100%);color:#fff;border-radius:16px;padding:2.5rem 3rem;margin-bottom:2rem; }
+    .hero-card .clase-badge { background:rgba(239,68,68,.25);border:1px solid rgba(239,68,68,.5);color:#fca5a5;font-size:.75rem;padding:.3rem .8rem;border-radius:20px;display:inline-block;margin-bottom:1rem;letter-spacing:.06em;text-transform:uppercase; }
+    .hero-card h1 { font-size:2rem;font-weight:700;margin-bottom:.5rem; }
+    .hero-card p { color:#94a3b8;font-size:1rem; }
+    .hero-meta span { background:rgba(255,255,255,.1);border-radius:8px;padding:.4rem .9rem;font-size:.82rem;margin-right:.5rem;color:#e2e8f0; }
+
+    /* ── BLOCKS ── */
+    .theory-block { background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.75rem;margin-bottom:1.5rem; }
+    .theory-block h4 { font-weight:700;font-size:1.05rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem; }
+    .theory-block p, .theory-block li { font-size:.9rem;color:#374151;line-height:1.75; }
+    .theory-block ul, .theory-block ol { padding-left:1.4rem; }
+    .info-card { background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem;height:100%; }
+    .info-card .ic-icon { width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem; }
+    .info-card h5 { font-weight:700;font-size:.95rem;margin-bottom:.5rem; }
+    .info-card p { font-size:.85rem;color:#64748b;margin:0; }
+
+    /* ── CALLOUTS ── */
+    .callout { border-left:4px solid;border-radius:0 8px 8px 0;padding:.9rem 1.2rem;margin:1rem 0;font-size:.88rem; }
+    .callout-blue   { border-color:#3b82f6;background:#eff6ff;color:#1e40af; }
+    .callout-green  { border-color:#10b981;background:#f0fdf4;color:#065f46; }
+    .callout-amber  { border-color:#f59e0b;background:#fffbeb;color:#92400e; }
+    .callout-red    { border-color:#ef4444;background:#fef2f2;color:#991b1b; }
+    .callout-purple { border-color:#8b5cf6;background:#f5f3ff;color:#4c1d95; }
+    .callout-cyan   { border-color:#06b6d4;background:#ecfeff;color:#164e63; }
+
+    /* ── CODE ── */
+    .code-block { background:#0f172a;border-radius:10px;overflow:hidden;margin:1rem 0;font-family:'JetBrains Mono',monospace; }
+    .code-block .code-header { background:#1e293b;padding:.5rem 1rem;display:flex;align-items:center;justify-content:space-between; }
+    .code-block .code-header span { font-size:.75rem;color:#64748b;font-family:'Inter',sans-serif; }
+    .code-block .code-header .lang-badge { font-size:.68rem;padding:.15rem .55rem;border-radius:20px;font-weight:700; }
+    .lang-ts   { background:rgba(6,182,212,.2);color:#67e8f9; }
+    .lang-html { background:rgba(239,68,68,.2);color:#fca5a5; }
+    .lang-bash { background:rgba(16,185,129,.2);color:#6ee7b7; }
+    .lang-json { background:rgba(245,158,11,.2);color:#fcd34d; }
+    .code-block pre { margin:0;padding:1.25rem;color:#e2e8f0;font-size:.82rem;line-height:1.75;overflow-x:auto; }
+    .kw   { color:#93c5fd; }
+    .fn   { color:#86efac; }
+    .str  { color:#fca5a5; }
+    .cm   { color:#475569;font-style:italic; }
+    .num  { color:#fdba74; }
+    .prop { color:#c4b5fd; }
+    .bool { color:#f9a8d4; }
+    .typ  { color:#67e8f9;font-weight:600; }
+    .dec  { color:#fbbf24;font-weight:600; }
+    .tag  { color:#86efac; }
+    .attr { color:#c4b5fd; }
+    .bind { color:#fcd34d;font-weight:600; }
+
+    /* ── SANDBOX ── */
+    .sandbox { background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:1.5rem; }
+    .sandbox-header { background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem; }
+    .sandbox-header .title { font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:.5rem; }
+    .sandbox-body { padding:1.5rem; }
+    .run-btn { background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.45rem 1.1rem;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:background .15s; }
+    .run-btn:hover   { background:var(--accent-dark); }
+    .run-btn.green   { background:#10b981; } .run-btn.green:hover  { background:#059669; }
+    .run-btn.blue    { background:#3b82f6; } .run-btn.blue:hover   { background:#2563eb; }
+    .run-btn.amber   { background:#f59e0b;color:#1e293b; } .run-btn.amber:hover { background:#d97706; }
+    .run-btn.purple  { background:#8b5cf6; } .run-btn.purple:hover { background:#7c3aed; }
+    .run-btn.gray    { background:#64748b; } .run-btn.gray:hover   { background:#475569; }
+
+    /* ── TIMELINE ── */
+    .timeline { position:relative;padding-left:2rem; }
+    .timeline::before { content:'';position:absolute;left:.55rem;top:0;bottom:0;width:2px;background:#e2e8f0; }
+    .timeline-item { position:relative;margin-bottom:1.25rem; }
+    .timeline-item::before { content:'';position:absolute;left:-1.5rem;top:.35rem;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent); }
+    .timeline-item .t-time  { font-size:.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em; }
+    .timeline-item .t-title { font-weight:600;font-size:.95rem; }
+    .timeline-item .t-desc  { font-size:.85rem;color:#64748b; }
+
+    /* ── COMPARE ── */
+    .compare-cols { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0; }
+    .compare-col  { border-radius:10px;padding:1.25rem; }
+
+    /* ── STEP PILLS ── */
+    .step-pills { display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0; }
+    .step-pill { background:var(--accent-faint);border:1px solid var(--accent-border);color:#991b1b;border-radius:30px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem; }
+    .step-pill .num { background:var(--accent);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem; }
+
+    /* ── FILE TREE ── */
+    .file-tree { background:#0f172a;border-radius:10px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:2.1;color:#94a3b8; }
+    .file-tree .dir   { color:#67e8f9; }
+    .file-tree .file  { color:#e2e8f0; }
+    .file-tree .ts    { color:#c4b5fd; }
+    .file-tree .html  { color:#fca5a5; }
+    .file-tree .css   { color:#86efac; }
+    .file-tree .json  { color:#fcd34d; }
+    .file-tree .note  { color:#475569;font-style:italic; }
+
+    /* ── OS TABLE ── */
+    .os-table { width:100%;border-collapse:collapse;font-size:.82rem;margin:1rem 0; }
+    .os-table th { background:#0f172a;color:#e2e8f0;padding:.6rem 1rem;text-align:left;font-weight:600; }
+    .os-table td { padding:.55rem 1rem;border-bottom:1px solid #e2e8f0;vertical-align:top; }
+    .os-table tr:last-child td { border-bottom:none; }
+    .os-table tr:nth-child(even) td { background:#f8fafc; }
+    .os-table code { background:#f1f5f9;border-radius:4px;padding:.1rem .4rem;font-size:.78rem;color:#0f172a; }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style:none;padding:0;margin:0; }
+    .checklist li { display:flex;align-items:flex-start;gap:.6rem;padding:.4rem 0;font-size:.88rem;color:#374151; }
+    .checklist li::before { content:'☐';color:#94a3b8;font-size:1rem;flex-shrink:0;margin-top:.05rem; }
+    .checklist li.done::before { content:'✓';color:#10b981; }
+
+    /* ── ANGULAR PREVIEW ── */
+    .ng-preview { background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden; }
+    .ng-preview .ng-bar { background:#0f172a;padding:.5rem 1rem;font-size:.72rem;color:#475569;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:.75rem; }
+    .ng-preview .ng-bar .dot { width:10px;height:10px;border-radius:50%; }
+    .ng-preview .ng-body { padding:1.25rem; }
+
+    /* ── BINDING BADGE ── */
+    .binding-badge { display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;padding:.2rem .65rem;border-radius:6px;margin:.15rem; }
+    .bb-interp  { background:#fef3c7;color:#92400e;border:1px solid #fde68a; }
+    .bb-prop    { background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe; }
+    .bb-event   { background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0; }
+    .bb-two     { background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe; }
+
+    /* ── ERROR BOX ── */
+    .error-box { background:#0f172a;border:1px solid #ef4444;border-radius:10px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.75;color:#fca5a5; }
+    .error-box .file { color:#94a3b8;margin-bottom:.5rem; }
+    .error-box .fix  { background:#134e0a;border:1px solid #16a34a;border-radius:6px;padding:.75rem;margin-top:.75rem;color:#86efac;font-size:.78rem; }
+
+    @media(max-width:768px){ #sidebar{transform:translateX(-100%);} #main{margin-left:0;} .compare-cols{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="brand">
+    <div class="badge-mod">MODULO 1 · CLASE 5</div>
+    <h6>Frontend con Angular</h6>
+    <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
+  </div>
+  <div class="progress-wrap">
+    <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+      <span>Progreso de la clase</span><span id="progress-pct">9%</span>
+    </div>
+    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:9%"></div></div>
+    <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Clase 5 de 7 · Modulo 1</div>
+  </div>
+  <div class="section-label">Contenido</div>
+  <nav id="sidenav">
+    <a href="#" class="active" onclick="window.showSection('agenda',this)">       <i class="bi bi-calendar3"></i> Agenda</a>
+    <a href="#" onclick="window.showSection('por-que',this)">                      <i class="bi bi-question-circle"></i> Por que Angular?</a>
+    <a href="#" onclick="window.showSection('instalacion',this)">                  <i class="bi bi-download"></i> Instalacion y Setup</a>
+    <a href="#" onclick="window.showSection('primer-proyecto',this)">              <i class="bi bi-rocket-takeoff"></i> Primer proyecto</a>
+    <a href="#" onclick="window.showSection('estructura',this)">                   <i class="bi bi-folder-tree"></i> Estructura del proyecto</a>
+    <a href="#" onclick="window.showSection('componentes',this)">                  <i class="bi bi-puzzle"></i> Componentes</a>
+    <a href="#" onclick="window.showSection('binding',this)">                      <i class="bi bi-arrow-left-right"></i> Data Binding</a>
+    <a href="#" onclick="window.showSection('ngfor',this)">                        <i class="bi bi-repeat"></i> ngFor y tabla</a>
+    <a href="#" onclick="window.showSection('input-decorator',this)">              <i class="bi bi-box-arrow-in-down"></i> Input()</a>
+    <a href="#" onclick="window.showSection('ejercicio',this)">                    <i class="bi bi-hammer"></i> Ejercicio final</a>
+    <a href="#" onclick="window.showSection('qa',this)">                           <i class="bi bi-patch-question"></i> Q&A y cierre</a>
+    <a href="#" onclick="window.showSection('conexion',this)">                     <i class="bi bi-arrow-right-circle"></i> Conexion con Clase 6</a>
+  </nav>
+  <div class="section-label">Navegacion</div>
+  <nav>
+    <a href="clase4.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 4</a>
+    <a href="clase6-http-routing.html"><i class="bi bi-arrow-right-circle"></i> Clase 6 → </a>
+  </nav>
+</nav>
+
+<div id="main">
+  <div class="topbar">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item text-muted">Modulo 1</li>
+        <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+        <li class="breadcrumb-item active fw-semibold">Clase 5 - Componentes y Binding</li>
+      </ol>
+    </nav>
+    <span class="ms-auto badge" style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca">
+      <i class="bi bi-clock me-1"></i>2h efectivas
+    </span>
+  </div>
+
+  <!-- AGENDA -->
+  <section id="agenda" class="content-section active">
+    <div class="hero-card">
+      <div class="clase-badge"><i class="bi bi-5-circle me-1"></i>Clase 5 de 7</div>
+      <h1>Componentes y Binding en Angular</h1>
+      <p>De TypeScript puro a una aplicacion real. Instalaras Angular, crearas tu primer proyecto y entenderas como los componentes se comunican y reaccionan a los datos.</p>
+      <div class="hero-meta mt-3">
+        <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
+        <span><i class="bi bi-terminal me-1"></i>Angular 19</span>
+        <span><i class="bi bi-puzzle me-1"></i>Modulos tradicionales</span>
+      </div>
+    </div>
+
+    <div class="callout callout-red mb-4">
+      <strong>Punto de partida:</strong> Al final de esta clase tendras tu proyecto Angular funcionando con <code>ng serve</code> en <code>localhost:4200</code>, una tabla de productos con datos mock, filtros por categoria y nombre, y un componente anidado con <code>Input()</code>.
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon" style="background:#fef2f2"><i class="bi bi-puzzle" style="color:#ef4444;font-size:1.3rem"></i></div>
+          <h5>Componentes</h5>
+          <p>La unidad basica de Angular. Cada componente es un <code>.ts</code> + <code>.html</code> + <code>.css</code>. Hoy crearas <code>ProductsComponent</code> y <code>ProductCardComponent</code>.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon" style="background:#fef2f2"><i class="bi bi-arrow-left-right" style="color:#ef4444;font-size:1.3rem"></i></div>
+          <h5>Data Binding</h5>
+          <p>Las 4 formas de conectar <code>.ts</code> con el <code>.html</code>: interpolacion <code>{{ }}</code>, property binding <code>[ ]</code>, event binding <code>( )</code> y two-way <code>[( )]</code>.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <div class="ic-icon" style="background:#fef2f2"><i class="bi bi-box-arrow-in-down" style="color:#ef4444;font-size:1.3rem"></i></div>
+          <h5>Input()</h5>
+          <p>Pasar datos de un componente padre a uno hijo. Ideal para extraer filas de una tabla a su propio componente.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-list-ol" style="color:var(--accent)"></i> Distribucion del tiempo</h4>
+      <div class="timeline mt-3">
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Por que Angular? El modelo mental</div>
+          <div class="t-desc">Diferencia entre JS/jQuery/TypeScript y un framework. Que resuelve Angular que no resolvian las clases anteriores.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Instalacion: Node.js  Angular CLI  ng new mi-tienda</div>
+          <div class="t-desc">Comandos para Windows, Mac y Linux. Explicacion de cada herramienta. Verificar que <code>localhost:4200</code> carga.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">30 min</div>
+          <div class="t-title">Primer componente: ProductsComponent con datos mock</div>
+          <div class="t-desc"><code>ng generate component products</code>. Array quemado en <code>data</code>. Tabla Bootstrap con <code>*ngFor</code>. Binding basico.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">20 min</div>
+          <div class="t-title">Componente anidado: ProductCardComponent con Input()</div>
+          <div class="t-desc">Separar la fila de la tabla en su propio componente. Pasar el producto como <code>Input()</code>. Boton con <code>(click)</code>.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">20 min</div>
+          <div class="t-title">Ejercicio: completar el componente con filtro por nombre</div>
+          <div class="t-desc">Input de texto con <code>(keyup)</code> que filtra el array.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="t-time">10 min</div>
+          <div class="t-title">Q&A y conexion con Clase 6</div>
+          <div class="t-desc">Preguntas frecuentes y el puente: hoy los datos son un array quemado, en Clase 6 vendran de la API real con HttpClient.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POR QUE ANGULAR -->
+  <section id="por-que" class="content-section">
+    <h2 class="fw-bold mb-1">Por que Angular?</h2>
+    <p class="text-muted mb-4">Todo lo que aprendiste en las clases anteriores era el "por que". Angular es el "para que".</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-3" style="color:var(--accent)"></i> La evolucion que has visto en este modulo</h4>
+      <div class="step-pills">
+        <div class="step-pill"><div class="num">1</div>JS + fetch (Clase 1-2)</div>
+        <div class="step-pill"><div class="num">2</div>jQuery + AJAX (Clase 3)</div>
+        <div class="step-pill"><div class="num">3</div>TypeScript (Clase 4)</div>
+        <div class="step-pill"><div class="num">4</div>Angular (Clases 5-7)</div>
+      </div>
+      <p class="mt-3" style="font-size:.9rem">Cada paso resolvio un problema del anterior. Angular resuelve el problema que TypeScript solo no puede: <strong>organizar una aplicacion grande de forma sostenible</strong>.</p>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-x-circle text-danger"></i> El problema que Angular resuelve</h4>
+      <p>Con lo que sabes hasta ahora, una tienda con 10 paginas y datos compartidos puede convertirse en esto:</p>
+      <div class="code-block">
+        <div class="code-header"><span>codigo-sin-framework.js - lo que termina pasando</span></div>
+        <pre><span class="cm">// archivo-1.js - carga productos</span>
+<span class="kw">async function</span> <span class="fn">cargarProductos</span>() { <span class="cm">/* fetch... */</span> }
+
+<span class="cm">// archivo-2.js - muestra carrito (necesita los mismos datos)</span>
+<span class="kw">let</span> carrito = <span class="fn">JSON</span>.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">"cart"</span>));
+<span class="cm">//  Sincronizar manualmente entre archivos</span>
+
+<span class="cm">// archivo-3.js - navbar (necesita el contador del carrito)</span>
+document.<span class="fn">getElementById</span>(<span class="str">"contador"</span>).textContent = carrito.length;
+<span class="cm">//  Actualizar el DOM manualmente en cada cambio</span>
+
+<span class="cm">// Resultado: codigo dificil de mantener, estado duplicado</span>
+<span class="cm">// y un bug que arreglas en un lugar y aparece en otro.</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check-circle text-success"></i> Lo que Angular agrega encima de TypeScript</h4>
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+            <div class="fw-bold mb-2" style="color:#991b1b;font-size:.88rem">Sin Angular</div>
+            <ul class="small mb-0" style="color:#374151;line-height:2.1;padding-left:1.2rem">
+              <li>Actualizas el DOM manualmente</li>
+              <li>Cada archivo de JS es independiente</li>
+              <li>Compartir datos entre "paginas" es manual</li>
+              <li>Las rutas las manejas tu con <code>location.href</code></li>
+              <li>Sin convenciones - cada desarrollador hace lo suyo</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <div class="fw-bold mb-2" style="color:#065f46;font-size:.88rem">Con Angular</div>
+            <ul class="small mb-0" style="color:#374151;line-height:2.1;padding-left:1.2rem">
+              <li>El DOM se actualiza <em>automaticamente</em> cuando cambian los datos</li>
+              <li>Componentes: cada pieza de UI en su propio archivo organizado</li>
+              <li>Servicios: datos compartidos entre componentes sin codigo repetido</li>
+              <li>Router: rutas declarativas <code>/products</code>, <code>/product/:id</code></li>
+              <li>Convenciones estrictas - mismo patron en todo el equipo</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-red mt-3">
+        <strong>La diferencia fundamental:</strong> en JS puro manipulas el DOM tu mismo. En Angular describes <em>como debe verse el DOM</em> segun el estado de los datos - y Angular se encarga del resto. <code>{{ titulo }}</code> en el HTML siempre muestra el valor actual de <code>titulo</code> en el TypeScript, sin que tengas que hacer nada mas.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Angular 19 con modulos tradicionales</h4>
+      <p>En este diplomado usamos la arquitectura de <strong>modulos tradicionales</strong> (<code>NgModule</code>). Angular 19 tambien soporta <em>standalone components</em>, pero usamos modulos porque:</p>
+      <div class="row g-3 mt-1">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca;text-align:center">
+            <div class="fw-bold" style="color:#991b1b;font-size:.88rem">Consistencia</div>
+            <p class="small mb-0 mt-1" style="color:#374151">El proyecto de referencia usa modulos. El tuyo tambien.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca;text-align:center">
+            <div class="fw-bold" style="color:#991b1b;font-size:.88rem">Mayoria del mundo real</div>
+            <p class="small mb-0 mt-1" style="color:#374151">La mayoria de proyectos en produccion usan NgModule.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca;text-align:center">
+            <div class="fw-bold" style="color:#991b1b;font-size:.88rem">Mas explicito</div>
+            <p class="small mb-0 mt-1" style="color:#374151">Ves exactamente que se registra en <code>app.module.ts</code>.</p>
+          </div>
+        </div>
+      </div>
+      <p class="mt-3 small text-muted">Comando que garantiza modulos tradicionales: <code>ng new mi-tienda <strong>--standalone false</strong> --routing true --style css</code></p>
+    </div>
+  </section>
+
+  <!-- INSTALACION -->
+  <section id="instalacion" class="content-section">
+    <h2 class="fw-bold mb-1">Instalacion y Setup</h2>
+    <p class="text-muted mb-4">De cero a <code>localhost:4200</code> corriendo. Comandos para Windows, Mac y Linux.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-question-circle" style="color:var(--accent)"></i> Que estamos instalando y por que?</h4>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold" style="color:#1e40af">Node.js</div>
+            <p class="small mt-1 mb-0" style="color:#374151">Es un programa que permite ejecutar JavaScript fuera del navegador. Angular lo necesita para funcionar en tu computadora.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold" style="color:#1e40af">npm</div>
+            <p class="small mt-1 mb-0" style="color:#374151">Es el "app store" de Node.js. Instala librerias y herramientas como Angular CLI.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold" style="color:#1e40af">Angular CLI</div>
+            <p class="small mt-1 mb-0" style="color:#374151">Es un programa que escribe codigo por ti. Genera componentes, servicios, y levanta el servidor de desarrollo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-hexagon-fill text-success"></i>
+        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
+        Instalar Node.js LTS
+      </h4>
+      <p style="font-size:.9rem">Descarga la version <strong>LTS</strong> (Long Term Support) de <a href="https://nodejs.org" target="_blank">nodejs.org</a> - es la que aparece en el boton verde grande.</p>
+      <table class="os-table">
+        <thead><tr><th>Sistema</th><th>Accion</th><th>Verificar instalacion</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Windows</strong></td><td>Descargar <code>.msi</code>  ejecutar  Next, Next, Finish</td><td><code>node -v</code> y <code>npm -v</code> en CMD o PowerShell</td></tr>
+          <tr><td><strong>Mac</strong></td><td>Descargar <code>.pkg</code>  ejecutar  continuar</td><td><code>node -v</code> y <code>npm -v</code> en Terminal</td></tr>
+          <tr><td><strong>Linux</strong></td><td><code>sudo apt install nodejs npm</code> o <code>sudo dnf install nodejs</code></td><td><code>node -v</code> y <code>npm -v</code> en terminal</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block mt-2">
+        <div class="code-header"><span>terminal - verificar que Node.js esta instalado</span><span class="lang-badge lang-bash">bash</span></div>
+        <pre>node -v    <span class="cm"># debe mostrar v22.x.x o superior</span>
+npm  -v    <span class="cm"># debe mostrar 10.x.x o superior</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
+        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 2</span>
+        Instalar Angular CLI
+      </h4>
+      <p style="font-size:.9rem">Angular CLI es la herramienta de linea de comandos que genera proyectos, componentes, servicios, etc. Se instala una sola vez globalmente.</p>
+      
+      <div class="callout callout-cyan mb-3">
+        <strong>Que hace <code>npm install -g @angular/cli@19</code> exactamente?</strong><br>
+        Instala la herramienta Angular CLI version 19 en tu computadora (global). El <code>@19</code> asegura que usamos una version especifica y estable. Sin el, instalaria la ultima version (quizas 20 o 21 beta).<br>
+        <strong>Importante:</strong> El CLI 19 genera proyectos con Angular 19. La version del CLI determina la version de Angular que usaras.
+      </div>
+
+      <table class="os-table">
+        <thead><tr><th>Sistema</th><th>Comando</th><th>Verificar</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Windows</strong> (PowerShell Admin)</td><td><code>npm install -g @angular/cli@19</code></td><td><code>ng version</code></td></tr>
+          <tr><td><strong>Mac</strong></td><td><code>sudo npm install -g @angular/cli@19</code></td><td><code>ng version</code></td></tr>
+          <tr><td><strong>Linux</strong></td><td><code>sudo npm install -g @angular/cli@19</code></td><td><code>ng version</code></td></tr>
+        </tbody>
+      </table>
+      
+      <div class="callout callout-amber">
+        <strong>Windows: error de permisos</strong> - si PowerShell dice "cannot be loaded because running scripts is disabled", ejecuta como Administrador: <code>Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned</code>. Luego vuelve a instalar.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-rocket-takeoff" style="color:var(--accent)"></i>
+        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 3</span>
+        Crear el proyecto
+      </h4>
+      <p style="font-size:.9rem">El comando <code>ng new</code> crea la estructura completa del proyecto. Las opciones <strong>son importantes</strong> para mantener la arquitectura que usaremos:</p>
+      
+      <div class="code-block">
+        <div class="code-header"><span>terminal - crear el proyecto</span><span class="lang-badge lang-bash">bash</span></div>
+        <pre><span class="cm"># Crear el proyecto - responde las preguntas que aparecen en pantalla</span>
+ng new mi-tienda --standalone false --routing true --style css
+
+<span class="cm"># El CLI pregunta:
+#   ? Which stylesheet format?  CSS (ya esta definido con --style css)
+#   ? Do you want to enable... SSR?  No (escribe N y Enter)</span>
+
+<span class="cm"># Entrar a la carpeta del proyecto</span>
+<span class="kw">cd</span> mi-tienda
+
+<span class="cm"># Levantar el servidor de desarrollo</span>
+ng serve --open  <span class="cm"># --open abre el navegador automaticamente</span>
+
+<span class="cm"># Resultado esperado: el navegador abre localhost:4200
+# con la pagina de bienvenida de Angular</span></pre>
+      </div>
+
+      <div class="callout callout-red">
+        <strong><code>--standalone false</code> es importante.</strong> Sin esta opcion, Angular 19 crea componentes standalone. Con <code>--standalone false</code> usamos modulos tradicionales (<code>app.module.ts</code>), que es el patron que seguiremos en todo el modulo.
+      </div>
+
+      <p class="fw-semibold small mt-3 mb-1">Instalar Bootstrap en el proyecto:</p>
+      <div class="code-block">
+        <div class="code-header"><span>terminal - dentro de la carpeta mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
+        <pre><span class="cm"># Agregar en src/index.html dentro del &lt;head&gt;:</span>
+<span class="cm"># &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"&gt;</span>
+<span class="cm"># &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"&gt;&lt;/script&gt;</span></pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i> Comandos que usaras todo el tiempo</h4>
+      <table class="os-table">
+        <thead><tr><th>Accion</th><th>Comando</th><th>Que hace</th></tr></thead>
+        <tbody>
+          <tr><td>Levantar servidor</td><td><code>ng serve</code></td><td>Compila, empaqueta y abre <code>localhost:4200</code>. Recompila automaticamente al guardar.</td></tr>
+          <tr><td>Levantar y abrir</td><td><code>ng serve --open</code></td><td>Lo mismo que <code>ng serve</code> pero abre el navegador automaticamente.</td></tr>
+          <tr><td>Generar componente</td><td><code>ng generate component nombre</code></td><td>Atajo: <code>ng g c nombre</code>. Crea los 3 archivos (.ts, .html, .css) y los registra.</td></tr>
+          <tr><td>Detener servidor</td><td><code>Ctrl + C</code></td><td>En la terminal donde corre <code>ng serve</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-code-square" style="color:var(--accent)"></i> Extensiones de VS Code recomendadas</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0">
+            <p class="fw-semibold mb-2" style="font-size:.85rem">Para Angular</p>
+            <ul class="small mb-0" style="color:#374151;line-height:2.1;padding-left:1.2rem">
+              <li><strong>Angular Language Service</strong> - autocompletado en templates HTML</li>
+              <li><strong>Error Lens</strong> - errores TypeScript mientras escribes</li>
+              <li><strong>Prettier</strong> - formateo automatico del codigo</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0">
+            <p class="fw-semibold mb-2" style="font-size:.85rem">Recomendadas</p>
+            <ul class="small mb-0" style="color:#374151;line-height:2.1;padding-left:1.2rem">
+              <li><strong>Material Icon Theme</strong> - iconos de archivos en el explorador</li>
+              <li><strong>ES7+ React/Redux snippets</strong> - snippets TypeScript utiles</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIMER PROYECTO -->
+  <section id="primer-proyecto" class="content-section">
+    <h2 class="fw-bold mb-1">El primer proyecto corriendo</h2>
+    <p class="text-muted mb-4">Verificar que todo funciona antes de empezar a codear.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check-circle text-success"></i> Que deberias ver en <code>localhost:4200</code></h4>
+      <div class="ng-preview">
+        <div class="ng-bar">
+          <div class="dot" style="background:#ef4444"></div>
+          <div class="dot" style="background:#f59e0b"></div>
+          <div class="dot" style="background:#10b981"></div>
+          <span style="margin-left:.5rem">localhost:4200</span>
+        </div>
+        <div class="ng-body text-center py-4" style="background:#f8fafc">
+          <div style="font-size:2.5rem;margin-bottom:.5rem">A</div>
+          <div style="font-weight:700;font-size:1.1rem;color:#1e293b">mi-tienda app is running!</div>
+          <div style="font-size:.85rem;color:#64748b;margin-top:.25rem">Pagina de bienvenida de Angular - reemplazaras esto</div>
+        </div>
+      </div>
+      <div class="callout callout-green mt-3">
+        Si ves esta pantalla, <strong>todo esta correctamente instalado</strong>. En la proxima seccion vas a borrar el contenido de bienvenida y empezar a construir la tienda.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-pencil-square" style="color:var(--accent)"></i> Primer cambio: limpiar <code>app.component.html</code></h4>
+      <p style="font-size:.9rem">Angular genera mucho contenido de bienvenida. Reemplazalo con el navbar basico:</p>
+      <div class="code-block">
+        <div class="code-header"><span>src/app/app.component.html - reemplazar todo el contenido</span><span class="lang-badge lang-html">HTML</span></div>
+        <pre><span class="cm">&lt;!-- Navbar principal --&gt;</span>
+<span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="str">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container-fluid"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"navbar-brand"</span> <span class="attr">href</span>=<span class="str">"#"</span><span class="tag">&gt;</span>Mi Tienda<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"collapse navbar-collapse"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;ul</span> <span class="attr">class</span>=<span class="str">"navbar-nav me-auto"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;li</span> <span class="attr">class</span>=<span class="str">"nav-item"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"nav-link"</span> <span class="attr">routerLink</span>=<span class="str">"/"</span><span class="tag">&gt;</span>Home<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+        <span class="tag">&lt;li</span> <span class="attr">class</span>=<span class="str">"nav-item"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"nav-link"</span> <span class="attr">routerLink</span>=<span class="str">"/products"</span><span class="tag">&gt;</span>Products<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/nav&gt;</span>
+
+<span class="cm">&lt;!-- Router outlet: aqui Angular renderiza el componente de la ruta activa --&gt;</span>
+<span class="tag">&lt;router-outlet&gt;&lt;/router-outlet&gt;</span></pre>
+      </div>
+      <div class="callout callout-blue">
+        <strong><code>&lt;router-outlet&gt;</code></strong> es el "hueco" donde Angular inserta el componente de la ruta activa. Cuando navegas a <code>/products</code>, Angular pone ahi el <code>ProductsComponent</code> automaticamente.
+      </div>
+    </div>
+  </section>
+
+  <!-- ESTRUCTURA DEL PROYECTO -->
+  <section id="estructura" class="content-section">
+    <h2 class="fw-bold mb-1">Estructura del proyecto</h2>
+    <p class="text-muted mb-4">Entender que archivo hace que - para no perderse en la carpeta <code>src/</code>.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-folder-tree" style="color:var(--accent)"></i> Arbol de archivos generado por <code>ng new</code></h4>
+      <div class="file-tree">
+        <div><span class="dir">mi-tienda/</span></div>
+        <div>&nbsp;&nbsp;<span class="dir">src/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dir">app/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> tu codigo vive aqui</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">app.component.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> componente raiz - navbar, router-outlet</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">app.component.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> template del componente raiz</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="css">app.component.css</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> estilos del componente raiz</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">app.module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> REGISTRO de todos los componentes</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">app-routing.module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> declaracion de rutas URL  componente</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">index.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> el unico HTML real - Angular lo gestiona</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">main.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> punto de arranque de la app</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="css">styles.css</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> estilos globales</span></div>
+        <div>&nbsp;&nbsp;<span class="json">angular.json</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> configuracion del CLI (build, estilos, scripts)</span></div>
+        <div>&nbsp;&nbsp;<span class="json">package.json</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> dependencias del proyecto</span></div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-file-earmark-code" style="color:var(--accent)"></i> Los archivos que mas vas a tocar</h4>
+
+      <p class="fw-semibold mt-2 mb-1" style="font-size:.88rem">1 <code>app.module.ts</code> - el registro central</p>
+      <div class="code-block">
+        <div class="code-header"><span>src/app/app.module.ts - estructura actual</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="str">'@angular/platform-browser'</span>;
+<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing.module'</span>;
+<span class="kw">import</span> { AppComponent } <span class="kw">from</span> <span class="str">'./app.component'</span>;
+
+<span class="dec">@NgModule</span>({
+  <span class="prop">declarations</span>: [
+    AppComponent,
+    <span class="cm">// Aqui se registra CADA componente que crees</span>
+    <span class="cm">// ng generate component lo hace automaticamente</span>
+  ],
+  <span class="prop">imports</span>: [
+    BrowserModule,
+    AppRoutingModule,
+    <span class="cm">// HttpClientModule ira aqui en Clase 6</span>
+  ],
+  <span class="prop">providers</span>: [],
+  <span class="prop">bootstrap</span>: [AppComponent]
+})
+<span class="kw">export class</span> <span class="typ">AppModule</span> { }</pre>
+      </div>
+
+      <p class="fw-semibold mt-3 mb-1" style="font-size:.88rem">2 <code>app-routing.module.ts</code> - rutas</p>
+      <div class="code-block">
+        <div class="code-header"><span>src/app/app-routing.module.ts - agregar ruta de products</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { RouterModule, Routes } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
+<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products.component'</span>;
+
+<span class="kw">const</span> routes: <span class="typ">Routes</span> = [
+  { <span class="prop">path</span>: <span class="str">''</span>,         <span class="prop">component</span>: AppComponent,      <span class="prop">title</span>: <span class="str">'Home'</span> },
+  { <span class="prop">path</span>: <span class="str">'products'</span>, <span class="prop">component</span>: ProductsComponent, <span class="prop">title</span>: <span class="str">'Productos'</span> },
+  <span class="cm">// { path: 'product/:id', ... }   Clase 6</span>
+  <span class="cm">// { path: 'users', ... }         Clase 6</span>
+];
+
+<span class="dec">@NgModule</span>({
+  <span class="prop">imports</span>: [RouterModule.<span class="fn">forRoot</span>(routes)],
+  <span class="prop">exports</span>: [RouterModule]
+})
+<span class="kw">export class</span> <span class="typ">AppRoutingModule</span> { }</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPONENTES -->
+  <section id="componentes" class="content-section">
+    <h2 class="fw-bold mb-1">Componentes</h2>
+    <p class="text-muted mb-4">La unidad basica de Angular. Todo en Angular es un componente.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-puzzle" style="color:var(--accent)"></i> Que es un componente?</h4>
+      <p>Un componente es una clase TypeScript decorada con <code>@Component</code> que controla un pedazo de la interfaz. Cada componente tiene 3 archivos:</p>
+      <div class="row g-3 mt-1">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:2px solid #ef4444">
+            <div class="fw-bold" style="color:#991b1b"><i class="bi bi-filetype-ts me-1"></i><code>.ts</code> - la logica</div>
+            <p class="small mt-1 mb-0" style="color:#374151">Las propiedades (<code>titulo</code>, <code>data</code>), los metodos (<code>filtrarCat()</code>, <code>ngOnInit()</code>) y las dependencias inyectadas.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:2px solid #f97316">
+            <div class="fw-bold" style="color:#c2410c"><i class="bi bi-filetype-html me-1"></i><code>.html</code> - el template</div>
+            <p class="small mt-1 mb-0" style="color:#374151">El HTML con sintaxis Angular: <code>{{ }}</code>, <code>*ngFor</code>, <code>(click)</code>, <code>[src]</code>. Se actualiza automaticamente cuando cambian los datos.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:2px solid #eab308">
+            <div class="fw-bold" style="color:#854d0e"><i class="bi bi-filetype-css me-1"></i><code>.css</code> - los estilos</div>
+            <p class="small mt-1 mb-0" style="color:#374151">CSS con <strong>scope</strong>: solo afecta a ese componente, no al resto de la app. No hay conflictos de clases.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i> Generar ProductsComponent</h4>
+      <p style="font-size:.9rem">El CLI genera los 3 archivos y lo registra automaticamente en <code>app.module.ts</code>:</p>
+      <div class="code-block">
+        <div class="code-header"><span>terminal - dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
+        <pre>ng generate component products
+<span class="cm"># Atajo equivalente:</span>
+ng g c products
+
+<span class="cm"># El CLI crea:</span>
+<span class="cm">#   src/app/products/products.component.ts</span>
+<span class="cm">#   src/app/products/products.component.html</span>
+<span class="cm">#   src/app/products/products.component.css</span>
+<span class="cm">#   src/app/products/products.component.spec.ts  (tests - ignorar por ahora)</span>
+<span class="cm">#</span>
+<span class="cm"># Y modifica automaticamente app.module.ts para agregar ProductsComponent</span></pre>
+      </div>
+      <div class="callout callout-amber">
+        <strong>Siempre usa el CLI para generar componentes.</strong> Crear los archivos manualmente y olvidar registrarlos en <code>app.module.ts</code> es el error mas comun - el CLI nunca se olvida.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i> Anatomia de un componente</h4>
+      <p style="font-size:.9rem">Este es el patron que mantendremos en todo el modulo. Las propiedades arriba, el constructor con dependencias, y <code>ngOnInit()</code> para la carga inicial:</p>
+      <div class="code-block">
+        <div class="code-header"><span>src/app/products/products.component.ts - version clase 5 (con datos mock)</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+
+<span class="dec">@Component</span>({
+  <span class="prop">selector</span>:    <span class="str">'app-products'</span>,
+  <span class="prop">templateUrl</span>: <span class="str">'./products.component.html'</span>,
+  <span class="prop">styleUrls</span>:   [<span class="str">'./products.component.css'</span>]
+})
+<span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+
+  <span class="cm">//  Propiedades</span>
+  titulo = <span class="str">'Proyecto API'</span>;
+  valor  = <span class="str">''</span>;
+  data:  <span class="typ">any</span> = [];
+  detalle: <span class="typ">any</span> = <span class="kw">null</span>;
+
+  <span class="cm">//  Datos mock - en Clase 6 vendran de la API</span>
+  productosMock = [
+    { id: 1, title: 'Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops', price: 109.95, category: "men's clothing", image: 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png' },
+    { id: 2, title: 'Mens Casual Premium Slim Fit T-Shirts ', price: 22.30, category: "men's clothing", image: 'https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_t.png' },
+    { id: 3, title: 'Mens Cotton Jacket', price: 55.99, category: "men's clothing", image: 'https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_t.png' },
+    { id: 4, title: 'Mens Casual Slim Fit', price: 15.99, category: "men's clothing", image: 'https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_t.png' },
+    { id: 5, title: 'John Hardy Women\'s Legends Naga Gold & Silver Dragon Station Chain Bracelet', price: 695.00, category: 'jewelery', image: 'https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_t.png' },
+    { id: 6, title: 'Solid Gold Petite Micropave ', price: 168.00, category: 'jewelery', image: 'https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_t.png' },
+    { id: 7, title: 'White Gold Plated Princess', price: 9.99, category: 'jewelery', image: 'https://fakestoreapi.com/img/71YAIFU48IL._AC_UL640_QL65_ML3_t.png' },
+    { id: 8, title: 'Pierced Owl Rose Gold Plated Stainless Steel Double', price: 10.99, category: 'jewelery', image: 'https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_t.png' }
+  ];
+
+  <span class="kw">constructor</span>() { }
+
+  <span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
+    <span class="kw">this</span>.data = <span class="kw">this</span>.productosMock;
+  }
+
+  <span class="cm">//  Filtrar por categoria</span>
+  <span class="fn">filtrarCat</span>(event: <span class="typ">any</span>): <span class="typ">void</span> {
+    <span class="kw">this</span>.valor = event.target.value;
+    <span class="kw">if</span> (<span class="kw">this</span>.valor === <span class="str">'all'</span>) {
+      <span class="kw">this</span>.data = <span class="kw">this</span>.productosMock;
+    } <span class="kw">else</span> {
+      <span class="kw">this</span>.data = <span class="kw">this</span>.productosMock.<span class="fn">filter</span>(p => p.category === <span class="kw">this</span>.valor);
+    }
+  }
+
+  <span class="cm">//  Filtrar por nombre</span>
+  <span class="fn">filtrarNombre</span>(event: <span class="typ">any</span>): <span class="typ">void</span> {
+    <span class="kw">this</span>.valor = event.target.value.toLowerCase();
+    <span class="kw">if</span> (<span class="kw">this</span>.valor === <span class="str">''</span>) {
+      <span class="kw">this</span>.data = <span class="kw">this</span>.productosMock;
+    } <span class="kw">else</span> {
+      <span class="kw">this</span>.data = <span class="kw">this</span>.productosMock.<span class="fn">filter</span>(p =>
+        p.title.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(<span class="kw">this</span>.valor)
+      );
+    }
+  }
+
+  <span class="cm">//  Ver detalle de un producto - abre modal</span>
+  <span class="fn">detallePro</span>(productId: <span class="typ">number</span>): <span class="typ">void</span> {
+    const producto = <span class="kw">this</span>.productosMock.<span class="fn">find</span>(p => p.id === productId);
+    <span class="kw">this</span>.detalle = producto;
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Producto seleccionado:'</span>, producto);
+  }
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA BINDING -->
+  <section id="binding" class="content-section">
+    <h2 class="fw-bold mb-1">Data Binding</h2>
+    <p class="text-muted mb-4">Las 4 formas de conectar el TypeScript con el HTML. Es el nucleo de Angular.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-2" style="color:var(--accent)"></i> Las 4 formas de binding</h4>
+      <div class="row g-3 mt-1">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fef3c7;border:1px solid #fde68a">
+            <div class="fw-bold mb-1" style="color:#92400e"><span class="binding-badge bb-interp">{{ }}</span> Interpolacion</div>
+            <p class="small mb-1" style="color:#374151">Muestra el valor de una propiedad del TS en el HTML. Solo lectura - el HTML no puede cambiar el TS.</p>
+            <code style="font-size:.78rem">{{ titulo }}</code>  <code style="font-size:.78rem">"Proyecto API"</code>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="fw-bold mb-1" style="color:#1e40af"><span class="binding-badge bb-prop">[propiedad]</span> Property Binding</div>
+            <p class="small mb-1" style="color:#374151">Asigna un valor del TS a una <em>propiedad</em> del elemento HTML. Para atributos dinamicos.</p>
+            <code style="font-size:.78rem">[src]="product.image"</code>  muestra la imagen
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <div class="fw-bold mb-1" style="color:#065f46"><span class="binding-badge bb-event">(evento)</span> Event Binding</div>
+            <p class="small mb-1" style="color:#374151">Ejecuta un metodo del TS cuando ocurre un evento en el HTML (click, keyup, change...).</p>
+            <code style="font-size:.78rem">(click)="detallePro(product.id)"</code>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <div class="fw-bold mb-1" style="color:#4c1d95"><span class="binding-badge bb-two">[(ngModel)]</span> Two-way Binding</div>
+            <p class="small mb-1" style="color:#374151">TS  HTML y HTML  TS simultaneamente. Para formularios. Con <code>[(ngModel)]</code> no necesitas <code>(keyup)</code> para capturar texto. <code>FormsModule</code> es el modulo de Angular Forms que habilita <code>[(ngModel)]</code>; se importa en <code>app.module.ts</code> y se agrega en <code>imports</code>.</p>
+            <code style="font-size:.78rem">[(ngModel)]="busqueda"</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i> Los 4 bindings en el template de productos</h4>
+      <div class="code-block">
+        <div class="code-header"><span>src/app/products/products.component.html - los 4 tipos</span><span class="lang-badge lang-html">HTML</span></div>
+        <pre><span class="cm">&lt;!-- 1. INTERPOLACION {{ }} --&gt;</span>
+<span class="tag">&lt;h1</span> <span class="attr">class</span>=<span class="str">"text-center"</span><span class="tag">&gt;</span><span class="bind">{{titulo}}</span><span class="tag">&lt;/h1&gt;</span>
+
+<span class="tag">&lt;section</span> <span class="attr">class</span>=<span class="str">"container"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"row mb-3"</span><span class="tag">&gt;</span>
+
+    <span class="cm">&lt;!-- 2. EVENT BINDING (change) --&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"col-md-6"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;select</span> <span class="bind">(change)</span>=<span class="str">"filtrarCat($event)"</span> <span class="attr">class</span>=<span class="str">"form-control"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"all"</span><span class="tag">&gt;</span>Todos<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"jewelery"</span><span class="tag">&gt;</span>Jewelery<span class="tag">&lt;/option&gt;</span>
+        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"men's clothing"</span><span class="tag">&gt;</span>Men's clothing<span class="tag">&lt;/option&gt;</span>
+      <span class="tag">&lt;/select&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="cm">&lt;!-- EVENT BINDING (keyup) --&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"col-md-6"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">class</span>=<span class="str">"form-control"</span>
+             <span class="attr">placeholder</span>=<span class="str">"Buscar por nombre..."</span>
+             <span class="bind">(keyup)</span>=<span class="str">"filtrarNombre($event)"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+    <span class="cm">&lt;!-- ALTERNATIVA SIN keyup: TWO-WAY con ngModel --&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"col-md-6"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">class</span>=<span class="str">"form-control"</span>
+             <span class="attr">placeholder</span>=<span class="str">"Buscar por nombre con ngModel..."</span>
+             <span class="bind">[(ngModel)]</span>=<span class="str">"busqueda"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- En el TS (sin keyup): --&gt;</span>
+<span class="cm">// busqueda = '';</span>
+<span class="cm">// get dataFiltrada() {</span>
+<span class="cm">//   const v = this.busqueda.toLowerCase().trim();</span>
+<span class="cm">//   return v ? this.productosMock.filter(p => p.title.toLowerCase().includes(v)) : this.productosMock;</span>
+<span class="cm">// }</span>
+<span class="cm">// Luego en el HTML: *ngFor="let product of dataFiltrada"</span>
+
+  <span class="tag">&lt;/div&gt;</span>
+
+  <span class="tag">&lt;table</span> <span class="attr">class</span>=<span class="str">"table table-bordered table-hover"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;thead&gt;</span>
+      <span class="tag">&lt;tr&gt;</span>
+        <span class="tag">&lt;th&gt;</span>id<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>title<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>price<span class="tag">&lt;/th&gt;</span>
+        <span class="tag">&lt;th&gt;</span>category<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>image<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Accion<span class="tag">&lt;/th&gt;</span>
+      <span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;/thead&gt;</span>
+    <span class="tag">&lt;tbody&gt;</span>
+      <span class="cm">&lt;!-- *ngFor itera data y crea una fila por producto --&gt;</span>
+      <span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.id}}</span><span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.title}}</span><span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.price}}</span><span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.category}}</span><span class="tag">&lt;/td&gt;</span>
+        <span class="cm">&lt;!-- 3. PROPERTY BINDING [src] --&gt;</span>
+        <span class="tag">&lt;td&gt;&lt;img</span> <span class="attr">height</span>=<span class="str">"80px"</span> <span class="bind">[src]</span>=<span class="str">"product.image"</span><span class="tag">/&gt;&lt;/td&gt;</span>
+        <span class="cm">&lt;!-- 4. EVENT BINDING (click) --&gt;</span>
+        <span class="tag">&lt;td&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
+                  <span class="bind">(click)</span>=<span class="str">"detallePro(product.id)"</span>
+                  <span class="attr">data-bs-toggle</span>=<span class="str">"modal"</span>
+                  <span class="attr">data-bs-target</span>=<span class="str">"#exampleModal"</span><span class="tag">&gt;</span>
+            Ver detalle
+          <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/td&gt;</span>
+      <span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;/tbody&gt;</span>
+  <span class="tag">&lt;/table&gt;</span>
+
+<span class="cm">&lt;!-- Modal Bootstrap para detalle --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal fade"</span> <span class="attr">id</span>=<span class="str">"exampleModal"</span> <span class="attr">tabindex</span>=<span class="str">"-1"</span> <span class="attr">aria-labelledby</span>=<span class="str">"exampleModalLabel"</span> <span class="attr">aria-hidden</span>=<span class="str">"true"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-dialog"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-content"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-header"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;h5</span> <span class="attr">class</span>=<span class="str">"modal-title"</span><span class="tag">&gt;</span>Detalle del Producto<span class="tag">&lt;/h5&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"button"</span> <span class="attr">class</span>=<span class="str">"btn-close"</span> <span class="attr">data-bs-dismiss</span>=<span class="str">"modal"</span><span class="tag">&gt;&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-body"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="kw">*ngIf</span>=<span class="str">"detalle"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;p&gt;&lt;strong&gt;</span>ID:<span class="tag">&lt;/strong&gt;</span> <span class="bind">{{detalle.id}}</span><span class="tag">&lt;/p&gt;</span>
+          <span class="tag">&lt;p&gt;&lt;strong&gt;</span>Title:<span class="tag">&lt;/strong&gt;</span> <span class="bind">{{detalle.title}}</span><span class="tag">&lt;/p&gt;</span>
+          <span class="tag">&lt;p&gt;&lt;strong&gt;</span>Price:<span class="tag">&lt;/strong&gt;</span> $<span class="bind">{{detalle.price}}</span><span class="tag">&lt;/p&gt;</span>
+          <span class="tag">&lt;p&gt;&lt;strong&gt;</span>Category:<span class="tag">&lt;/strong&gt;</span> <span class="bind">{{detalle.category}}</span><span class="tag">&lt;/p&gt;</span>
+          <span class="tag">&lt;img</span> <span class="bind">[src]</span>=<span class="str">"detalle.image"</span> <span class="attr">class</span>=<span class="str">"img-fluid"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+      <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"modal-footer"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="str">"button"</span> <span class="attr">class</span>=<span class="str">"btn btn-secondary"</span> <span class="attr">data-bs-dismiss</span>=<span class="str">"modal"</span><span class="tag">&gt;</span>Cerrar<span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/section&gt;</span></pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo interactivo - los 4 tipos de binding en vivo</div>
+      </div>
+      <div class="sandbox-body">
+        <p class="small text-muted mb-3">Simulacion de como se comporta cada binding en el navegador:</p>
+        <div class="d-flex gap-2 flex-wrap mb-3">
+          <button class="run-btn"        onclick="demoInterp()">  <span style="background:rgba(255,255,255,.2);border-radius:4px;padding:.1rem .4rem;font-size:.8rem">{{ }}</span> Interpolacion</button>
+          <button class="run-btn blue"   onclick="demoPropBind()"><span style="background:rgba(255,255,255,.2);border-radius:4px;padding:.1rem .4rem;font-size:.8rem">[ ]</span> Property binding</button>
+          <button class="run-btn green"  onclick="demoEventBind()"><span style="background:rgba(255,255,255,.2);border-radius:4px;padding:.1rem .4rem;font-size:.8rem">( )</span> Event binding</button>
+          <button class="run-btn purple" onclick="demoTwoWay()">  <span style="background:rgba(255,255,255,.2);border-radius:4px;padding:.1rem .4rem;font-size:.8rem">[( )]</span> Two-way</button>
+        </div>
+        <div id="demo-bind-visual" style="min-height:120px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ngFor -->
+  <section id="ngfor" class="content-section">
+    <h2 class="fw-bold mb-1">ngFor - Renderizar listas</h2>
+    <p class="text-muted mb-4">La directiva que convierte un array TypeScript en filas de una tabla. La usaras en absolutamente todos los proyectos Angular.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-repeat" style="color:var(--accent)"></i> Sintaxis de ngFor</h4>
+      <div class="code-block">
+        <div class="code-header"><span>ngFor - todas las formas que necesitas saber</span><span class="lang-badge lang-html">HTML</span></div>
+        <pre><span class="cm">&lt;!-- Forma basica - itera "data" del componente TS --&gt;</span>
+<span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;td&gt;</span><span class="bind">{{product.id}}</span><span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;td&gt;</span><span class="bind">{{product.title}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;/tr&gt;</span>
+
+<span class="cm">&lt;!-- Con indice - util para numerar filas --&gt;</span>
+<span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data; let i = index"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;td&gt;</span><span class="bind">{{i + 1}}</span><span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;td&gt;</span><span class="bind">{{product.title}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;/tr&gt;</span></pre>
+      </div>
+      <div class="callout callout-amber">
+        <strong>El asterisco <code>*</code> es obligatorio.</strong> <code>ngFor</code> (sin asterisco) no funciona - Angular lanza un error. El <code>*</code> indica que es una <em>directiva estructural</em> que modifica el DOM.
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-eye-slash" style="color:var(--accent)"></i> *ngIf - mostrar/ocultar segun condicion</h4>
+      <div class="code-block">
+        <div class="code-header"><span>*ngIf en el template</span><span class="lang-badge lang-html">HTML</span></div>
+        <pre><span class="cm">&lt;!-- Se muestra SOLO si detalle no es null --&gt;</span>
+<span class="tag">&lt;div</span> <span class="kw">*ngIf</span>=<span class="str">"detalle"</span> <span class="attr">class</span>=<span class="str">"alert alert-info"</span><span class="tag">&gt;</span>
+  Seleccionado: <span class="bind">{{detalle.title}}</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- Con else --&gt;</span>
+<span class="tag">&lt;div</span> <span class="kw">*ngIf</span>=<span class="str">"data.length &gt; 0; else sinResultados"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;table&gt;</span>...<span class="tag">&lt;/table&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;ng-template</span> <span class="attr">#sinResultados</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;p</span><span class="tag">&gt;</span>No hay productos que coincidan con la busqueda.<span class="tag">&lt;/p&gt;</span>
+<span class="tag">&lt;/ng-template&gt;</span></pre>
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: *ngFor simulado en vivo</div>
+        <div class="d-flex gap-2">
+          <button class="run-btn"      onclick="demoNgFor()">      <i class="bi bi-play-fill"></i> Renderizar tabla</button>
+          <button class="run-btn blue" onclick="demoNgForFiltro()"><i class="bi bi-funnel"></i> Filtrar</button>
+          <button class="run-btn gray" onclick="demoNgForReset()"> <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        </div>
+      </div>
+      <div class="sandbox-body">
+        <div id="ngfor-filtro" style="display:none;margin-bottom:1rem">
+          <input type="text" class="form-control form-control-sm" placeholder="Busca en la tabla..."
+                 oninput="filtrarNgForDemo(this.value)" style="max-width:280px">
+        </div>
+        <div id="ngfor-output">
+          <div class="text-center text-muted py-4"><i class="bi bi-table" style="font-size:2rem;color:#fecaca"></i><p class="mt-2 small">Haz clic en \"Renderizar tabla\" para ver *ngFor en accion</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INPUT -->
+  <section id="input-decorator" class="content-section">
+    <h2 class="fw-bold mb-1">Input() - Comunicacion padre  hijo</h2>
+    <p class="text-muted mb-4">Extraer la fila de la tabla en su propio componente y pasarle datos con <code>Input()</code>.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-diagram-3" style="color:var(--accent)"></i> Por que separar en componentes?</h4>
+      <p>Un error comun es poner toda la logica de la fila de la tabla dentro del mismo componente que la lista. Separar la fila en su propio componente la hace reutilizable y mas facil de mantener:</p>
+      <div class="compare-cols">
+        <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
+          <h6 style="color:#991b1b;font-size:.82rem">Codigo que se vuelve dificil de mantener</h6>
+          <pre style="font-size:.76rem;color:#78350f;margin:0;line-height:1.9"><span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;td&gt;</span><span class="bind">{{product.id}}</span><span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;td&gt;</span><span class="bind">{{product.title}}</span><span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;td&gt;</span><span class="bind">{{product.price}}</span><span class="tag">&lt;/td&gt;</span>
+  <span class="tag">&lt;td&gt;&lt;img</span> <span class="bind">[src]</span>=<span class="str">"product.image"</span><span class="tag">/&gt;&lt;/td&gt;</span>
+  <span class="tag">&lt;td&gt;&lt;button</span> <span class="bind">(click)</span>=<span class="str">"detallePro(product.id)"</span><span class="tag">&gt;</span>
+    Ver<span class="tag">&lt;/button&gt;&lt;/td&gt;</span>
+<span class="tag">&lt;/tr&gt;</span></pre>
+        </div>
+        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+          <h6 style="color:#065f46;font-size:.82rem">Como mejorar: extraer a componente hijo</h6>
+          <pre style="font-size:.76rem;color:#14532d;margin:0;line-height:1.9"><span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;app-product-card</span>
+    <span class="bind">[product]</span>=<span class="str">"product"</span>
+    <span class="bind">(click)</span>=<span class="str">"detallePro(product.id)"</span>
+  <span class="tag">&gt;&lt;/app-product-card&gt;</span>
+<span class="tag">&lt;/tr&gt;</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i> Crear ProductCardComponent</h4>
+      <div class="code-block">
+        <div class="code-header"><span>terminal</span><span class="lang-badge lang-bash">bash</span></div>
+        <pre>ng generate component product-card</pre>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-box-arrow-in-down" style="color:var(--accent)"></i> Usar Input() en el componente hijo</h4>
+      <div class="code-block">
+        <div class="code-header"><span>src/app/product-card/product-card.component.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <pre><span class="kw">import</span> { Component, Input } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+
+<span class="dec">@Component</span>({
+  <span class="prop">selector</span>:    <span class="str">'app-product-card'</span>,
+  <span class="prop">templateUrl</span>: <span class="str">'./product-card.component.html'</span>,
+  <span class="prop">styleUrls</span>:   [<span class="str">'./product-card.component.css'</span>]
+})
+<span class="kw">export class</span> <span class="typ">ProductCardComponent</span> {
+
+  <span class="dec">@Input</span>() product: <span class="typ">any</span> = <span class="kw">null</span>;
+
+  <span class="fn">verDetalle</span>(): <span class="typ">void</span> {
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Detalle:'</span>, <span class="kw">this</span>.product);
+    <span class="fn">alert</span>(<span class="str">`Producto: </span>${<span class="kw">this</span>.product.title}\n<span class="str">Precio: $</span>${<span class="kw">this</span>.product.price}<span class="str">`</span>);
+  }
+}</pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span>src/app/product-card/product-card.component.html</span><span class="lang-badge lang-html">HTML</span></div>
+        <pre><span class="tag">&lt;td&gt;</span><span class="bind">{{product?.id}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.title}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span>$<span class="bind">{{product?.price}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.category}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;&lt;img</span> <span class="attr">height</span>=<span class="str">"80px"</span> <span class="bind">[src]</span>=<span class="str">"product?.image"</span><span class="tag">/&gt;&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
+          <span class="bind">(click)</span>=<span class="str">"verDetalle()"</span>
+          <span class="attr">data-bs-toggle</span>=<span class="str">"modal"</span>
+          <span class="attr">data-bs-target</span>=<span class="str">"#exampleModal"</span><span class="tag">&gt;</span>
+    Ver detalle
+  <span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/td&gt;</span></pre>
+      </div>
+
+      <div class="callout callout-blue">
+        <strong><code>product?.title</code> - el operador opcional <code>?.</code></strong>: Si <code>product</code> es <code>null</code> antes de que lleguen los datos, sin el <code>?.</code> Angular lanza un error. Con <code>?.</code> simplemente muestra vacio.
+      </div>
+    </div>
+
+    <div class="sandbox">
+      <div class="sandbox-header">
+        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: Input() en accion - padre pasa datos al hijo</div>
+      </div>
+      <div class="sandbox-body">
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+              <div class="fw-bold mb-2" style="font-size:.82rem;color:#991b1b"><i class="bi bi-cpu me-1"></i>ProductsComponent (padre)</div>
+              <p class="small mb-2" style="color:#374151">Selecciona un producto para pasarlo al hijo:</p>
+              <div class="d-flex gap-2 flex-wrap" id="parent-btns"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+              <div class="fw-bold mb-2" style="font-size:.82rem;color:#065f46"><i class="bi bi-box-arrow-in-down me-1"></i>ProductCardComponent (hijo) recibe Input()</div>
+              <div id="child-output" class="text-muted small">Esperando que el padre pase un producto...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EJERCICIO -->
+  <section id="ejercicio" class="content-section">
+    <h2 class="fw-bold mb-1">Ejercicio final</h2>
+    <p class="text-muted mb-4">Consolidar todo lo visto en la clase con un componente que filtra, renderiza y comunica datos.</p>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-list-check" style="color:var(--accent)"></i> Que debes tener funcionando</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+            <p class="fw-semibold mb-2" style="color:#991b1b">Obligatorio</p>
+            <ul class="checklist">
+              <li><code>ng serve</code> corriendo sin errores en consola</li>
+              <li><code>/products</code> muestra la tabla con los productos mock</li>
+              <li>El select filtra por categoria correctamente</li>
+              <li>El input filtra por nombre al escribir</li>
+              <li>El boton "Ver detalle" abre el modal con el producto seleccionado</li>
+              <li><code>ProductCardComponent</code> recibe el producto con <code>Input()</code></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
+            <p class="fw-semibold mb-2" style="color:#4c1d95">Opcional</p>
+            <ul class="checklist">
+              <li>Mostrar el contador de resultados: <code>{{data.length}} productos</code></li>
+              <li>Mensaje <code>*ngIf</code> cuando no hay resultados</li>
+              <li>Columna de indice con <code>let i = index</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-bug" style="color:var(--accent)"></i> Errores comunes y sus soluciones</h4>
+
+      <p class="fw-semibold small mb-1">1 <code>app-product-card</code> no es un elemento conocido</p>
+      <div class="error-box">
+        <div class="file">Error en el navegador / consola de VS Code</div>
+        'app-product-card' is not a known element
+        <div class="fix">Solucion: el componente no esta registrado en declarations de app.module.ts. Solucion: borrarlo y regenerarlo con el CLI  <code>ng g c product-card</code>. El CLI lo registra automaticamente.</div>
+      </div>
+
+      <p class="fw-semibold small mb-1 mt-3">2 Cannot read properties of null (reading 'title')</p>
+      <div class="error-box">
+        <div class="file">Consola del navegador</div>
+        TypeError: Cannot read properties of null (reading 'title')
+        <div class="fix">Solucion: agrega el operador <code>?.</code> en el template del hijo: <code>{{product?.title}}</code> en lugar de <code>{{product.title}}</code>.</div>
+      </div>
+
+      <p class="fw-semibold small mb-1 mt-3">3 ngFor no funciona - "Can't bind to 'ngFor'"</p>
+      <div class="error-box">
+        <div class="file">Consola del navegador</div>
+        Can't bind to 'ngFor' since it isn't a known property of 'tr'
+        <div class="fix">Solucion: falta el asterisco. Cambia <code>ngFor</code> por <code>*ngFor</code>.</div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-check2-all text-success"></i> Checklist de verificacion final</h4>
+      <ul class="checklist">
+        <li><code>node -v</code> muestra version 22.x o superior</li>
+        <li><code>ng version</code> muestra Angular CLI 19.x</li>
+        <li><code>ng serve</code> corre sin errores de compilacion</li>
+        <li>Navegar a <code>/products</code> muestra la tabla Bootstrap</li>
+        <li>El select filtra por las 2 categorias presentes en la muestra: men's clothing y jewelery</li>
+        <li>El input de texto filtra por nombre en tiempo real</li>
+        <li>Clic en "Ver detalle" abre el modal con imagen y precio</li>
+        <li><code>ProductCardComponent</code> recibe producto con <code>Input()</code></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Q&A -->
+  <section id="qa" class="content-section">
+    <h2 class="fw-bold mb-1">Q&A y Cierre</h2>
+    <p class="text-muted mb-4">Resumen de la clase y preguntas frecuentes.</p>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="theory-block h-100">
+          <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
+          <ul style="font-size:.9rem;line-height:2.2">
+            <li>Instalar Node.js, Angular CLI y crear un proyecto</li>
+            <li>La estructura de un proyecto Angular con <code>--standalone false</code></li>
+            <li><code>app.module.ts</code> - registro de componentes</li>
+            <li><code>app-routing.module.ts</code> - rutas URL  componente</li>
+            <li>Generar componentes con <code>ng generate component</code></li>
+            <li>Anatomia de un componente: <code>.ts</code> + <code>.html</code> + <code>.css</code></li>
+            <li>Los 4 tipos de binding: <code>{{ }}</code>, <code>[ ]</code>, <code>( )</code>, <code>[( )]</code></li>
+            <li><code>*ngFor</code> para renderizar listas, <code>*ngIf</code> para condiciones</li>
+            <li><code>Input()</code> para pasar datos de padre a hijo</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="theory-block h-100">
+          <h4><i class="bi bi-patch-question" style="color:var(--accent)"></i> Preguntas frecuentes</h4>
+          <div class="p-3 rounded-3 mb-2" style="background:#fef2f2;border:1px solid #fecaca">
+            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#991b1b">Por que <code>--standalone false</code>?</p>
+            <p class="small mb-0" style="color:#374151">Angular 19 por defecto crea componentes standalone. Con <code>--standalone false</code> usamos modulos tradicionales (<code>NgModule</code>), que es el patron que seguiremos en todo el modulo.</p>
+          </div>
+          <div class="p-3 rounded-3 mb-2" style="background:#fef2f2;border:1px solid #fecaca">
+            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#991b1b">Cuando uso <code>[ ]</code> y cuando <code>{{ }}</code>?</p>
+            <p class="small mb-0" style="color:#374151"><code>{{ }}</code> para texto dentro de etiquetas. <code>[ ]</code> para atributos HTML: <code>[src]</code>, <code>[class]</code>, <code>[disabled]</code>. No puedes usar <code>{{ }}</code> en un atributo <code>src</code>.</p>
+          </div>
+          <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#991b1b">Que es <code>&lt;router-outlet&gt;</code>?</p>
+            <p class="small mb-0" style="color:#374151">Es el "hueco" donde Angular inserta el componente de la ruta activa. Esta en <code>app.component.html</code>. Sin el, las rutas no renderizan nada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-block">
+      <h4><i class="bi bi-journal-check text-success"></i> Tarea para la Clase 6</h4>
+      <div class="callout callout-red">
+        <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2.3">
+          <li>Tener el ejercicio de hoy funcionando: tabla, filtros y <code>Input()</code></li>
+          <li><strong>Opcional:</strong> Agregar el mensaje "sin resultados" con <code>*ngIf</code></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONEXION CON CLASE 6 -->
+  <section id="conexion" class="content-section">
+    <h2 class="fw-bold mb-1">Conexion con la Clase 6</h2>
+    <p class="text-muted mb-4">Hoy usaste datos falsos. En la Clase 6 esos datos vendran de la API real - sin cambiar la logica del componente.</p>
+
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1a0a0a 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;color:#fff">
+      <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem">El cambio que hara la Clase 6 en tu componente - nota que el template HTML no cambia:</p>
+      <div class="code-block">
+        <div class="code-header"><span>products.component.ts - la diferencia entre Clase 5 y Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <pre><span class="cm">//  CLASE 5 (hoy) - datos mock</span>
+<span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+  data: <span class="typ">any</span> = [];
+
+  <span class="kw">constructor</span>() { }
+
+  <span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
+    <span class="kw">this</span>.data = <span class="kw">this</span>.productosMock;
+  }
+}
+
+<span class="cm">//  CLASE 6 (proxima) - API real</span>
+<span class="kw">import</span> { HttpClient } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
+
+<span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+  data: <span class="typ">any</span> = [];
+
+  <span class="kw">constructor</span>(<span class="kw">private</span> http: <span class="typ">HttpClient</span>) { }
+
+  <span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
+    <span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'https://fakestoreapi.com/products'</span>).<span class="fn">subscribe</span>(
+      (response) => { <span class="kw">this</span>.data = response <span class="kw">as</span> <span class="typ">any</span>[]; }
+    );
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="clase4.html" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i> Clase 4
+      </a>
+      <a href="clase6-http-routing.html" class="btn text-white" style="background:#f97316;border-color:#f97316">
+        Clase 6 - HttpClient + Routing <i class="bi bi-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* == NAVEGACION + PROGRESO == */
+const sections5 = ['agenda','por-que','instalacion','primer-proyecto','estructura','componentes','binding','ngfor','input-decorator','ejercicio','qa','conexion'];
+
+function _upd(id) {
+  const pct = Math.round(((sections5.indexOf(id)+1)/sections5.length)*100);
+  document.getElementById('progress-bar').style.width = pct+'%';
+  document.getElementById('progress-pct').textContent = pct+'%';
+}
+window.showSection = function(id, el) {
+  event.preventDefault();
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  _upd(id);
+  window.scrollTo(0,0);
+};
+_upd('agenda');
+
+/* == DATOS MOCK == */
+const mockProducts = [
+  { id:1, title:'Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops',            price:109.95, category:"men's clothing", image:'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png' },
+  { id:2, title:'Mens Casual Premium Slim Fit T-Shirts ',                            price:22.30,  category:"men's clothing", image:'https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_t.png' },
+  { id:3, title:'Mens Cotton Jacket',                                                price:55.99,  category:"men's clothing", image:'https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_t.png' },
+  { id:4, title:'Mens Casual Slim Fit',                                               price:15.99,  category:"men's clothing", image:'https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_t.png' },
+  { id:5, title:'John Hardy Women\'s Legends Naga Gold & Silver Dragon Station Chain Bracelet', price:695.00, category:'jewelery', image:'https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3_t.png' },
+  { id:6, title:'Solid Gold Petite Micropave ',                                      price:168.00, category:'jewelery',        image:'https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3_t.png' },
+  { id:7, title:'White Gold Plated Princess',                                         price:9.99,   category:'jewelery',        image:'https://fakestoreapi.com/img/71YAIFU48IL._AC_UL640_QL65_ML3_t.png' },
+  { id:8, title:'Pierced Owl Rose Gold Plated Stainless Steel Double',               price:10.99,  category:'jewelery',        image:'https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_t.png' },
+];
+
+/* == DEMO BINDING == */
+function demoInterp() {
+  const v = document.getElementById('demo-bind-visual');
+  v.innerHTML = `
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div><span style="color:#93c5fd">titulo</span> = <span style="color:#fca5a5">'Catalogo de Productos'</span>;</div>
+          <div><span style="color:#93c5fd">precio</span> = <span style="color:#fdba74">109.95</span>;</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div>&lt;h1&gt;<span style="color:#fcd34d">{{titulo}}</span>&lt;/h1&gt;</div>
+          <div>&lt;p&gt;Precio: $<span style="color:#fcd34d">{{precio}}</span>&lt;/p&gt;</div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem">
+          <div style="font-size:.72rem;color:#94a3b8;margin-bottom:.5rem">Resultado en el navegador:</div>
+          <h5 style="color:#1e293b;margin:0">Catalogo de Productos</h5>
+          <p style="color:#64748b;margin:.25rem 0 0">Precio: $109.95</p>
+          <div class="callout callout-amber mt-2" style="font-size:.8rem">Angular actualiza el HTML automaticamente cada vez que cambia <code>titulo</code> o <code>precio</code> en el TS.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function demoPropBind() {
+  const v = document.getElementById('demo-bind-visual');
+  v.innerHTML = `
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div><span style="color:#93c5fd">imageUrl</span> = <span style="color:#fca5a5">'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png'</span>;</div>
+          <div><span style="color:#93c5fd">btnDisabled</span> = <span style="color:#f9a8d4">false</span>;</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div>&lt;img <span style="color:#fcd34d">[src]</span>="imageUrl" height="80"&gt;</div>
+          <div>&lt;button <span style="color:#fcd34d">[disabled]</span>="btnDisabled"&gt;OK&lt;/button&gt;</div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem">
+          <div style="font-size:.72rem;color:#94a3b8;margin-bottom:.75rem">Resultado: la imagen se muestra, el boton esta habilitado</div>
+          <img src="https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png" height="80" style="border:1px solid #e2e8f0;border-radius:6px;padding:.25rem">
+          <button class="btn btn-primary btn-sm ms-3">OK - habilitado</button>
+          <div class="callout callout-blue mt-2" style="font-size:.8rem"><code>[src]</code> no es lo mismo que <code>src=\"{{ }}\"</code>. Con <code>[ ]</code> el valor es evaluado como expresion TypeScript, no como texto.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function demoEventBind() {
+  const v = document.getElementById('demo-bind-visual');
+  v.innerHTML = `
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div><span style="color:#86efac">seleccionar</span>(producto: <span style="color:#67e8f9">any</span>): <span style="color:#67e8f9">void</span> {</div>
+          <div>&nbsp;&nbsp;<span style="color:#93c5fd">this</span>.detalle = producto;</div>
+          <div>}</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div>&lt;button <span style="color:#fcd34d">(click)</span>="seleccionar(product)"&gt;</div>
+          <div>&nbsp;&nbsp;Ver detalle</div>
+          <div>&lt;/button&gt;</div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem">
+          <div style="font-size:.72rem;color:#94a3b8;margin-bottom:.75rem">Haz clic en el boton para ver el event binding en accion:</div>
+          <div id="event-result" style="color:#64748b;font-size:.85rem;margin-bottom:.75rem">Ningun producto seleccionado todavia...</div>
+          ${mockProducts.slice(0,3).map(p=>`<button class="btn btn-success btn-sm me-2 mb-2" onclick="simularClick(${p.id})">seleccionar(${p.id})</button>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function simularClick(id) {
+  const p = mockProducts.find(x=>x.id===id);
+  document.getElementById('event-result').innerHTML = `<strong style="color:#10b981">seleccionar() ejecutado:</strong> detalle = { id: ${p.id}, title: "${p.title}", price: ${p.price} }`;
+}
+
+function demoTwoWay() {
+  const v = document.getElementById('demo-bind-visual');
+  v.innerHTML = `
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div><span style="color:#93c5fd">busqueda</span>: <span style="color:#67e8f9">string</span> = <span style="color:#fca5a5">''</span>;</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
+          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div>&lt;input <span style="color:#fcd34d">[(ngModel)]</span>="busqueda"&gt;</div>
+          <div>&lt;p&gt;Buscas: <span style="color:#fcd34d">{{busqueda}}</span>&lt;/p&gt;</div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem">
+          <div style="font-size:.72rem;color:#94a3b8;margin-bottom:.75rem">Simulacion two-way: escribe y el TS se actualiza automaticamente:</div>
+          <input type="text" class="form-control form-control-sm mb-2" placeholder="Escribe algo..." oninput="document.getElementById('twoway-val').textContent=this.value || '(vacio)'" style="max-width:300px">
+          <p style="font-size:.9rem">busqueda en el TS: <strong id="twoway-val" style="color:#8b5cf6">(vacio)</strong></p>
+          <div class="callout callout-purple" style="font-size:.8rem"><strong>Que es <code>FormsModule</code>?</strong> Es el modulo que activa los bindings de formularios como <code>[(ngModel)]</code>. <strong>Donde va?</strong> En <code>app.module.ts</code>: agrega <code>import { FormsModule } from '@angular/forms';</code> arriba y luego incluyelo en <code>imports: [BrowserModule, AppRoutingModule, FormsModule]</code>. Si usas <code>[(ngModel)]</code>, no necesitas <code>(keyup)</code> para capturar el valor.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* == DEMO *ngFor == */
+let ngForData = [...mockProducts];
+
+function demoNgFor() {
+  document.getElementById('ngfor-filtro').style.display = 'block';
+  renderNgForTable(ngForData);
+}
+
+function filtrarNgForDemo(val) {
+  const v = val.toLowerCase();
+  const filtered = v ? mockProducts.filter(p=>p.title.toLowerCase().includes(v) || p.category.toLowerCase().includes(v)) : mockProducts;
+  ngForData = filtered;
+  renderNgForTable(filtered);
+}
+
+function renderNgForTable(data) {
+  if (!data.length) {
+    document.getElementById('ngfor-output').innerHTML = '<div class="alert alert-warning small">*ngIf="data.length > 0" - No hay resultados para esa busqueda</div>';
+    return;
+  }
+  const rows = data.map((p,i)=>`
+    <tr>
+      <td class="text-muted small">${i+1}</td>
+      <td><img src="${p.image}" height="40" style="object-fit:contain"></td>
+      <td style="font-size:.82rem">${p.title.substring(0,32)}...</td>
+      <td style="font-size:.82rem">$${p.price}</td>
+      <td><span class="badge" style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;font-size:.7rem">${p.category}</span></td>
+    </tr>`).join('');
+  document.getElementById('ngfor-output').innerHTML = `
+    <div style="font-size:.72rem;color:#64748b;margin-bottom:.5rem">*ngFor="let product of data" - ${data.length} filas renderizadas</div>
+    <table class="table table-sm table-bordered" style="font-size:.82rem">
+      <thead style="background:#0f172a;color:#e2e8f0"><tr><th>#</th><th>Img</th><th>Title</th><th>Price</th><th>Category</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function demoNgForFiltro() {
+  document.getElementById('ngfor-filtro').style.display = 'block';
+  if (!document.getElementById('ngfor-output').querySelector('table')) { demoNgFor(); }
+  document.querySelector('#ngfor-filtro input').focus();
+}
+
+function demoNgForReset() {
+  ngForData = [...mockProducts];
+  document.getElementById('ngfor-filtro').style.display = 'none';
+  document.querySelector('#ngfor-filtro input').value = '';
+  document.getElementById('ngfor-output').innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-table" style="font-size:2rem;color:#fecaca"></i><p class="mt-2 small">Haz clic en "Renderizar tabla" para ver *ngFor en accion</p></div>';
+}
+
+/* == DEMO Input() == */
+(function initInputDemo() {
+  const btns = document.getElementById('parent-btns');
+  if (!btns) return;
+  mockProducts.slice(0,4).forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'run-btn mb-1';
+    b.style.fontSize = '.76rem';
+    b.textContent = `[product]="${p.title.substring(0,12)}..."`;
+    b.onclick = function() {
+      document.getElementById('child-output').innerHTML = `
+        <div style="font-size:.8rem">
+          <div style="color:#10b981;font-weight:600;margin-bottom:.5rem">Input() recibido:</div>
+          <div><strong>product.id:</strong> ${p.id}</div>
+          <div><strong>product.title:</strong> ${p.title.substring(0,35)}...</div>
+          <div><strong>product.price:</strong> $${p.price}</div>
+          <div class="mt-2"><img src="${p.image}" height="60" style="border:1px solid #e2e8f0;border-radius:4px;padding:.2rem"></div>
+          <div class="mt-1" style="color:#64748b;font-size:.75rem">(click)=\"verDetalle()\" mostraria alert con estos datos</div>
+        </div>`;
+      document.querySelectorAll('#parent-btns button').forEach(x=>x.style.background='#ef4444');
+      this.style.background = '#10b981';
+    };
+    btns.appendChild(b);
+  });
+})();
+</script>
+</body>
+</html>
