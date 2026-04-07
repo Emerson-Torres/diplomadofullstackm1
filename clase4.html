@@ -987,66 +987,6 @@
         </div>
       </div>
 
-      <div class="theory-block">
-        <h4><i class="bi bi-diagram-2" style="color:var(--accent)"></i> JavaScript vs TypeScript — la relación real</h4>
-        <div class="compare-cols">
-          <div class="compare-col" style="background:#fffbeb;border:1px solid #fde68a">
-            <h6 style="color:#92400e"><i class="bi bi-filetype-js me-2"></i>JavaScript</h6>
-            <ul style="font-size:.86rem;color:#374151;line-height:2.1;margin:0;padding-left:1.2rem">
-              <li>Tipado dinámico — los tipos se resuelven en ejecución</li>
-              <li>Los errores de tipo aparecen cuando el código corre</li>
-              <li>El navegador lo entiende directamente</li>
-              <li>Más flexible pero más peligroso</li>
-            </ul>
-          </div>
-          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
-            <h6 style="color:#164e63"><i class="bi bi-filetype-tsx me-2"></i>TypeScript</h6>
-            <ul style="font-size:.86rem;color:#374151;line-height:2.1;margin:0;padding-left:1.2rem">
-              <li>Tipado estático — los tipos se verifican antes de ejecutar</li>
-              <li>Los errores aparecen en el editor, mientras escribes</li>
-              <li>Compila a JavaScript — el navegador nunca ve TS</li>
-              <li>Más verboso pero mucho más seguro</li>
-            </ul>
-          </div>
-        </div>
-        <div class="callout callout-cyan mt-3">
-          <strong>TypeScript es un superset de JavaScript.</strong> Todo el JS que escribiste en las clases 0–3 es
-          TypeScript válido. No empiezas desde cero — solo agregas anotaciones de tipo encima.
-        </div>
-      </div>
-
-      <div class="theory-block">
-        <h4><i class="bi bi-gear" style="color:var(--accent)"></i> Cómo funciona el proceso</h4>
-        <div class="step-pills">
-          <div class="step-pill">
-            <div class="num">1</div> Escribes <code>products.ts</code>
-          </div>
-          <div class="step-pill">
-            <div class="num">2</div> <code>tsc products.ts --target es2017</code>
-          </div>
-          <div class="step-pill">
-            <div class="num">3</div> Se genera <code>products.js</code>
-          </div>
-          <div class="step-pill">
-            <div class="num">4</div> El navegador ejecuta el <code>.js</code> — nunca ve el <code>.ts</code>
-          </div>
-        </div>
-        <div class="code-block mt-3">
-          <div class="code-header"><span>compilar.bash</span><span class="lang-badge lang-bash">terminal</span></div>
-          <pre><span class="cm"># Instalar TypeScript globalmente (una sola vez)</span>
-npm install -g typescript
-
-<span class="cm"># Verificar versión</span>
-tsc --version
-
-<span class="cm"># Compilar un archivo</span>
-tsc products.ts --target es2017
-
-<span class="cm"># Resultado: se crea products.js en la misma carpeta</span>
-<span class="cm"># Todas las anotaciones de tipo desaparecen — queda JS puro</span></pre>
-        </div>
-      </div>
-
       <div class="sandbox">
         <div class="sandbox-header">
           <div class="title"><i class="bi bi-layout-split" style="color:var(--accent)"></i> Comparativa en vivo: mismos
@@ -1116,11 +1056,203 @@ tsc products.ts --target es2017
           <div id="cmp-conclusion" style="display:none" class="callout callout-cyan mt-3">
             <strong>Mismos datos, diferente resultado.</strong>
             JS ejecutó sin quejarse y mostró <code>undefined</code> en todos los campos con typo.
-            TS hubiera marcado error en el editor <em>antes de ejecutar</em> — el alumno nunca llegaría a ver ese
+            TS hubiera marcado error en el editor <em>antes de ejecutar</em> — el cliente nunca llegaría a ver ese
             resultado roto.
           </div>
         </div>
       </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-diagram-2" style="color:var(--accent)"></i> JavaScript vs TypeScript — la relación real</h4>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fffbeb;border:1px solid #fde68a">
+            <h6 style="color:#92400e"><i class="bi bi-filetype-js me-2"></i>JavaScript</h6>
+            <ul style="font-size:.86rem;color:#374151;line-height:2.1;margin:0;padding-left:1.2rem">
+              <li>Tipado dinámico — los tipos se resuelven en ejecución</li>
+              <li>Los errores de tipo aparecen cuando el código corre</li>
+              <li>El navegador lo entiende directamente</li>
+              <li>Más flexible pero más peligroso</li>
+            </ul>
+          </div>
+          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <h6 style="color:#164e63"><i class="bi bi-filetype-tsx me-2"></i>TypeScript</h6>
+            <ul style="font-size:.86rem;color:#374151;line-height:2.1;margin:0;padding-left:1.2rem">
+              <li>Tipado estático — los tipos se verifican antes de ejecutar</li>
+              <li>Los errores aparecen en el editor, mientras escribes</li>
+              <li>Compila a JavaScript — el navegador nunca ve TS</li>
+              <li>Más verboso pero mucho más seguro</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout callout-cyan mt-3">
+          <strong>TypeScript es un superset de JavaScript.</strong> Todo el JS que escribiste en las clases 0–3 es
+          TypeScript válido. No empiezas desde cero — solo agregas anotaciones de tipo encima.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-download" style="color:var(--accent)"></i> Antes de compilar: setup inicial (equipo desde 0)</h4>
+        <p>Si tu máquina está limpia, primero instala <strong>Node.js LTS</strong> (incluye <code>npm</code>) desde
+          <a href="https://nodejs.org/en/download" target="_blank" rel="noopener noreferrer">nodejs.org/en/download</a>.
+          Después cierra y abre de nuevo la terminal para que el <code>PATH</code> se actualice.</p>
+
+        <div class="compare-cols mt-3">
+          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <h6 style="color:#164e63"><i class="bi bi-question-circle me-2"></i>¿Qué es Node.js?</h6>
+            <p style="font-size:.86rem;color:#334155;margin:0">Es un entorno que ejecuta JavaScript fuera del navegador
+              (en tu sistema operativo). Te permite usar herramientas de desarrollo desde terminal, como <code>npm</code>
+              y <code>tsc</code>.</p>
+          </div>
+          <div class="compare-col" style="background:#f8fafc;border:1px solid #e2e8f0">
+            <h6 style="color:#0f172a"><i class="bi bi-cpu me-2"></i>¿Cómo funciona?</h6>
+            <p style="font-size:.86rem;color:#334155;margin:0">Node usa el motor V8 para ejecutar JS, y <code>npm</code>
+              para instalar paquetes. Cuando ejecutas <code>npm install -g typescript</code>, npm descarga el compilador
+              y deja disponible el comando <code>tsc</code> en tu terminal.</p>
+          </div>
+        </div>
+
+        <div class="callout callout-cyan mt-3">
+          <strong>¿Por qué es relevante en este curso?</strong> Porque todo el flujo de TypeScript depende de Node:
+          instalar el compilador, compilar <code>.ts</code> a <code>.js</code>, y más adelante levantar proyectos con
+          Angular CLI. Sin Node, no hay <code>npm</code>, no hay <code>tsc</code>, y no puedes ejecutar el pipeline del
+          curso.
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span>setup-inicial.bash</span><span class="lang-badge lang-bash">terminal</span></div>
+          <pre><span class="cm"># 1) Verificar que Node.js y npm quedaron instalados</span>
+node --version
+npm --version
+
+<span class="cm"># 2) Instalar TypeScript globalmente</span>
+npm install -g typescript
+
+<span class="cm"># 3) Confirmar instalación</span>
+tsc --version</pre>
+        </div>
+
+        <div class="callout callout-amber mt-3">
+          Si ves <code>'npm' is not recognized</code> o <code>'tsc' is not recognized</code>, reinicia la terminal.
+          Si persiste, Node.js no quedó en el <code>PATH</code> y hay que reinstalarlo marcando la opción de variables
+          de entorno.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-gear" style="color:var(--accent)"></i> Cómo funciona el proceso</h4>
+        <div class="step-pills">
+          <div class="step-pill">
+            <div class="num">1</div> Escribes <code>products.ts</code>
+          </div>
+          <div class="step-pill">
+            <div class="num">2</div> <code>tsc products.ts --target es2017</code>
+          </div>
+          <div class="step-pill">
+            <div class="num">3</div> Se genera <code>products.js</code>
+          </div>
+          <div class="step-pill">
+            <div class="num">4</div> El navegador ejecuta el <code>.js</code> — nunca ve el <code>.ts</code>
+          </div>
+        </div>
+        <div class="code-block mt-3">
+          <div class="code-header"><span>compilar.bash</span><span class="lang-badge lang-bash">terminal</span></div>
+          <pre><span class="cm"># Instalar TypeScript globalmente (una sola vez)</span>
+npm install -g typescript
+
+<span class="cm"># Verificar versión</span>
+tsc --version
+
+<span class="cm"># Compilar un archivo</span>
+tsc products.ts --target es2017
+
+<span class="cm"># Resultado: se crea products.js en la misma carpeta</span>
+<span class="cm"># Todas las anotaciones de tipo desaparecen — queda JS puro</span></pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-puzzle" style="color:var(--accent)"></i> Extensiones recomendadas para esta clase</h4>
+        <p class="mb-2">Para trabajar TypeScript en VS Code con mejor autocompletado, diagnósticos y mejoras tempranas,
+          instala:</p>
+        <ul style="font-size:.86rem;color:#334155;line-height:1.9;margin-bottom:.75rem">
+          <li><strong>JavaScript and TypeScript Nightly</strong> (Microsoft)</li>
+        </ul>
+        <p class="mb-0" style="font-size:.84rem;color:#475569">Marketplace:
+          <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next" target="_blank" rel="noopener noreferrer">ms-vscode.vscode-typescript-next</a>
+        </p>
+        <div class="callout callout-cyan mt-3">
+          Esta extensión usa una versión más reciente del lenguaje TypeScript en VS Code. En clase ayuda a detectar
+          errores antes y a tener mejores sugerencias mientras escribes.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-rocket-takeoff" style="color:var(--accent)"></i> Creando mi primer proyecto con TypeScript</h4>
+        <p>Vamos a crear una carpeta <code>ts</code> con dos archivos: <code>index.html</code> y <code>app.ts</code>.
+          Luego compilas <code>app.ts</code> para generar <code>app.js</code> y lo enlazas en el HTML.</p>
+
+        <div class="file-tree mb-3">
+          <div class="dir">ts/</div>
+          <div class="file">├─ <span class="ts">index.html</span></div>
+          <div class="file">├─ <span class="ts">app.ts</span></div>
+          <div class="file">└─ <span class="ts">app.js</span> <span class="note">(lo crea TypeScript al compilar)</span></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span>paso-a-paso.bash</span><span class="lang-badge lang-bash">terminal</span></div>
+          <pre><span class="cm"># 1) Crear carpeta del mini proyecto</span>
+mkdir ts
+cd ts
+
+<span class="cm"># 2) Crear archivos base</span>
+<span class="cm"># Windows PowerShell:</span>
+ni index.html -ItemType File
+ni app.ts -ItemType File
+
+<span class="cm"># 3) Compilar TypeScript a JavaScript</span>
+tsc app.ts --target es2017
+
+<span class="cm"># 4) Se genera app.js automáticamente</span></pre>
+        </div>
+
+        <div class="compare-cols mt-3">
+          <div class="compare-col" style="background:#f8fafc;border:1px solid #e2e8f0">
+            <h6 style="color:#0f172a"><i class="bi bi-filetype-tsx me-2"></i>app.ts</h6>
+            <pre style="font-size:.8rem;color:#0f172a;margin:0;line-height:1.8"><span class="kw">const</span> mensaje: <span class="typ">string</span> = <span class="str">"Hola mundo desde TypeScript"</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(mensaje);
+
+<span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"app"</span>);
+<span class="kw">if</span> (el) {
+  el.textContent = mensaje;
+}</pre>
+          </div>
+
+          <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
+            <h6 style="color:#164e63"><i class="bi bi-filetype-html me-2"></i>index.html</h6>
+            <pre style="font-size:.78rem;color:#0e7490;margin:0;line-height:1.75"><span class="kw">&lt;!DOCTYPE html&gt;</span>
+<span class="kw">&lt;html</span> <span class="prop">lang</span>=<span class="str">"es"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;head&gt;</span>
+  <span class="kw">&lt;meta</span> <span class="prop">charset</span>=<span class="str">"UTF-8"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;meta</span> <span class="prop">name</span>=<span class="str">"viewport"</span> <span class="prop">content</span>=<span class="str">"width=device-width, initial-scale=1.0"</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;title&gt;</span>Mi primer TS<span class="kw">&lt;/title&gt;</span>
+<span class="kw">&lt;/head&gt;</span>
+<span class="kw">&lt;body&gt;</span>
+  <span class="kw">&lt;h1&gt;</span>Mi primer proyecto TypeScript<span class="kw">&lt;/h1&gt;</span>
+  <span class="kw">&lt;p</span> <span class="prop">id</span>=<span class="str">"app"</span><span class="kw">&gt;</span>Cargando...<span class="kw">&lt;/p&gt;</span>
+
+  <span class="cm">&lt;!-- Importante: SIEMPRE el JS compilado, no el .ts --&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+<span class="kw">&lt;/body&gt;</span>
+<span class="kw">&lt;/html&gt;</span></pre>
+          </div>
+        </div>
+
+        <div class="callout callout-green mt-3">
+          <strong>Cómo ejecutarlo:</strong> abre <code>index.html</code> en el navegador después de compilar. Si todo
+          está correcto, verás el mensaje en pantalla y también en consola: <code>Hola mundo desde TypeScript</code>.
+        </div>
+      </div>
+
     </section>
 
     <!-- ══════════════════════════════
@@ -1183,7 +1315,13 @@ precio2 = <span class="str">"caro"</span>;     <span class="cm">// ✗ ERROR —
 
 <span class="cm">// Con const, siempre infiere el valor exacto (literal type)</span>
 <span class="kw">const</span> API = <span class="str">"https://fakestoreapi.com"</span>;
-<span class="cm">// TypeScript infiere: const API: "https://fakestoreapi.com" (no solo string)</span>
+<span class="cm">// TypeScript infiere: const API: "https://fakestoreapi.com" (valor exacto, no solo string)</span>
+API = <span class="str">"https://otra-api.com"</span>; <span class="cm">// ✗ ERROR: no puedes reasignar una constante</span>
+
+<span class="cm">// Ejemplo donde también falla por literal type:</span>
+<span class="kw">function</span> <span class="fn">soloFakeStore</span>(url: <span class="str">"https://fakestoreapi.com"</span>) { }
+<span class="fn">soloFakeStore</span>(API);                          <span class="cm">// ✓ OK</span>
+<span class="fn">soloFakeStore</span>(<span class="str">"https://otra-api.com"</span>);       <span class="cm">// ✗ ERROR: no coincide el literal esperado</span>
 
 <span class="cm">// Cuándo SÍ conviene anotar explícitamente:</span>
 <span class="kw">let</span> producto: <span class="typ">Product</span>;      <span class="cm">// variable declarada sin valor inicial</span>
@@ -1209,9 +1347,12 @@ titulo.textContent = <span class="str">"Hola"</span>;  <span class="cm">// ✗ E
 
 <span class="cm">// Solución 1: el operador ! (non-null assertion) — "yo sé que existe"</span>
 document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>)!.textContent = <span class="str">"Hola"</span>;
+<span class="cm">// ⚠ Si te equivocas en el id, el ! oculta el null y explota en runtime:</span>
+document.<span class="fn">getElementById</span>(<span class="str">"titluo"</span>)!.textContent = <span class="str">"Hola"</span>; <span class="cm">// TypeError: Cannot set properties of null</span>
 
 <span class="cm">// Solución 2: optional chaining ?. — "solo si existe"</span>
 document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>)?.textContent;
+<span class="cm">// ✓ Si no existe, NO lanza error: la expresión se corta y no ejecuta textContent</span>
 
 <span class="cm">// Solución 3: verificar con if antes</span>
 <span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"titulo"</span>);
