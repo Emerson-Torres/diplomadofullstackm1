@@ -391,6 +391,44 @@
       text-decoration: underline wavy #ef4444;
     }
 
+     .os-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      margin: 1rem 0;
+    }
+
+    .os-table th {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: .6rem 1rem;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .os-table td {
+      padding: .55rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    .os-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .os-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .os-table code {
+      background: #f1f5f9;
+      border-radius: 4px;
+      padding: .1rem .4rem;
+      font-size: .78rem;
+      color: #0f172a;
+    }
+
+
     /* ── SANDBOX ── */
     .sandbox {
       background: #fff;
@@ -758,6 +796,8 @@
       <a href="#" class="active" onclick="window.showSection('agenda',this)"> <i class="bi bi-calendar3"></i> Agenda</a>
       <a href="#" onclick="window.showSection('problema',this)"> <i class="bi bi-exclamation-triangle"></i> El problema
         que TS resuelve</a>
+      <a href="#" onclick="window.showSection('instalacion-primer-proyecto',this)"> <i class="bi bi-download"></i>
+        Instalacion y primer proyecto</a>
       <a href="#" onclick="window.showSection('tipos-basicos',this)"> <i class="bi bi-tag"></i> Tipos básicos</a>
       <a href="#" onclick="window.showSection('interfaces',this)"> <i class="bi bi-layout-text-sidebar"></i>
         Interfaces</a>
@@ -1090,51 +1130,95 @@
         </div>
       </div>
 
+    </section>
+
+    <!-- ══════════════════════════════
+       INSTALACION Y PRIMER PROYECTO
+  ══════════════════════════════ -->
+    <section id="instalacion-primer-proyecto" class="content-section">
+      <h2 class="fw-bold mb-1">Instalacion y primer proyecto</h2>
+      <p class="text-muted mb-4">Aquí queda todo el setup inicial para empezar con TypeScript desde cero y crear el primer proyecto.</p>
+
       <div class="theory-block">
         <h4><i class="bi bi-download" style="color:var(--accent)"></i> Antes de compilar: setup inicial (equipo desde 0)</h4>
-        <p>Si tu máquina está limpia, primero instala <strong>Node.js LTS</strong> (incluye <code>npm</code>) desde
-          <a href="https://nodejs.org/en/download" target="_blank" rel="noopener noreferrer">nodejs.org/en/download</a>.
-          Después cierra y abre de nuevo la terminal para que el <code>PATH</code> se actualice.</p>
 
-        <div class="compare-cols mt-3">
+          <div class="compare-cols mt-3">
           <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
             <h6 style="color:#164e63"><i class="bi bi-question-circle me-2"></i>¿Qué es Node.js?</h6>
-            <p style="font-size:.86rem;color:#334155;margin:0">Es un entorno que ejecuta JavaScript fuera del navegador
-              (en tu sistema operativo). Te permite usar herramientas de desarrollo desde terminal, como <code>npm</code>
-              y <code>tsc</code>.</p>
+            <p style="font-size:.86rem;color:#334155;margin:0">Es un entorno que ejecuta JavaScript fuera del navegador (en tu computadora). Permite usar herramientas como <code>npm</code> y <code>tsc</code> desde la terminal.</p>
           </div>
           <div class="compare-col" style="background:#f8fafc;border:1px solid #e2e8f0">
             <h6 style="color:#0f172a"><i class="bi bi-cpu me-2"></i>¿Cómo funciona?</h6>
-            <p style="font-size:.86rem;color:#334155;margin:0">Node usa el motor V8 para ejecutar JS, y <code>npm</code>
-              para instalar paquetes. Cuando ejecutas <code>npm install -g typescript</code>, npm descarga el compilador
-              y deja disponible el comando <code>tsc</code> en tu terminal.</p>
+            <p style="font-size:.86rem;color:#334155;margin:0">Node usa el motor V8 para ejecutar JS. <code>npm</code> instala paquetes globales o locales. Cuando ejecutas <code>npm install -g typescript</code>, el comando <code>tsc</code> queda disponible en tu terminal.</p>
           </div>
         </div>
 
         <div class="callout callout-cyan mt-3">
-          <strong>¿Por qué es relevante en este curso?</strong> Porque todo el flujo de TypeScript depende de Node:
-          instalar el compilador, compilar <code>.ts</code> a <code>.js</code>, y más adelante levantar proyectos con
-          Angular CLI. Sin Node, no hay <code>npm</code>, no hay <code>tsc</code>, y no puedes ejecutar el pipeline del
-          curso.
+          <strong>¿Por qué es relevante en este curso?</strong> Porque todo el flujo de TypeScript depende de Node: instalar el compilador, compilar <code>.ts</code> a <code>.js</code>, y más adelante levantar proyectos con Angular CLI. Sin Node, no hay <code>npm</code>, no hay <code>tsc</code>, y <strong> en general no puedes ejecutar el pipeline del curso</strong>.
+        </div>
+        <div class="callout callout-cyan mt-2 mb-3" style="border-left:4px solid #0891b2">
+          <strong style="font-size:1rem">¿Qué versión de Node.js instalar?</strong><br>
+          Instala <strong>Node.js v22.x LTS</strong>. Es la versión compatible con Angular 19 (que usaremos desde la Clase 5).<br>
+          <strong>No instales Node v24</strong> aunque aparezca como LTS en la página oficial — Angular 19 no la soporta.<br><br>
+          <strong>Descarga:</strong>
+          <a href="https://nodejs.org/en/download" target="_blank">nodejs.org/en/download</a> → busca la última <strong>22.x LTS</strong>.
         </div>
 
-        <div class="code-block">
-          <div class="code-header"><span>setup-inicial.bash</span><span class="lang-badge lang-bash">terminal</span></div>
-          <pre><span class="cm"># 1) Verificar que Node.js y npm quedaron instalados</span>
-node --version
-npm --version
+        <p style="font-size:.9rem">Descarga la version <strong>LTS</strong> (Long Term Support) de <a
+            href="https://nodejs.org" target="_blank">nodejs.org</a> - es la que aparece en Get Node.js®.</p>
 
-<span class="cm"># 2) Instalar TypeScript globalmente</span>
-npm install -g typescript
+        <table class="os-table">
+          <thead>
+            <tr>
+              <th>Sistema</th>
+              <th>Accion</th>
+              <th>Verificar instalacion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Windows</strong></td>
+              <td>Descargar <code>.msi</code> desde nodejs.org → ejecutar → Next, Next, Finish</td>
+              <td><code>node -v</code> y <code>npm -v</code> en CMD o PowerShell</td>
+            </tr>
+            <tr>
+              <td><strong>Mac</strong></td>
+              <td>Descargar <code>.pkg</code> desde nodejs.org → ejecutar → continuar</td>
+              <td><code>node -v</code> y <code>npm -v</code> en Terminal</td>
+            </tr>
+            <tr>
+              <td><strong>Linux (Ubuntu/Debian)</strong></td>
+              <td>
+                <code>curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -</code><br>
+                <code>sudo apt install -y nodejs</code>
+              </td>
+              <td><code>node -v</code> y <code>npm -v</code> en terminal</td>
+            </tr>
+            <tr>
+              <td><strong>Linux (Fedora/RHEL)</strong></td>
+              <td>
+                <code>curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -</code><br>
+                <code>sudo dnf install -y nodejs</code>
+              </td>
+              <td><code>node -v</code> y <code>npm -v</code> en terminal</td>
+            </tr>
+          </tbody>
+        </table>
 
-<span class="cm"># 3) Confirmar instalación</span>
-tsc --version</pre>
+      
+
+        <div class="code-block mt-3">
+          <div class="code-header"><span>terminal — verificar instalación</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>node --version    <span class="cm"># debe mostrar v22.x.x</span>
+npm --version     <span class="cm"># debe mostrar 10.x.x o superior</span>
+
+npm install -g typescript   <span class="cm"># instalar TypeScript globalmente</span>
+tsc --version               <span class="cm"># verificar que TypeScript se instaló</span></pre>
         </div>
 
         <div class="callout callout-amber mt-3">
-          Si ves <code>'npm' is not recognized</code> o <code>'tsc' is not recognized</code>, reinicia la terminal.
-          Si persiste, Node.js no quedó en el <code>PATH</code> y hay que reinstalarlo marcando la opción de variables
-          de entorno.
+          <strong>Error: 'npm' no se reconoce como comando</strong><br>
+          Si ves <code>'npm' is not recognized</code> o <code>'tsc' is not recognized</code>, cierra y vuelve a abrir la terminal. Si persiste, Node.js no quedó en el <code>PATH</code> — reinstálalo y asegúrate de marcar la opción "Add to PATH" durante la instalación.
         </div>
       </div>
 
@@ -1224,7 +1308,8 @@ tsc app.ts --target es2017
 <span class="kw">const</span> el = document.<span class="fn">getElementById</span>(<span class="str">"app"</span>);
 <span class="kw">if</span> (el) {
   el.textContent = mensaje;
-}</pre>
+}
+export {} // ← Línea vacía a propósito: evita que "mensaje" quede global y previene errores como "Cannot redeclare block-scoped variable 'mensaje'"</pre>
           </div>
 
           <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
@@ -1251,8 +1336,19 @@ tsc app.ts --target es2017
           <strong>Cómo ejecutarlo:</strong> abre <code>index.html</code> en el navegador después de compilar. Si todo
           está correcto, verás el mensaje en pantalla y también en consola: <code>Hola mundo desde TypeScript</code>.
         </div>
-      </div>
 
+        <div class="callout callout-cyan mt-3">
+          <strong>¿Por qué agregamos <code>export {}</code> si no estamos exportando nada?</strong><br>
+          Porque es la forma <strong>más simple</strong> de decirle a TypeScript: <em>"este archivo es un módulo"</em>.
+          Al hacerlo, variables como <code>mensaje</code> dejan de vivir en el ámbito global y quedan encerradas dentro
+          del archivo.<br><br>
+          <strong>¿Qué problema evita?</strong> Errores muy comunes como:
+          <code>Cannot redeclare block-scoped variable 'mensaje'</code>.<br>
+          Eso pasa cuando TypeScript interpreta varios archivos como scripts globales y mezcla sus variables. Con
+          <code>export {}</code>, cada archivo queda aislado y ese choque de nombres desaparece.
+        </div>
+
+      </div>
     </section>
 
     <!-- ══════════════════════════════
@@ -2364,8 +2460,8 @@ $(<span class="kw">function</span>(): <span class="typ">void</span> { <span clas
           <div class="code-header"><span>terminal — requisito: Node.js instalado</span><span
               class="lang-badge lang-bash">bash</span></div>
           <pre><span class="cm"># 1. Verificar que Node.js está instalado</span>
-node --version    <span class="cm"># debe mostrar v18.x o superior</span>
-npm --version     <span class="cm"># debe mostrar 9.x o superior</span>
+node --version    <span class="cm"># debe mostrar v22.x.x</span>
+npm --version     <span class="cm"># debe mostrar 10.x.x o superior</span>
 
 <span class="cm"># 2. Instalar Angular CLI globalmente</span>
 npm install -g @angular/cli
