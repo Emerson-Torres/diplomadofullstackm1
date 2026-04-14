@@ -837,8 +837,8 @@
         Angular?</a>
       <a href="#" onclick="window.showSection('instalacion',this)"> <i class="bi bi-download"></i> Instalacion y
         Setup</a>
-      <a href="#" onclick="window.showSection('depuracion-vscode',this)"> <i class="bi bi-bug"></i> Depuracion
-        profesional</a>
+      <a href="#" onclick="window.showSection('depuracion-vscode',this)"> <i class="bi bi-microsoft"></i> Configuracion
+        del entorno</a>
       <a href="#" onclick="window.showSection('primer-proyecto',this)"> <i class="bi bi-rocket-takeoff"></i> Primer
         proyecto</a>
       <a href="#" onclick="window.showSection('estructura',this)"> <i class="bi bi-code-slash"></i> Estructura del
@@ -883,7 +883,7 @@
           los componentes se comunican y reaccionan a los datos.</p>
         <div class="hero-meta mt-3">
           <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
-          <span><i class="bi bi-terminal me-1"></i>Angular 19</span>
+          <span><i class="bi bi-terminal me-1"></i>Angular 20</span>
           <span><i class="bi bi-puzzle me-1"></i>Modulos tradicionales</span>
         </div>
       </div>
@@ -1059,51 +1059,51 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
       </p>
 
       <div class="theory-block">
-        <h4 style="color:var(--accent);font-weight:700">¿Por qué usamos Angular 19 y no la versión más nueva?</h4>
+        <h4 style="color:var(--accent);font-weight:700">¿Por qué usamos Angular 20 y no la versión más nueva?</h4>
         <p style="font-size:.9rem;color:#374151;margin-bottom:1.25rem">
-          Angular es un framework que evoluciona rápidamente. Cada año sale una versión nueva. La tentación es usar la
-          última (ahora Angular 21), pero aquí te explico por qué 19 es la correcta para este curso.
+          Angular evoluciona rápido, pero para este curso buscamos una versión moderna, estable y muy bien documentada.
+          Angular 20 ofrece justo ese equilibrio: ya incluye las mejoras actuales del framework sin obligarnos a seguir
+          cambios extra de la versión más reciente.
         </p>
         <table class="os-table" style="font-size:.83rem">
           <thead>
             <tr>
               <th>Criterio</th>
-              <th>Angular 19</th>
-              <th>Angular 21+</th>
+              <th>Angular 20</th>
+              <th>Versión más reciente</th>
             </tr>
           </thead>
           <tbody>
             <tr style="background:#ecfeff">
               <td><strong>Estabilidad</strong></td>
-              <td>Lista para producción. Sin bugs conocidos graves.</td>
-              <td>Todavía en beta. Puede tener bugs que se descubren semanas después.</td>
+              <td>Madura, sólida y lista para producción.</td>
+              <td>Puede traer cambios nuevos que todavía no ves en todos los cursos o equipos.</td>
             </tr>
             <tr style="background:#f0fdf4">
               <td><strong>Documentación</strong></td>
-              <td>Completa. Si tienes un error, hay cientos de respuestas en Stack Overflow.</td>
-              <td>Limitada. Si tienes un error nuevo, quizás no hay respuesta de nadie.</td>
+              <td>Amplia, actualizada y fácil de contrastar con ejemplos reales.</td>
+              <td>A veces cambia más rápido y obliga a reaprender detalles menores.</td>
             </tr>
             <tr style="background:#fef3c7">
-              <td><strong>Mercado laboral</strong></td>
-              <td>Las empresas buscan personas con Angular 18/19. Es lo que usan.</td>
-              <td>Casi nadie lo pide aún. Es demasiado nuevo.</td>
+              <td><strong>Aprendizaje</strong></td>
+              <td>Perfecta para entender componentes, servicios, rutas y estado sin ruido adicional.</td>
+              <td>Puede introducir novedades que distraen del objetivo principal del módulo.</td>
             </tr>
           </tbody>
         </table>
         <div class="callout callout-blue" style="margin-top:1rem">
-          <strong>La verdad simple:</strong> Los conceptos de componentes, binding, routing y servicios son exactamente
-          los mismos en Angular 19 que en 21. Lo que cambiaría sería cómo se escriben algunos detalles internos. Usamos
-          19 porque es estable, bien documentada, y lo que verás cuando trabajes en una empresa real. No es un
-          sacrificio, es una decisión inteligente.
+          <strong>La verdad simple:</strong> componentes, binding, routing y servicios siguen el mismo modelo mental.
+          Usamos Angular 20 porque es una base actual, profesional y suficientemente estable para aprender bien y luego
+          trabajar con confianza.
         </div>
       </div>
 
       <div class="theory-block">
         <h4 style="color:var(--accent);font-weight:700">¿Y por qué módulos tradicionales, no Standalone Components?</h4>
         <p style="font-size:.9rem;color:#374151;margin-bottom:1.25rem">
-          Estas dos decisiones van juntas: elegimos Angular 19 como versión base, y dentro de 19, elegimos la
-          arquitectura más probada y usada en el mundo real. Angular 19 permite dos caminos: módulos tradicionales
-          (NgModule) o standalone components (experimento). Aquí usamos módulos.
+          Estas dos decisiones van juntas: elegimos Angular 20 como versión base, y dentro de 20 mantenemos módulos
+          tradicionales para que el flujo del curso sea más claro. Angular 20 soporta tanto standalone components como
+          NgModule; aquí usamos módulos porque hacen más visible cómo se conecta toda la aplicación paso a paso.
         </p>
         <div class="row g-3 mt-1">
           <div class="col-md-6">
@@ -1131,13 +1131,13 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
           <div class="col-md-6">
             <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca;text-align:center">
               <div class="fw-bold" style="color:#991b1b;font-size:.88rem">Más explícito</div>
-              <p class="small mb-0 mt-1" style="color:#374151">Tienes un solo lugar (<code>app.module.ts</code>) donde
+              <p class="small mb-0 mt-1" style="color:#374151">Tienes un solo lugar (<code>app-module.ts</code>) donde
                 registras qué servicios usa toda la aplicación. Así todos los componentes comparten la misma instancia
                 del carrito, del servicio de productos, etc.</p>
             </div>
           </div>
         </div>
-        <p class="mt-3 small text-muted">Comando que garantiza módulos tradicionales:
+        <p class="mt-3 small text-muted">Comando que usamos en el curso para crear el proyecto con Angular 20 y módulos tradicionales:
           <code>ng new mi-tienda <strong>--standalone false</strong> --routing true --style css</code></p>
       </div>
 
@@ -1175,9 +1175,8 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
         </h4>
         <div class="callout callout-cyan mb-3">
           Si vienes de la <strong>Clase 4</strong>, este paso <strong>ya lo tienes</strong>: instalaste Node.js
-          <strong>v22.x</strong> y <code>npm</code>. <strong>Importante:</strong> antes de seguir con Angular CLI,
-          verifica de nuevo <code>node -v</code> y <code>npm -v</code> para confirmar que sigues en versiones
-          compatibles.
+          <strong>v22.x LTS</strong> y <code>npm</code>. <strong>Importante:</strong> para Angular 20 conviene verificar
+          que estés en una versión reciente de la rama 22, por ejemplo <code>22.12+</code>.
         </div>
       
 
@@ -1185,12 +1184,11 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
           style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.25rem">
           <h6 style="color:#0f172a;font-weight:700;margin-bottom:.75rem">
             <i class="bi bi-table me-2" style="color:var(--accent)"></i>
-            ¿Por qué v22 y no la última versión de Node?
+            Compatibilidad de Node para Angular 20
           </h6>
           <p style="font-size:.85rem;color:#475569;margin-bottom:.75rem">
-            Angular 19 (el que usamos en este curso) solo soporta versiones específicas de Node.
-            Instalar una versión más nueva puede hacer que <code>ng new</code> falle.
-            Esta es la tabla oficial de compatibilidad:
+            Angular 20 soporta versiones específicas de Node. Para este curso la opción más cómoda sigue siendo
+            <code>Node 22 LTS</code>, porque funciona bien con el CLI y suele ser la más práctica para clase.
           </p>
           <table class="os-table" style="font-size:.82rem">
             <thead>
@@ -1202,21 +1200,26 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
             </thead>
             <tbody>
               <tr style="background:#ecfeff">
-                <td><strong>19.x</strong> <span
+                <td><strong>20.x</strong> <span
                     style="font-size:.7rem;background:#06b6d4;color:#fff;padding:.15rem .4rem;border-radius:4px">este
                     curso</span></td>
-                <td><code>^18.19.1 || ^20.11.1 || ^22.0.0</code></td>
+                <td><code>^20.19.0 || ^22.12.0 || ^24.0.0</code></td>
                 <td style="color:#0891b2;font-weight:600">✓ v22.x LTS</td>
               </tr>
-              <tr style="background:#fef9c3">
-                <td>20.x</td>
-                <td><code>^20.19.0 || ^22.12.0 || ^24.0.0</code></td>
-                <td style="color:#92400e">⚠ No en este curso</td>
+              <tr style="background:#f8fafc">
+                <td>19.x</td>
+                <td><code>^18.19.1 || ^20.11.1 || ^22.0.0</code></td>
+                <td style="color:#64748b"><ul>
+  <li><strong>Dependencias obsoletas:</strong> tar@6.2.1 y glob@10.5.0</li>
+  <li><strong>Riesgo:</strong> contienen vulnerabilidades de seguridad conocidas</li>
+  <li><strong>Acción:</strong> actualizar a versiones recientes</li>
+  <li><strong>Nota:</strong> versiones antiguas sin soporte oficial</li>
+</ul>
+</td>
               </tr>
-              <tr style="background:#fef2f2">
-                <td><span style="color:#dc2626">v24 (LTS actual)</span></td>
-                <td colspan="2" style="color:#dc2626">✗ No soportado por Angular 19 — puede romper <code>ng new</code>
-                </td>
+              <tr style="background:#f0fdf4">
+                <td><span style="color:#065f46">Recomendación práctica</span></td>
+                <td colspan="2" style="color:#065f46">Usa <code>node -v</code> y confirma una versión LTS compatible antes de ejecutar <code>ng new</code>.</td>
               </tr>
             </tbody>
           </table>
@@ -1233,14 +1236,13 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
           Instalar Angular CLI
         </h4>
         <p style="font-size:.9rem">Angular CLI es la herramienta de linea de comandos que genera proyectos, componentes,
-          servicios, etc. Se instala una sola vez globalmente.</p>
+          servicios y estructura inicial. Se instala una sola vez globalmente.</p>
 
         <div class="callout callout-cyan mb-3">
-          <strong>Que hace <code>npm install -g @angular/cli@19</code> exactamente?</strong><br>
-          Instala la herramienta Angular CLI version 19 en tu computadora (global). El <code>@19</code> asegura que
-          usamos una version especifica y estable. Sin el, instalaria la ultima version (quizas 20 o 21 beta).<br>
-          <strong>Importante:</strong> El CLI 19 genera proyectos con Angular 19. La version del CLI determina la
-          version de Angular que usaras.
+          <strong>Que hace <code>npm install -g @angular/cli@20</code> exactamente?</strong><br>
+          Instala la herramienta Angular CLI versión 20 en tu computadora. El <code>@20</code> fija la versión del
+          curso y evita que el proyecto nazca con otra versión más nueva por accidente.<br>
+          <strong>Importante:</strong> el CLI 20 genera proyectos alineados con Angular 20.
         </div>
 
         <table class="os-table">
@@ -1254,17 +1256,17 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
           <tbody>
             <tr>
               <td><strong>Windows</strong> (PowerShell Admin)</td>
-              <td><code>npm install -g @angular/cli@19</code></td>
+              <td><code>npm install -g @angular/cli@20</code></td>
               <td><code>ng version</code></td>
             </tr>
             <tr>
               <td><strong>Mac</strong></td>
-              <td><code>sudo npm install -g @angular/cli@19</code></td>
+              <td><code>sudo npm install -g @angular/cli@20</code></td>
               <td><code>ng version</code></td>
             </tr>
             <tr>
               <td><strong>Linux</strong></td>
-              <td><code>sudo npm install -g @angular/cli@19</code></td>
+              <td><code>sudo npm install -g @angular/cli@20</code></td>
               <td><code>ng version</code></td>
             </tr>
           </tbody>
@@ -1291,9 +1293,12 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
           <pre><span class="cm"># Crear el proyecto - responde las preguntas que aparecen en pantalla</span>
 ng new mi-tienda --standalone false --routing true --style css
 
-<span class="cm"># El CLI pregunta:
-#   ? Which stylesheet format?  CSS (ya esta definido con --style css)
-#   ? Do you want to enable... SSR?  No (escribe N y Enter)</span>
+<span class="cm"># En Angular CLI 20 ahora pueden aparecer estas preguntas:</span>
+<span class="cm">#   ? Do you want to enable Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering)?  No</span>
+<span class="cm">#   ? Do you want to create a 'zoneless' application without zone.js?  No</span>
+<span class="cm">#   ? Which AI tools do you want to configure with Angular best practices?  None</span>
+<span class="cm">#</span>
+<span class="cm"># Nota: como ya usamos --style css, no hace falta que pregunte por el formato de estilos</span>
 
 <span class="cm"># Entrar a la carpeta del proyecto</span>
 <span class="kw">cd</span> mi-tienda
@@ -1306,9 +1311,15 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
         </div>
 
         <div class="callout callout-red">
-          <strong><code>--standalone false</code> es importante.</strong> Sin esta opcion, Angular 19 crea componentes
-          standalone. Con <code>--standalone false</code> usamos modulos tradicionales (<code>app.module.ts</code>), que
+          <strong><code>--standalone false</code> es importante.</strong> Sin esta opcion, Angular 20 crea componentes
+          standalone por defecto. Con <code>--standalone false</code> usamos modulos tradicionales (<code>app-module.ts</code>), que
           es el patron que seguiremos en todo el modulo.
+        </div>
+
+        <div class="callout callout-blue">
+          <strong>Importante:</strong> Angular CLI 20 usa una nomenclatura mas corta para varios archivos base del
+          proyecto. Por eso en este curso veras nombres como <code>app.ts</code>, <code>app.html</code>,
+          <code>app.css</code>, <code>app-module.ts</code> y <code>app-routing-module.ts</code>.
         </div>
 
         <p class="fw-semibold small mt-3 mb-1">Instalar Bootstrap en el proyecto:</p>
@@ -1384,7 +1395,7 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
 
     <!-- DEPURACION PROFESIONAL -->
     <section id="depuracion-vscode" class="content-section">
-      <h2 class="fw-bold mb-1">Depuracion profesional con VS Code</h2>
+      <h2 class="fw-bold mb-1">Configuracion del entorno con VS Code</h2>
       <p class="text-muted mb-4">Dos maneras de ejecutar Angular: la rapida en terminal y la profesional con Run and Debug.</p>
 
       <div class="theory-block">
@@ -1591,10 +1602,10 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
 
       <div class="theory-block">
         <h4><i class="bi bi-pencil-square" style="color:var(--accent)"></i> Primer cambio: limpiar
-          <code>app.component.html</code></h4>
+          <code>app.html</code></h4>
         <p style="font-size:.9rem">Angular genera mucho contenido de bienvenida. Reemplazalo con el navbar basico:</p>
         <div class="code-block">
-          <div class="code-header"><span>src/app/app.component.html - reemplazar todo el contenido</span><span
+          <div class="code-header"><span>src/app/app.html - reemplazar todo el contenido</span><span
               class="lang-badge lang-html">HTML</span></div>
           <pre><span class="cm">&lt;!-- Navbar principal --&gt;</span>
 <span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="str">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="tag">&gt;</span>
@@ -1632,6 +1643,10 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
       <div class="theory-block">
         <h4><i class="bi bi-folder-tree" style="color:var(--accent)"></i> Arbol de archivos generado por
           <code>ng new</code></h4>
+        <div class="callout callout-cyan" style="margin-bottom:1rem">
+          <strong>Importante para Angular 20:</strong> el proyecto base generado por el CLI ahora usa nombres mas
+          concisos. Por eso en esta guia ya trabajamos directamente con los nombres reales que el alumno vera.
+        </div>
         <div class="file-tree">
           <div><span class="dir">mi-tienda/</span></div>
           <div>&nbsp;&nbsp;<span class="dir">src/</span></div>
@@ -1639,19 +1654,19 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
               class="dir">app/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
               class="note"> tu codigo vive aqui</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-              class="ts">app.component.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="ts">app.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
               class="note"> componente raiz - navbar, router-outlet</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-              class="html">app.component.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">
+              class="html">app.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">
               template del componente raiz</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-              class="css">app.component.css</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">
+              class="css">app.css</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note">
               estilos del componente raiz</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-              class="ts">app.module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+              class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
               class="note"> REGISTRO de todos los componentes</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-              class="ts">app-routing.module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> declaracion de rutas
+              class="ts">app-routing-module.ts</span>&nbsp;&nbsp;<span class="note"> declaracion de rutas
               URL componente</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;<span
               class="html">index.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
@@ -1674,14 +1689,14 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
       <div class="theory-block">
         <h4><i class="bi bi-file-earmark-code" style="color:var(--accent)"></i> Los archivos que mas vas a tocar</h4>
 
-        <p class="fw-semibold mt-2 mb-1" style="font-size:.88rem">1 <code>app.module.ts</code> - el registro central</p>
+        <p class="fw-semibold mt-2 mb-1" style="font-size:.88rem">1 <code>app-module.ts</code> - el registro central</p>
         <div class="code-block">
-          <div class="code-header"><span>src/app/app.module.ts - estructura actual</span><span
+          <div class="code-header"><span>src/app/app-module.ts - estructura actual</span><span
               class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="str">'@angular/platform-browser'</span>;
-<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing.module'</span>;
-<span class="kw">import</span> { AppComponent } <span class="kw">from</span> <span class="str">'./app.component'</span>;
+<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing-module'</span>;
+<span class="kw">import</span> { AppComponent } <span class="kw">from</span> <span class="str">'./app'</span>;
 
 <span class="dec">@NgModule</span>({
   <span class="prop">declarations</span>: [
@@ -1700,13 +1715,13 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
 <span class="kw">export class</span> <span class="typ">AppModule</span> { }</pre>
         </div>
 
-        <p class="fw-semibold mt-3 mb-1" style="font-size:.88rem">2 <code>app-routing.module.ts</code> - rutas</p>
+        <p class="fw-semibold mt-3 mb-1" style="font-size:.88rem">2 <code>app-routing-module.ts</code> - rutas</p>
         <div class="code-block">
-          <div class="code-header"><span>src/app/app-routing.module.ts - agregar ruta de products</span><span
+          <div class="code-header"><span>src/app/app-routing-module.ts - agregar ruta de products</span><span
               class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { RouterModule, Routes } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
-<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products.component'</span>;
+<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products'</span>;
 
 <span class="kw">const</span> routes: <span class="typ">Routes</span> = [
   { <span class="prop">path</span>: <span class="str">''</span>,         <span class="prop">component</span>: AppComponent,      <span class="prop">title</span>: <span class="str">'Home'</span> },
@@ -1765,7 +1780,7 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
       <div class="theory-block">
         <h4><i class="bi bi-terminal" style="color:var(--accent)"></i> Generar ProductsComponent</h4>
         <p style="font-size:.9rem">El CLI genera los 3 archivos y lo registra automaticamente en
-          <code>app.module.ts</code>:</p>
+          <code>app-module.ts</code>:</p>
         <div class="code-block">
           <div class="code-header"><span>terminal - dentro de mi-tienda/</span><span
               class="lang-badge lang-bash">bash</span></div>
@@ -1774,16 +1789,16 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
 ng g c products
 
 <span class="cm"># El CLI crea:</span>
-<span class="cm">#   src/app/products/products.component.ts</span>
-<span class="cm">#   src/app/products/products.component.html</span>
-<span class="cm">#   src/app/products/products.component.css</span>
-<span class="cm">#   src/app/products/products.component.spec.ts  (tests - ignorar por ahora)</span>
+<span class="cm">#   src/app/products/products.ts</span>
+<span class="cm">#   src/app/products/products.html</span>
+<span class="cm">#   src/app/products/products.css</span>
+<span class="cm">#   src/app/products/products.spec.ts  (tests - ignorar por ahora)</span>
 <span class="cm">#</span>
-<span class="cm"># Y modifica automaticamente app.module.ts para agregar ProductsComponent</span></pre>
+<span class="cm"># Y modifica automaticamente app-module.ts para agregar ProductsComponent</span></pre>
         </div>
         <div class="callout callout-amber">
           <strong>Siempre usa el CLI para generar componentes.</strong> Crear los archivos manualmente y olvidar
-          registrarlos en <code>app.module.ts</code> es el error mas comun - el CLI nunca se olvida.
+          registrarlos en <code>app-module.ts</code> es el error mas comun - el CLI nunca se olvida.
         </div>
       </div>
 
@@ -1792,14 +1807,14 @@ ng g c products
         <p style="font-size:.9rem">Este es el patron que mantendremos en todo el modulo. Las propiedades arriba, el
           constructor con dependencias, y <code>ngOnInit()</code> para la carga inicial:</p>
         <div class="code-block">
-          <div class="code-header"><span>src/app/products/products.component.ts - version clase 5 (con datos
+          <div class="code-header"><span>src/app/products/products.ts - version clase 5 (con datos
               mock)</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-products'</span>,
-  <span class="prop">templateUrl</span>: <span class="str">'./products.component.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./products.component.css'</span>]
+  <span class="prop">templateUrl</span>: <span class="str">'./products.html'</span>,
+  <span class="prop">styleUrls</span>:   [<span class="str">'./products.css'</span>]
 })
 <span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
 
@@ -1902,7 +1917,7 @@ ng g c products
               <p class="small mb-1" style="color:#374151">TS HTML y HTML TS simultaneamente. Para formularios. Con
                 <code>[(ngModel)]</code> no necesitas <code>(keyup)</code> para capturar texto. <code>FormsModule</code>
                 es el modulo de Angular Forms que habilita <code>[(ngModel)]</code>; se importa en
-                <code>app.module.ts</code> y se agrega en <code>imports</code>.</p>
+                <code>app-module.ts</code> y se agrega en <code>imports</code>.</p>
               <code style="font-size:.78rem">[(ngModel)]="busqueda"</code>
             </div>
           </div>
@@ -1912,7 +1927,7 @@ ng g c products
       <div class="theory-block">
         <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i> Los 4 bindings en el template de productos</h4>
         <div class="code-block">
-          <div class="code-header"><span>src/app/products/products.component.html - los 4 tipos</span><span
+          <div class="code-header"><span>src/app/products/products.html - los 4 tipos</span><span
               class="lang-badge lang-html">HTML</span></div>
           <pre><span class="cm">&lt;!-- 1. INTERPOLACION {{ }} --&gt;</span>
 <span class="tag">&lt;h1</span> <span class="attr">class</span>=<span class="str">"text-center"</span><span class="tag">&gt;</span><span class="bind">{{titulo}}</span><span class="tag">&lt;/h1&gt;</span>
@@ -2154,14 +2169,14 @@ ng g c products
       <div class="theory-block">
         <h4><i class="bi bi-box-arrow-in-down" style="color:var(--accent)"></i> Usar Input() en el componente hijo</h4>
         <div class="code-block">
-          <div class="code-header"><span>src/app/product-card/product-card.component.ts</span><span
+          <div class="code-header"><span>src/app/product-card/product-card.ts</span><span
               class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { Component, Input } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-product-card'</span>,
-  <span class="prop">templateUrl</span>: <span class="str">'./product-card.component.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./product-card.component.css'</span>]
+  <span class="prop">templateUrl</span>: <span class="str">'./product-card.html'</span>,
+  <span class="prop">styleUrls</span>:   [<span class="str">'./product-card.css'</span>]
 })
 <span class="kw">export class</span> <span class="typ">ProductCardComponent</span> {
 
@@ -2175,7 +2190,7 @@ ng g c products
         </div>
 
         <div class="code-block">
-          <div class="code-header"><span>src/app/product-card/product-card.component.html</span><span
+          <div class="code-header"><span>src/app/product-card/product-card.html</span><span
               class="lang-badge lang-html">HTML</span></div>
           <pre><span class="tag">&lt;td&gt;</span><span class="bind">{{product?.id}}</span><span class="tag">&lt;/td&gt;</span>
 <span class="tag">&lt;td&gt;</span><span class="bind">{{product?.title}}</span><span class="tag">&lt;/td&gt;</span>
@@ -2268,7 +2283,7 @@ ng g c products
         <div class="error-box">
           <div class="file">Error en el navegador / consola de VS Code</div>
           'app-product-card' is not a known element
-          <div class="fix">Solucion: el componente no esta registrado en declarations de app.module.ts. Solucion:
+          <div class="fix">Solucion: el componente no esta registrado en declarations de app-module.ts. Solucion:
             borrarlo y regenerarlo con el CLI <code>ng g c product-card</code>. El CLI lo registra automaticamente.
           </div>
         </div>
@@ -2293,7 +2308,7 @@ ng g c products
         <h4><i class="bi bi-check2-all text-success"></i> Checklist de verificacion final</h4>
         <ul class="checklist">
           <li><code>node -v</code> muestra version 22.x o superior</li>
-          <li><code>ng version</code> muestra Angular CLI 19.x</li>
+          <li><code>ng version</code> muestra Angular CLI 20.x</li>
           <li><code>ng serve</code> corre sin errores de compilacion</li>
           <li>Navegar a <code>/products</code> muestra la tabla Bootstrap</li>
           <li>El select filtra por las 2 categorias presentes en la muestra: men's clothing y jewelery</li>
@@ -2316,8 +2331,8 @@ ng g c products
             <ul style="font-size:.9rem;line-height:2.2">
               <li>Instalar Node.js, Angular CLI y crear un proyecto</li>
               <li>La estructura de un proyecto Angular con <code>--standalone false</code></li>
-              <li><code>app.module.ts</code> - registro de componentes</li>
-              <li><code>app-routing.module.ts</code> - rutas URL componente</li>
+              <li><code>app-module.ts</code> - registro de componentes</li>
+              <li><code>app-routing-module.ts</code> - rutas URL componente</li>
               <li>Generar componentes con <code>ng generate component</code></li>
               <li>Anatomia de un componente: <code>.ts</code> + <code>.html</code> + <code>.css</code></li>
               <li>Los 4 tipos de binding: <code>{{ }}</code>, <code>[ ]</code>, <code>( )</code>, <code>[( )]</code>
@@ -2333,7 +2348,7 @@ ng g c products
             <div class="p-3 rounded-3 mb-2" style="background:#fef2f2;border:1px solid #fecaca">
               <p class="fw-semibold mb-1" style="font-size:.85rem;color:#991b1b">Por que
                 <code>--standalone false</code>?</p>
-              <p class="small mb-0" style="color:#374151">Angular 19 por defecto crea componentes standalone. Con
+              <p class="small mb-0" style="color:#374151">Angular 20 por defecto crea componentes standalone. Con
                 <code>--standalone false</code> usamos modulos tradicionales (<code>NgModule</code>), que es el patron
                 que seguiremos en todo el modulo.</p>
             </div>
@@ -2348,7 +2363,7 @@ ng g c products
               <p class="fw-semibold mb-1" style="font-size:.85rem;color:#991b1b">Que es
                 <code>&lt;router-outlet&gt;</code>?</p>
               <p class="small mb-0" style="color:#374151">Es el "hueco" donde Angular inserta el componente de la ruta
-                activa. Esta en <code>app.component.html</code>. Sin el, las rutas no renderizan nada.</p>
+                activa. Esta en <code>app.html</code>. Sin el, las rutas no renderizan nada.</p>
             </div>
           </div>
         </div>
@@ -2376,7 +2391,7 @@ ng g c products
         <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem">El cambio que hara la Clase 6 en tu componente -
           nota que el template HTML no cambia:</p>
         <div class="code-block">
-          <div class="code-header"><span>products.component.ts - la diferencia entre Clase 5 y Clase 6</span><span
+          <div class="code-header"><span>products.ts - la diferencia entre Clase 5 y Clase 6</span><span
               class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="cm">//  CLASE 5 (hoy) - datos mock</span>
 <span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
@@ -2421,7 +2436,7 @@ ng g c products
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     /* == NAVEGACION + PROGRESO == */
-    const sections5 = ['agenda', 'por-que', 'instalacion', 'primer-proyecto', 'estructura', 'componentes', 'binding', 'ngfor', 'input-decorator', 'ejercicio', 'qa', 'conexion'];
+    const sections5 = ['agenda', 'por-que', 'instalacion', 'depuracion-vscode', 'primer-proyecto', 'estructura', 'componentes', 'binding', 'ngfor', 'input-decorator', 'ejercicio', 'qa', 'conexion'];
 
     function _upd(id) {
       const pct = Math.round(((sections5.indexOf(id) + 1) / sections5.length) * 100);
@@ -2458,14 +2473,14 @@ ng g c products
     <div class="row g-3">
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.ts</div>
           <div><span style="color:#93c5fd">titulo</span> = <span style="color:#fca5a5">'Catalogo de Productos'</span>;</div>
           <div><span style="color:#93c5fd">precio</span> = <span style="color:#fdba74">109.95</span>;</div>
         </div>
       </div>
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.html</div>
           <div>&lt;h1&gt;<span style="color:#fcd34d">{{titulo}}</span>&lt;/h1&gt;</div>
           <div>&lt;p&gt;Precio: $<span style="color:#fcd34d">{{precio}}</span>&lt;/p&gt;</div>
         </div>
@@ -2487,14 +2502,14 @@ ng g c products
     <div class="row g-3">
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.ts</div>
           <div><span style="color:#93c5fd">imageUrl</span> = <span style="color:#fca5a5">'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_t.png'</span>;</div>
           <div><span style="color:#93c5fd">btnDisabled</span> = <span style="color:#f9a8d4">false</span>;</div>
         </div>
       </div>
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.html</div>
           <div>&lt;img <span style="color:#fcd34d">[src]</span>="imageUrl" height="80"&gt;</div>
           <div>&lt;button <span style="color:#fcd34d">[disabled]</span>="btnDisabled"&gt;OK&lt;/button&gt;</div>
         </div>
@@ -2516,7 +2531,7 @@ ng g c products
     <div class="row g-3">
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.ts</div>
           <div><span style="color:#86efac">seleccionar</span>(producto: <span style="color:#67e8f9">any</span>): <span style="color:#67e8f9">void</span> {</div>
           <div>&nbsp;&nbsp;<span style="color:#93c5fd">this</span>.detalle = producto;</div>
           <div>}</div>
@@ -2524,7 +2539,7 @@ ng g c products
       </div>
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.html</div>
           <div>&lt;button <span style="color:#fcd34d">(click)</span>="seleccionar(product)"&gt;</div>
           <div>&nbsp;&nbsp;Ver detalle</div>
           <div>&lt;/button&gt;</div>
@@ -2551,13 +2566,13 @@ ng g c products
     <div class="row g-3">
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.ts</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.ts</div>
           <div><span style="color:#93c5fd">busqueda</span>: <span style="color:#67e8f9">string</span> = <span style="color:#fca5a5">''</span>;</div>
         </div>
       </div>
       <div class="col-md-6">
         <div style="background:#0f172a;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#94a3b8">
-          <div style="color:#475569;margin-bottom:.5rem">products.component.html</div>
+          <div style="color:#475569;margin-bottom:.5rem">products.html</div>
           <div>&lt;input <span style="color:#fcd34d">[(ngModel)]</span>="busqueda"&gt;</div>
           <div>&lt;p&gt;Buscas: <span style="color:#fcd34d">{{busqueda}}</span>&lt;/p&gt;</div>
         </div>
@@ -2567,7 +2582,7 @@ ng g c products
           <div style="font-size:.72rem;color:#94a3b8;margin-bottom:.75rem">Simulacion two-way: escribe y el TS se actualiza automaticamente:</div>
           <input type="text" class="form-control form-control-sm mb-2" placeholder="Escribe algo..." oninput="document.getElementById('twoway-val').textContent=this.value || '(vacio)'" style="max-width:300px">
           <p style="font-size:.9rem">busqueda en el TS: <strong id="twoway-val" style="color:#8b5cf6">(vacio)</strong></p>
-          <div class="callout callout-purple" style="font-size:.8rem"><strong>Que es <code>FormsModule</code>?</strong> Es el modulo que activa los bindings de formularios como <code>[(ngModel)]</code>. <strong>Donde va?</strong> En <code>app.module.ts</code>: agrega <code>import { FormsModule } from '@angular/forms';</code> arriba y luego incluyelo en <code>imports: [BrowserModule, AppRoutingModule, FormsModule]</code>. Si usas <code>[(ngModel)]</code>, no necesitas <code>(keyup)</code> para capturar el valor.</div>
+          <div class="callout callout-purple" style="font-size:.8rem"><strong>Que es <code>FormsModule</code>?</strong> Es el modulo que activa los bindings de formularios como <code>[(ngModel)]</code>. <strong>Donde va?</strong> En <code>app-module.ts</code>: agrega <code>import { FormsModule } from '@angular/forms';</code> arriba y luego incluyelo en <code>imports: [BrowserModule, AppRoutingModule, FormsModule]</code>. Si usas <code>[(ngModel)]</code>, no necesitas <code>(keyup)</code> para capturar el valor.</div>
         </div>
       </div>
     </div>`;

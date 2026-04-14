@@ -219,7 +219,7 @@
     </div>
 
     <div class="callout callout-orange mb-4">
-      <strong>Punto de partida:</strong> Llegas con la Clase 5 funcionando: <code>ng serve</code> activo, tabla de productos con datos mock en <code>/products</code>, filtros por categoria y nombre, y <code>ProductCardComponent</code> con <code>Input()</code>. Hoy reemplazas el mock por la API real y agregas rutas con detalle.
+      <strong>Punto de partida:</strong> Llegas con tu proyecto Angular 20 de la Clase 5 funcionando: <code>ng serve</code> activo, tabla de productos con datos mock en <code>/products</code>, filtros por categoria y nombre, y <code>ProductCardComponent</code> con <code>Input()</code>. Hoy reemplazas el mock por la API real y agregas rutas con detalle.
     </div>
 
     <div class="row g-4 mb-4">
@@ -252,7 +252,7 @@
         <div class="timeline-item">
           <div class="t-time">10 min</div>
           <div class="t-title">HttpClient y Observable vs Promise</div>
-          <div class="t-desc">Por que Angular usa <code>Observable</code> en lugar de <code>Promise</code>. Como funciona <code>.subscribe()</code>. Activar <code>HttpClientModule</code> en <code>app.module.ts</code>.</div>
+          <div class="t-desc">Por que Angular usa <code>Observable</code> en lugar de <code>Promise</code>. Como funciona <code>.subscribe()</code>. Activar <code>HttpClientModule</code> en <code>app-module.ts</code>.</div>
         </div>
         <div class="timeline-item">
           <div class="t-time">30 min</div>
@@ -262,7 +262,7 @@
         <div class="timeline-item">
           <div class="t-time">30 min</div>
           <div class="t-title">Routing: agregar ruta <code>/product/:id</code></div>
-          <div class="t-desc">Crear <code>ProductDetailComponent</code>. Registrar la ruta en <code>app-routing.module.ts</code>. Leer el parametro <code>:id</code> con <code>ActivatedRoute</code>.</div>
+          <div class="t-desc">Crear <code>ProductDetailComponent</code>. Registrar la ruta en <code>app-routing-module.ts</code>. Leer el parametro <code>:id</code> con <code>ActivatedRoute</code>.</div>
         </div>
         <div class="timeline-item">
           <div class="t-time">30 min</div>
@@ -314,18 +314,18 @@
     <div class="theory-block">
       <h4><i class="bi bi-puzzle" style="color:var(--accent)"></i>
         <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
-        Activar HttpClientModule en app.module.ts
+        Activar HttpClientModule en app-module.ts
       </h4>
-      <p style="font-size:.9rem">HttpClient no esta disponible por defecto. Hay que importar <code>HttpClientModule</code> en <code>app.module.ts</code>. Se hace una sola vez y queda disponible en toda la aplicacion:</p>
+      <p style="font-size:.9rem">HttpClient no esta disponible por defecto. Hay que importar <code>HttpClientModule</code> en <code>app-module.ts</code>. Se hace una sola vez y queda disponible en toda la aplicacion:</p>
       <div class="code-block">
-        <div class="code-header"><span>src/app/app.module.ts — agregar HttpClientModule</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <div class="code-header"><span>src/app/app-module.ts — agregar HttpClientModule</span><span class="lang-badge lang-ts">TypeScript</span></div>
         <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="str">'@angular/platform-browser'</span>;
-<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing.module'</span>;
-<span class="kw">import</span> { AppComponent } <span class="kw">from</span> <span class="str">'./app.component'</span>;
+<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing-module'</span>;
+<span class="kw">import</span> { AppComponent } <span class="kw">from</span> <span class="str">'./app'</span>;
 <span class="kw">import</span> { HttpClientModule } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;  <span class="cm">// AGREGAR</span>
-<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products.component'</span>;
-<span class="kw">import</span> { ProductCardComponent } <span class="kw">from</span> <span class="str">'./product-card/product-card.component'</span>;
+<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products'</span>;
+<span class="kw">import</span> { ProductCardComponent } <span class="kw">from</span> <span class="str">'./product-card/product-card'</span>;
 
 <span class="dec">@NgModule</span>({
   <span class="prop">declarations</span>: [
@@ -344,7 +344,7 @@
 <span class="kw">export class</span> <span class="typ">AppModule</span> { }</pre>
       </div>
       <div class="callout callout-amber">
-        <strong>Un error comun es</strong> intentar usar <code>HttpClient</code> sin agregar <code>HttpClientModule</code> a <code>imports</code>. El error que aparece es <code>NullInjectorError: No provider for HttpClient</code>. La solucion es siempre revisar que <code>HttpClientModule</code> este en el array <code>imports</code> de <code>app.module.ts</code>.
+        <strong>Un error comun es</strong> intentar usar <code>HttpClient</code> sin agregar <code>HttpClientModule</code> a <code>imports</code>. El error que aparece es <code>NullInjectorError: No provider for HttpClient</code>. La solucion es siempre revisar que <code>HttpClientModule</code> este en el array <code>imports</code> de <code>app-module.ts</code>.
       </div>
     </div>
 
@@ -423,7 +423,7 @@ ng g s services/product
 <span class="cm">#   src/app/services/product.service.ts</span>
 <span class="cm">#   src/app/services/product.service.spec.ts  (tests - ignorar por ahora)</span>
 <span class="cm">#</span>
-<span class="cm"># Los servicios con providedIn: 'root' NO necesitan registrarse en app.module.ts</span>
+<span class="cm"># Los servicios con providedIn: 'root' NO necesitan registrarse en app-module.ts</span>
 <span class="cm"># Angular los registra automaticamente de forma global</span></pre>
       </div>
       <div class="callout callout-blue">
@@ -443,7 +443,7 @@ ng g s services/product
 <span class="kw">import</span> { Observable } <span class="kw">from</span> <span class="str">'rxjs'</span>;
 
 <span class="dec">@Injectable</span>({
-  <span class="prop">providedIn</span>: <span class="str">'root'</span>  <span class="cm">// disponible en toda la app sin registrar en app.module.ts</span>
+  <span class="prop">providedIn</span>: <span class="str">'root'</span>  <span class="cm">// disponible en toda la app sin registrar en app-module.ts</span>
 })
 <span class="kw">export class</span> <span class="typ">ProductService</span> {
 
@@ -475,18 +475,18 @@ ng g s services/product
     <div class="theory-block">
       <h4><i class="bi bi-wrench" style="color:var(--accent)"></i>
         <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 4</span>
-        products.component.ts actualizado
+        products.ts actualizado
       </h4>
       <p style="font-size:.9rem">Los cambios son minimos: se agrega la inyeccion del servicio en el constructor y se actualizan los metodos que hacian referencia al mock. El template HTML no requiere ninguna modificacion.</p>
       <div class="code-block">
-        <div class="code-header"><span>src/app/products/products.component.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <div class="code-header"><span>src/app/products/products.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
         <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { ProductService } <span class="kw">from</span> <span class="str">'../services/product.service'</span>;  <span class="cm">// NUEVO</span>
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-products'</span>,
-  <span class="prop">templateUrl</span>: <span class="str">'./products.component.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./products.component.css'</span>]
+  <span class="prop">templateUrl</span>: <span class="str">'./products.html'</span>,
+  <span class="prop">styleUrls</span>:   [<span class="str">'./products.css'</span>]
 })
 <span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
 
@@ -592,24 +592,24 @@ ng g s services/product
 ng g c product-detail
 
 <span class="cm"># El CLI crea:</span>
-<span class="cm">#   src/app/product-detail/product-detail.component.ts</span>
-<span class="cm">#   src/app/product-detail/product-detail.component.html</span>
-<span class="cm">#   src/app/product-detail/product-detail.component.css</span>
-<span class="cm"># Y lo registra automaticamente en app.module.ts</span></pre>
+<span class="cm">#   src/app/product-detail/product-detail.ts</span>
+<span class="cm">#   src/app/product-detail/product-detail.html</span>
+<span class="cm">#   src/app/product-detail/product-detail.css</span>
+<span class="cm"># Y lo registra automaticamente en app-module.ts</span></pre>
       </div>
     </div>
 
     <div class="theory-block">
       <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i>
         <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 6</span>
-        Agregar la ruta en app-routing.module.ts
+        Agregar la ruta en app-routing-module.ts
       </h4>
       <div class="code-block">
-        <div class="code-header"><span>src/app/app-routing.module.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <div class="code-header"><span>src/app/app-routing-module.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
         <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { RouterModule, Routes } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
-<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products.component'</span>;
-<span class="kw">import</span> { ProductDetailComponent } <span class="kw">from</span> <span class="str">'./product-detail/product-detail.component'</span>;  <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products'</span>;
+<span class="kw">import</span> { ProductDetailComponent } <span class="kw">from</span> <span class="str">'./product-detail/product-detail'</span>;  <span class="cm">// NUEVO</span>
 
 <span class="kw">const</span> routes: <span class="typ">Routes</span> = [
   { <span class="prop">path</span>: <span class="str">''</span>,            <span class="prop">redirectTo</span>: <span class="str">'/products'</span>, <span class="prop">pathMatch</span>: <span class="str">'full'</span> },
@@ -638,18 +638,18 @@ ng g c product-detail
     <div class="theory-block">
       <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
         <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 7</span>
-        product-detail.component.ts
+        product-detail.ts
       </h4>
       <div class="code-block">
-        <div class="code-header"><span>src/app/product-detail/product-detail.component.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+        <div class="code-header"><span>src/app/product-detail/product-detail.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
         <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { ActivatedRoute } <span class="kw">from</span> <span class="str">'@angular/router'</span>;          <span class="cm">// lee parametros de la URL</span>
 <span class="kw">import</span> { ProductService } <span class="kw">from</span> <span class="str">'../services/product.service'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-product-detail'</span>,
-  <span class="prop">templateUrl</span>: <span class="str">'./product-detail.component.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./product-detail.component.css'</span>]
+  <span class="prop">templateUrl</span>: <span class="str">'./product-detail.html'</span>,
+  <span class="prop">styleUrls</span>:   [<span class="str">'./product-detail.css'</span>]
 })
 <span class="kw">export class</span> <span class="typ">ProductDetailComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
 
@@ -691,10 +691,10 @@ ng g c product-detail
     <div class="theory-block">
       <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
         <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 8</span>
-        product-detail.component.html
+        product-detail.html
       </h4>
       <div class="code-block">
-        <div class="code-header"><span>src/app/product-detail/product-detail.component.html</span><span class="lang-badge lang-html">HTML</span></div>
+        <div class="code-header"><span>src/app/product-detail/product-detail.html</span><span class="lang-badge lang-html">HTML</span></div>
         <pre><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container mt-4"</span><span class="tag">&gt;</span>
 
   <span class="cm">&lt;!-- Estado de carga --&gt;</span>
@@ -739,7 +739,7 @@ ng g c product-detail
     <div class="theory-block">
       <h4><i class="bi bi-link-45deg" style="color:var(--accent)"></i>
         <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 9</span>
-        Actualizar products.component.html
+        Actualizar products.html
       </h4>
       <p style="font-size:.9rem">El boton de "Ver detalle" que abria un modal ahora navega a la ruta <code>/product/:id</code> usando <code>routerLink</code>. El resto del template no cambia:</p>
       <div class="compare-cols">
@@ -768,7 +768,7 @@ ng g c product-detail
 
       <p class="fw-semibold small mt-3 mb-1">El template completo actualizado:</p>
       <div class="code-block">
-        <div class="code-header"><span>src/app/products/products.component.html — version Clase 6</span><span class="lang-badge lang-html">HTML</span></div>
+        <div class="code-header"><span>src/app/products/products.html — version Clase 6</span><span class="lang-badge lang-html">HTML</span></div>
         <pre><span class="tag">&lt;h1</span> <span class="attr">class</span>=<span class="str">"text-center"</span><span class="tag">&gt;</span><span class="bind">{{titulo}}</span><span class="tag">&lt;/h1&gt;</span>
 
 <span class="tag">&lt;section</span> <span class="attr">class</span>=<span class="str">"container"</span><span class="tag">&gt;</span>
@@ -821,16 +821,16 @@ ng g c product-detail
       <h4><i class="bi bi-signpost" style="color:var(--accent)"></i> Resumen de la estructura de archivos al terminar la Clase 6</h4>
       <div class="file-tree">
         <div><span class="dir">src/app/</span></div>
-        <div>&nbsp;&nbsp;<span class="ts">app.module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> HttpClientModule agregado</span></div>
-        <div>&nbsp;&nbsp;<span class="ts">app-routing.module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ruta /product/:id agregada</span></div>
+        <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> HttpClientModule agregado</span></div>
+        <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ruta /product/:id agregada</span></div>
         <div>&nbsp;&nbsp;<span class="dir">products/</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">products.component.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> usa ProductService</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">products.component.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> routerLink en lugar de modal</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">products.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> usa ProductService</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">products.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> routerLink en lugar de modal</span></div>
         <div>&nbsp;&nbsp;<span class="dir">product-card/</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-card.component.ts</span>&nbsp;&nbsp;&nbsp;<span class="note"> igual que Clase 5</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-card.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> igual que Clase 5</span></div>
         <div>&nbsp;&nbsp;<span class="dir">product-detail/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-detail.component.ts</span>&nbsp;<span class="note"> lee :id con ActivatedRoute</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">product-detail.component.html</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-detail.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lee :id con ActivatedRoute</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">product-detail.html</span></div>
         <div>&nbsp;&nbsp;<span class="dir">services/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
         <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> getProducts(), getProductById()</span></div>
       </div>
@@ -897,14 +897,14 @@ ng g c product-detail
       <div class="error-box">
         <div class="file">Consola del navegador</div>
         NullInjectorError: R3InjectorError... No provider for HttpClient!
-        <div class="fix">Solucion: agregar <code>HttpClientModule</code> al array <code>imports</code> en <code>app.module.ts</code>, no a <code>declarations</code>. Verificar que el import este arriba: <code>import { HttpClientModule } from '@angular/common/http';</code></div>
+        <div class="fix">Solucion: agregar <code>HttpClientModule</code> al array <code>imports</code> en <code>app-module.ts</code>, no a <code>declarations</code>. Verificar que el import este arriba: <code>import { HttpClientModule } from '@angular/common/http';</code></div>
       </div>
 
       <p class="fw-semibold small mb-1 mt-3">2 La ruta /product/:id muestra pagina en blanco</p>
       <div class="error-box">
         <div class="file">Navegador</div>
         Se navega a /product/5 pero no aparece nada
-        <div class="fix">Un error comun es olvidar agregar el import de <code>ProductDetailComponent</code> en <code>app-routing.module.ts</code>. Verificar tambien que la ruta este declarada correctamente: <code>{ path: 'product/:id', component: ProductDetailComponent }</code>.</div>
+        <div class="fix">Un error comun es olvidar agregar el import de <code>ProductDetailComponent</code> en <code>app-routing-module.ts</code>. Verificar tambien que la ruta este declarada correctamente: <code>{ path: 'product/:id', component: ProductDetailComponent }</code>.</div>
       </div>
 
       <p class="fw-semibold small mb-1 mt-3">3 Cannot read properties of null (reading 'image') en el detalle</p>
@@ -947,7 +947,7 @@ ng g c product-detail
         <div class="theory-block h-100">
           <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
           <ul style="font-size:.9rem;line-height:2.2">
-            <li>Activar <code>HttpClientModule</code> en <code>app.module.ts</code></li>
+            <li>Activar <code>HttpClientModule</code> en <code>app-module.ts</code></li>
             <li>Observable vs Promise — <code>.subscribe()</code> en lugar de <code>.then()</code></li>
             <li>Generar y usar un <strong>servicio</strong> con <code>ng g s</code></li>
             <li>Centralizar llamadas HTTP en <code>ProductService</code></li>
@@ -1014,7 +1014,7 @@ ng g c product-detail
   <span class="kw">return</span> next.<span class="fn">handle</span>(req);
 }
 
-<span class="cm">// app-routing.module.ts — la ruta /users queda protegida</span>
+<span class="cm">// app-routing-module.ts — la ruta /users queda protegida</span>
 { <span class="prop">path</span>: <span class="str">'users'</span>, <span class="prop">component</span>: UsersComponent, <span class="prop">canActivate</span>: [<span class="typ">AuthGuard</span>] }</pre>
       </div>
     </div>
@@ -1026,7 +1026,7 @@ ng g c product-detail
           <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
             <li>El patron de inyeccion de servicios en el constructor</li>
             <li><code>.subscribe()</code> para manejar la respuesta</li>
-            <li>El <code>app-routing.module.ts</code> con las rutas existentes</li>
+            <li>El <code>app-routing-module.ts</code> con las rutas existentes</li>
             <li><code>HttpClientModule</code> ya activado</li>
           </ul>
         </div>
