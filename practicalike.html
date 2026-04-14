@@ -23,11 +23,7 @@
       <div class="p-title">${producto.title.substring(0, 45)}...</div>
       <div class="p-price">$${producto.price.toFixed(2)}</div>
       <div class="small text-muted"> ${renderStars(producto.rating.rate)} (${producto.rating.count})</div>
-      <button
-        class="btn-like ${esLiked ? "liked" : ""}"
-        data-id="${producto.id}">
-        ${esLiked ? "❤️" : "🤍"} Me gusta
-      </button>
+      
     </div>
   `;
     }

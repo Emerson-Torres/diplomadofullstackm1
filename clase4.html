@@ -1309,7 +1309,7 @@ tsc app.ts --target es2017
 <span class="kw">if</span> (el) {
   el.textContent = mensaje;
 }
-export {} // ← Línea vacía a propósito: evita que "mensaje" quede global y previene errores como "Cannot redeclare block-scoped variable 'mensaje'"</pre>
+export {} // ← previene errores como "Cannot redeclare block-scoped variable 'mensaje'"</pre>
           </div>
 
           <div class="compare-col" style="background:#ecfeff;border:1px solid #a5f3fc">
@@ -1325,8 +1325,8 @@ export {} // ← Línea vacía a propósito: evita que "mensaje" quede global y 
   <span class="kw">&lt;h1&gt;</span>Mi primer proyecto TypeScript<span class="kw">&lt;/h1&gt;</span>
   <span class="kw">&lt;p</span> <span class="prop">id</span>=<span class="str">"app"</span><span class="kw">&gt;</span>Cargando...<span class="kw">&lt;/p&gt;</span>
 
-  <span class="cm">&lt;!-- Importante: SIEMPRE el JS compilado, no el .ts --&gt;</span>
-  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+  <span class="cm">&lt;!-- Importante: como usamos export {}, el navegador debe cargarlo como módulo --&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">type</span>=<span class="str">"module"</span> <span class="prop">src</span>=<span class="str">"app.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
 <span class="kw">&lt;/body&gt;</span>
 <span class="kw">&lt;/html&gt;</span></pre>
           </div>
@@ -1334,7 +1334,8 @@ export {} // ← Línea vacía a propósito: evita que "mensaje" quede global y 
 
         <div class="callout callout-green mt-3">
           <strong>Cómo ejecutarlo:</strong> abre <code>index.html</code> en el navegador después de compilar. Si todo
-          está correcto, verás el mensaje en pantalla y también en consola: <code>Hola mundo desde TypeScript</code>.
+          está correcto, verás el mensaje en pantalla y también en consola: <code>Hola mundo desde TypeScript</code>.<br>
+          <strong>Ojo:</strong> en el HTML debes enlazar el archivo así: <code>&lt;script type="module" src="app.js"&gt;&lt;/script&gt;</code>.
         </div>
 
         <div class="callout callout-cyan mt-3">
@@ -1345,7 +1346,12 @@ export {} // ← Línea vacía a propósito: evita que "mensaje" quede global y 
           <strong>¿Qué problema evita?</strong> Errores muy comunes como:
           <code>Cannot redeclare block-scoped variable 'mensaje'</code>.<br>
           Eso pasa cuando TypeScript interpreta varios archivos como scripts globales y mezcla sus variables. Con
-          <code>export {}</code>, cada archivo queda aislado y ese choque de nombres desaparece.
+          <code>export {}</code>, cada archivo queda aislado y ese choque de nombres desaparece.<br><br>
+          <strong>Pero hay una consecuencia importante:</strong> si el archivo compilado contiene <code>export {}</code>,
+          entonces el navegador debe cargar <code>app.js</code> como <strong>módulo</strong>. Si lo cargas como script
+          normal, verás este error:<br>
+          <code>Uncaught SyntaxError: Unexpected token 'export'</code>.<br>
+          <strong>Solución:</strong> en el HTML usa <code>&lt;script type="module" src="app.js"&gt;&lt;/script&gt;</code>.
         </div>
 
       </div>
@@ -1357,6 +1363,91 @@ export {} // ← Línea vacía a propósito: evita que "mensaje" quede global y 
     <section id="tipos-basicos" class="content-section">
       <h2 class="fw-bold mb-1">Tipos básicos</h2>
       <p class="text-muted mb-4">La sintaxis central: <code>variable: tipo</code>. Nada más.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-table" style="color:var(--accent)"></i> Tabla rápida de tipos de datos</h4>
+        <p>Según la documentación oficial de TypeScript, estos son los tipos cotidianos que más usarás:</p>
+
+        <table class="os-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>¿Para qué sirve?</th>
+              <th>Ejemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>string</strong></td>
+              <td>Texto</td>
+              <td><code>let nombre: string = "Ana"</code></td>
+            </tr>
+            <tr>
+              <td><strong>number</strong></td>
+              <td>Cualquier número normal: entero o decimal</td>
+              <td><code>let precio: number = 19.99</code></td>
+            </tr>
+            <tr>
+              <td><strong>boolean</strong></td>
+              <td>Verdadero o falso</td>
+              <td><code>let activo: boolean = true</code></td>
+            </tr>
+            <tr>
+              <td><strong>string[]</strong></td>
+              <td>Arreglo de textos</td>
+              <td><code>let tags: string[] = ["ts", "js"]</code></td>
+            </tr>
+            <tr>
+              <td><strong>number[]</strong></td>
+              <td>Arreglo de números</td>
+              <td><code>let notas: number[] = [4.5, 5.0]</code></td>
+            </tr>
+            <tr>
+              <td><strong>string | number</strong></td>
+              <td>Unión: puede ser uno u otro</td>
+              <td><code>let id: string | number = 10</code></td>
+            </tr>
+            <tr>
+              <td><strong>null / undefined</strong></td>
+              <td>Ausencia de valor</td>
+              <td><code>let respuesta: string | null = null</code></td>
+            </tr>
+            <tr>
+              <td><strong>any</strong></td>
+              <td>Desactiva el chequeo de tipos</td>
+              <td><code>let dato: any = "hola"</code></td>
+            </tr>
+            <tr>
+              <td><strong>bigint</strong></td>
+              <td>Enteros muy grandes</td>
+              <td><code>let grande: bigint = 100n</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-amber mt-3">
+          <strong>Pregunta frecuente: ¿y decimal, float, double o int?</strong><br>
+          En TypeScript <strong>no existen como tipos separados</strong>. Igual que en JavaScript, todos los números
+          normales usan <code>number</code>.<br>
+          Eso incluye enteros como <code>10</code>, decimales como <code>19.99</code>, y valores que en otros lenguajes
+          llamarías <em>float</em> o <em>double</em>.<br>
+          <strong>Regla práctica:</strong> si es un número común, usa <code>number</code>; si es un entero gigantesco,
+          usa <code>bigint</code>.
+        </div>
+
+        <div class="callout callout-cyan mt-3">
+          <strong>Importante:</strong> escribe siempre <code>string</code>, <code>number</code> y <code>boolean</code>
+          en minúscula. Es la forma recomendada por la documentación oficial.
+        </div>
+
+        <div class="callout callout-blue mt-3">
+          <strong>Referencia oficial:</strong> esta información fue tomada y resumida de la documentación oficial de
+          TypeScript, en la sección <em>Everyday Types</em>.<br>
+          <a href="https://www.typescriptlang.org/docs/handbook/2/everyday-types.html" target="_blank" rel="noopener noreferrer">
+            https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
+          </a>
+        </div>
+      </div>
 
       <div class="theory-block">
         <h4><i class="bi bi-tag" style="color:var(--accent)"></i> Anotar variables</h4>
@@ -1662,6 +1753,8 @@ productos.<span class="fn">push</span>(producto);          <span class="cm">// �
 <span class="fn">formatPrecio</span>(<span class="num">29.99</span>, <span class="str">"€"</span>);  <span class="cm">// → "€29.99"</span>
 
 <span class="cm">// ── Arrow function tipada ─────────────────────────────────────</span>
+<span class="cm">// Esta función RECIBE un arreglo de productos y una categoría</span>
+<span class="cm">// y RETORNA un NUEVO arreglo solo con los productos que pertenecen a esa categoría.</span>
 <span class="kw">const</span> <span class="fn">filtrarPorCategoria</span> = (
   productos: <span class="typ">Product</span>[],
   categoria: <span class="typ">string</span>
@@ -1669,13 +1762,33 @@ productos.<span class="fn">push</span>(producto);          <span class="cm">// �
   <span class="kw">return</span> productos.<span class="fn">filter</span>(p => p.category === categoria);
 };
 
+<span class="cm">// Ejemplos:</span>
+filtrarPorCategoria(productos, <span class="str">"electronics"</span>);
+<span class="cm">// → retorna solo los productos de electrónica</span>
+filtrarPorCategoria(productos, <span class="str">"jewelery"</span>);
+<span class="cm">// → retorna solo los productos de joyería</span>
+
 <span class="cm">// ── Función que recibe callback ───────────────────────────────</span>
+<span class="cm">// Un callback es simplemente una función que se le pasa a otra función</span>
+<span class="cm">// para que la ejecute después, normalmente una vez por cada elemento.</span>
 <span class="kw">function</span> <span class="fn">procesarProductos</span>(
   productos: <span class="typ">Product</span>[],
   callback: (p: <span class="typ">Product</span>) => <span class="typ">void</span>
 ): <span class="typ">void</span> {
   productos.<span class="fn">forEach</span>(callback);
-}</pre>
+}
+
+<span class="cm">// Ejemplo 1: mostrar el título de cada producto</span>
+<span class="fn">procesarProductos</span>(productos, p => {
+  <span class="fn">console</span>.<span class="fn">log</span>(p.title);
+});
+<span class="cm">// → imprime uno por uno los títulos</span>
+
+<span class="cm">// Ejemplo 2: mostrar el precio de cada producto</span>
+<span class="fn">procesarProductos</span>(productos, p => {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"$"</span> + p.price);
+});
+<span class="cm">// → imprime uno por uno los precios</span></pre>
         </div>
       </div>
 
@@ -1689,11 +1802,10 @@ productos.<span class="fn">push</span>(producto);          <span class="cm">// �
 <span class="cm">// Crear HTML de una tarjeta</span>
 <span class="kw">function</span> <span class="fn">crearTarjeta</span>(producto: <span class="typ">Product</span>): <span class="typ">string</span> {
   <span class="kw">return</span> <span class="str">`
-    &lt;div class="card"&gt;
-      &lt;img src="</span>${producto.image}<span class="str"}" alt="</span>${producto.title}<span class="str"}"&gt;
-      &lt;h3&gt;</span>${producto.title.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">30</span>)}<span class="str">...&lt;/h3&gt;
-      &lt;p&gt;$</span>${producto.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
-      &lt;small&gt;</span>${producto.category}<span class="str">&lt;/small&gt;
+    &lt;div class="product-card" data-id="</span>${producto.id}<span class="str">"&gt;
+      &lt;img src="</span>${producto.image}<span class="str">" alt="</span>${producto.title}<span class="str">" loading="lazy"&gt;
+      &lt;div class="p-title"&gt;</span>${producto.title.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">45</span>)}<span class="str">...&lt;/div&gt;
+      &lt;div class="p-price"&gt;$</span>${producto.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/div&gt;
     &lt;/div&gt;
   `</span>;
 }
@@ -1827,12 +1939,13 @@ productos.<span class="fn">push</span>(producto);          <span class="cm">// �
 
 <span class="cm">// 3. Función que renderiza una tarjeta</span>
 <span class="kw">function</span> <span class="fn">crearTarjeta</span>(p: <span class="typ">Product</span>): <span class="typ">string</span> {
-  <span class="kw">return</span> <span class="str">`&lt;div class="card"&gt;
-    &lt;img src="</span>${p.image}<span class="str"}" loading="lazy"&gt;
-    &lt;h3&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>,<span class="num">30</span>)}<span class="str">...&lt;/h3&gt;
-    &lt;p&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/p&gt;
-    &lt;span&gt;</span>${p.category}<span class="str">&lt;/span&gt;
-  &lt;/div&gt;`</span>;
+  <span class="kw">return</span> <span class="str">`
+    &lt;div class="product-card" data-id="</span>${p.id}<span class="str">"&gt;
+      &lt;img src="</span>${p.image}<span class="str">" alt="</span>${p.title}<span class="str">" loading="lazy"&gt;
+      &lt;div class="p-title"&gt;</span>${p.title.<span class="fn">substring</span>(<span class="num">0</span>, <span class="num">45</span>)}<span class="str">...&lt;/div&gt;
+      &lt;div class="p-price"&gt;$</span>${p.price.<span class="fn">toFixed</span>(<span class="num">2</span>)}<span class="str">&lt;/div&gt;
+    &lt;/div&gt;
+  `</span>;
 }
 
 <span class="cm">// 4. Función principal: orquesta todo</span>
@@ -2145,6 +2258,7 @@ $(<span class="kw">function</span>(): <span class="typ">void</span> { <span clas
         <h4><i class="bi bi-folder2-open" style="color:var(--accent)"></i> Estructura de archivos</h4>
         <div class="file-tree">
           <div><span class="dir">mi-tienda-ts/</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">models.ts</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="note">← archivo nuevo: tipos e interfaces compartidas</span></div>
           <div>&nbsp;&nbsp;<span class="ts">products.ts</span> &nbsp;&nbsp;<span class="note">← Paso 1: aquí escribes
               TypeScript</span></div>
           <div>&nbsp;&nbsp;<span class="file">products.js</span> &nbsp;&nbsp;<span class="note">← Paso 2: se genera al
@@ -2159,15 +2273,46 @@ $(<span class="kw">function</span>(): <span class="typ">void</span> { <span clas
         </div>
       </div>
 
+      <div class="theory-block">
+        <h4><i class="bi bi-filetype-tsx" style="color:var(--accent)"></i>
+          Crear <code>models.ts</code>
+        </h4>
+        <p style="font-size:.9rem;color:#374151">Primero crea este archivo en el <strong>mismo directorio</strong> de
+          <code>products.ts</code> e <code>index.html</code>. Aquí vivirán los tipos compartidos del proyecto:</p>
+
+        <div class="code-block">
+          <div class="code-header"><span>models.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// Rating anidado dentro de Product</span>
+<span class="kw">export interface</span> <span class="typ">Rating</span> {
+  rate:  <span class="typ">number</span>;
+  count: <span class="typ">number</span>;
+}
+
+<span class="cm">// Producto de FakeStore API</span>
+<span class="kw">export interface</span> <span class="typ">Product</span> {
+  id:          <span class="typ">number</span>;
+  title:       <span class="typ">string</span>;
+  price:       <span class="typ">number</span>;
+  category:    <span class="typ">string</span>;
+  description?: <span class="typ">string</span>;
+  image:       <span class="typ">string</span>;
+  rating:      <span class="typ">Rating</span>;
+}
+
+<span class="cm">// Para usar en otro archivo:</span>
+<span class="cm">// import { Product, CartItem } from './models';</span></pre>
+        </div>
+      </div>
+
       <!-- ── PASO 1: products.ts ── -->
       <div class="theory-block">
         <h4><i class="bi bi-filetype-tsx" style="color:var(--accent)"></i>
           <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
           Crear <code>products.ts</code>
         </h4>
-        <p style="font-size:.9rem;color:#374151">Este archivo contiene <strong>todas las interfaces y toda la
-            lógica</strong>. Nota cómo cada función tiene sus tipos declarados — eso es lo único nuevo respecto a las
-          clases anteriores:</p>
+        <p style="font-size:.9rem;color:#374151">Este archivo contiene la <strong>lógica principal</strong> y usa
+          los tipos importados desde <code>models.ts</code>. Nota cómo cada función tiene sus tipos declarados — eso es
+          lo único nuevo respecto a las clases anteriores:</p>
 
         <div class="code-block">
           <div class="code-header"><span>products.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
@@ -2176,21 +2321,8 @@ $(<span class="kw">function</span>(): <span class="typ">void</span> { <span clas
 //  Interfaces + fetch tipado + localStorage tipado
 // ═══════════════════════════════════════════════════════════════</span>
 
-<span class="cm">// ── 1. INTERFACES ─────────────────────────────────────────────</span>
-<span class="kw">interface</span> <span class="typ">Rating</span> {
-  rate:  <span class="typ">number</span>;
-  count: <span class="typ">number</span>;
-}
-
-<span class="kw">interface</span> <span class="typ">Product</span> {
-  id:          <span class="typ">number</span>;
-  title:       <span class="typ">string</span>;
-  price:       <span class="typ">number</span>;
-  category:    <span class="typ">string</span>;
-  description: <span class="typ">string</span>;
-  image:       <span class="typ">string</span>;
-  rating:      <span class="typ">Rating</span>;
-}
+<span class="cm">// ── 1. IMPORTAR EL MODELO COMPARTIDO ──────────────────────────</span>
+<span class="kw">import</span> { <span class="typ">Product</span> } <span class="kw">from</span> <span class="str">"./models"</span>;
 
 <span class="cm">// ── 2. FAVORITOS — localStorage tipado ────────────────────────</span>
 <span class="kw">const</span> STORAGE_KEY = <span class="str">"favoritos"</span>;
@@ -2215,6 +2347,9 @@ $(<span class="kw">function</span>(): <span class="typ">void</span> { <span clas
   <span class="fn">actualizarContador</span>();
   <span class="fn">actualizarBoton</span>(id, favs.<span class="fn">includes</span>(id));
 }
+
+<span class="cm">// Como el archivo se carga como módulo, exponemos la función al HTML</span>
+(window <span class="kw">as</span> <span class="typ">any</span>).toggleFavorito = toggleFavorito;
 
 <span class="kw">function</span> <span class="fn">esFavorito</span>(id: <span class="typ">number</span>): <span class="typ">boolean</span> {
   <span class="kw">return</span> <span class="fn">getFavoritos</span>().<span class="fn">includes</span>(id);
@@ -2403,18 +2538,19 @@ $(<span class="kw">function</span>(): <span class="typ">void</span> { <span clas
   <span class="cm">&lt;!-- La galería la llena TypeScript: iniciar() → crearTarjeta() --&gt;</span>
   <span class="kw">&lt;div</span> <span class="prop">id</span>=<span class="str">"galeria"</span><span class="kw">&gt;&lt;/div&gt;</span>
 
-  <span class="cm">&lt;!-- ⚠ Siempre products.js (el compilado), NUNCA products.ts --&gt;</span>
-  <span class="kw">&lt;script</span> <span class="prop">src</span>=<span class="str">"products.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
+  <span class="cm">&lt;!-- ⚠ Cargar el JS compilado como módulo --&gt;</span>
+  <span class="kw">&lt;script</span> <span class="prop">type</span>=<span class="str">"module"</span> <span class="prop">src</span>=<span class="str">"products.js"</span><span class="kw">&gt;&lt;/script&gt;</span>
 
 <span class="kw">&lt;/body&gt;</span>
 <span class="kw">&lt;/html&gt;</span></pre>
         </div>
 
         <div class="callout callout-amber">
-          <strong>¿Por qué <code>toggleFavorito()</code> funciona desde el HTML?</strong> Porque las funciones
-          declaradas con <code>function</code> en el <code>.ts</code> quedan en el scope global del <code>.js</code>
-          compilado. Por eso el botón del HTML puede llamarla con <code>onclick="toggleFavorito(1)"</code>. En Angular
-          esto cambia — los eventos se declaran diferente — pero eso lo verás en Clase 5.
+          <strong>Ojo con los módulos:</strong> como ahora el archivo se carga con <code>type="module"</code>, sus
+          funciones ya no quedan globales automáticamente. Por eso, si quieres seguir usando
+          <code>onclick="toggleFavorito(1)"</code> desde el HTML, debes exponerla manualmente con
+          <code>(window as any).toggleFavorito = toggleFavorito;</code>. Así el ejemplo sigue funcionando y el
+          estudiante entiende por qué.
         </div>
       </div>
 
