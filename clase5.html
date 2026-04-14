@@ -837,6 +837,8 @@
         Angular?</a>
       <a href="#" onclick="window.showSection('instalacion',this)"> <i class="bi bi-download"></i> Instalacion y
         Setup</a>
+      <a href="#" onclick="window.showSection('depuracion-vscode',this)"> <i class="bi bi-bug"></i> Depuracion
+        profesional</a>
       <a href="#" onclick="window.showSection('primer-proyecto',this)"> <i class="bi bi-rocket-takeoff"></i> Primer
         proyecto</a>
       <a href="#" onclick="window.showSection('estructura',this)"> <i class="bi bi-folder-tree"></i> Estructura del
@@ -1177,40 +1179,7 @@ document.<span class="fn">getElementById</span>(<span class="str">"contador"</sp
           verifica de nuevo <code>node -v</code> y <code>npm -v</code> para confirmar que sigues en versiones
           compatibles.
         </div>
-        <p style="font-size:.9rem">Descarga la version <strong>LTS</strong> (Long Term Support) de <a
-            href="https://nodejs.org" target="_blank">nodejs.org</a> - es la que aparece en el boton verde grande.</p>
-        <table class="os-table">
-          <thead>
-            <tr>
-              <th>Sistema</th>
-              <th>Accion</th>
-              <th>Verificar instalacion</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Windows</strong></td>
-              <td>Descargar <code>.msi</code> ejecutar Next, Next, Finish</td>
-              <td><code>node -v</code> y <code>npm -v</code> en CMD o PowerShell</td>
-            </tr>
-            <tr>
-              <td><strong>Mac</strong></td>
-              <td>Descargar <code>.pkg</code> ejecutar continuar</td>
-              <td><code>node -v</code> y <code>npm -v</code> en Terminal</td>
-            </tr>
-            <tr>
-              <td><strong>Linux</strong></td>
-              <td><code>sudo apt install nodejs npm</code> o <code>sudo dnf install nodejs</code></td>
-              <td><code>node -v</code> y <code>npm -v</code> en terminal</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="code-block mt-2">
-          <div class="code-header"><span>terminal - verificar que Node.js esta instalado</span><span
-              class="lang-badge lang-bash">bash</span></div>
-          <pre>node -v    <span class="cm"># debe mostrar v22.x.x</span>
-npm  -v    <span class="cm"># debe mostrar 10.x.x o superior</span></pre>
-        </div>
+      
 
         <div class="theory-block mt-3"
           style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.25rem">
@@ -1410,6 +1379,186 @@ ng serve --open  <span class="cm"># --open abre el navegador automaticamente</sp
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- DEPURACION PROFESIONAL -->
+    <section id="depuracion-vscode" class="content-section">
+      <h2 class="fw-bold mb-1">Depuracion profesional con VS Code</h2>
+      <p class="text-muted mb-4">Dos maneras de ejecutar Angular: la rapida en terminal y la profesional con Run and Debug.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-play-circle" style="color:var(--accent)"></i> Dos formas de ejecutar Angular</h4>
+        <p>Cuando trabajas con Angular puedes levantar tu proyecto de dos maneras. Ambas sirven, pero no ofrecen la
+          misma experiencia cuando necesitas depurar errores reales.</p>
+
+        <table class="os-table">
+          <thead>
+            <tr>
+              <th>Forma</th>
+              <th>Como se usa</th>
+              <th>Resultado en clase o trabajo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#fef2f2">
+              <td><strong>❌ Manual por terminal</strong></td>
+              <td><code>ng serve</code> en la consola</td>
+              <td>Levanta el proyecto, pero la depuracion queda separada del editor.</td>
+            </tr>
+            <tr style="background:#f0fdf4">
+              <td><strong>✅ Profesional con VS Code</strong></td>
+              <td>Run and Debug con <code>Ctrl + Shift + D</code></td>
+              <td>Arranca Angular y conecta el navegador al depurador del editor.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="os-table mt-3">
+          <thead>
+            <tr>
+              <th>Comparacion</th>
+              <th style="color:#991b1b">❌ Terminal manual</th>
+              <th style="color:#065f46">✅ Run and Debug</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Breakpoints</strong></td>
+              <td>No quedan conectados al flujo de debug de VS Code.</td>
+              <td>Puedes poner breakpoints directamente en archivos <code>.ts</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Inspeccion</strong></td>
+              <td>Debes usar <code>console.log()</code> o DevTools manualmente.</td>
+              <td>Inspeccionas variables, call stack y watchers en tiempo real.</td>
+            </tr>
+            <tr>
+              <td><strong>Servidor</strong></td>
+              <td>Queda corriendo aparte y a veces olvidas detenerlo.</td>
+              <td>Se integra con la sesion de debug y se controla mejor.</td>
+            </tr>
+            <tr>
+              <td><strong>Errores comunes</strong></td>
+              <td>Terminal desconectada, puertos ocupados, navegador sin attach.</td>
+              <td>Configuracion persistente y repetible para toda la clase o equipo.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-green mt-3">
+          <strong>Recomendacion profesional:</strong> usa <strong>Run and Debug</strong> como flujo principal. La
+          terminal manual sirve para salir del paso; la depuracion integrada sirve para entender y resolver bugs.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-filetype-json" style="color:var(--accent)"></i> Configuracion de <code>launch.json</code></h4>
+        <p>Dentro de la carpeta <code>.vscode</code>, este archivo le dice a VS Code como iniciar Angular en modo de
+          depuracion:</p>
+
+        <div class="code-block">
+          <div class="code-header"><span>.vscode/launch.json</span><span class="lang-badge lang-json">json</span></div>
+          <pre>{
+  <span class="prop">"version"</span>: <span class="str">"0.2.0"</span>,
+  <span class="prop">"configurations"</span>: [
+    {
+      <span class="prop">"name"</span>: <span class="str">"Angular: Debug en Chrome"</span>,
+      <span class="prop">"type"</span>: <span class="str">"chrome"</span>,
+      <span class="prop">"request"</span>: <span class="str">"launch"</span>,
+      <span class="prop">"preLaunchTask"</span>: <span class="str">"npm: start"</span>,
+      <span class="prop">"url"</span>: <span class="str">"http://localhost:4200/"</span>,
+      <span class="prop">"webRoot"</span>: <span class="str">"${workspaceFolder}"</span>,
+      <span class="prop">"sourceMaps"</span>: <span class="bool">true</span>
+    }
+  ]
+}</pre>
+        </div>
+
+        <table class="os-table">
+          <thead>
+            <tr>
+              <th>Atributo</th>
+              <th>Que significa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>type</code></td>
+              <td>Tipo de depurador que se usara: <code>chrome</code>, <code>edge</code> o <code>firefox</code>.</td>
+            </tr>
+            <tr>
+              <td><code>request</code></td>
+              <td><code>launch</code> inicia un navegador nuevo; <code>attach</code> se conecta a uno ya abierto.</td>
+            </tr>
+            <tr>
+              <td><code>preLaunchTask</code></td>
+              <td>Ejecuta <code>npm start</code> antes de comenzar la depuracion.</td>
+            </tr>
+            <tr>
+              <td><code>url</code></td>
+              <td>Direccion donde corre tu proyecto Angular.</td>
+            </tr>
+            <tr>
+              <td><code>webRoot</code></td>
+              <td>Raiz del proyecto para que los source maps relacionen navegador y codigo fuente.</td>
+            </tr>
+            <tr>
+              <td><code>sourceMaps</code></td>
+              <td>Permite depurar los archivos <code>.ts</code> originales en vez del JavaScript compilado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-link-45deg" style="color:var(--accent)"></i> Documentacion oficial</h4>
+        <p>VS Code documenta muchas mas opciones de configuracion para depuracion, perfiles, variables de entorno y
+          escenarios avanzados.</p>
+        <div class="callout callout-blue">
+          <strong>Referencia recomendada:</strong>
+          <a href="https://code.visualstudio.com/docs/debugtest/debugging-configuration" target="_blank"
+            rel="noopener noreferrer">Debugging configuration en la documentacion oficial de VS Code</a>.
+          Ahi puedes encontrar mas atributos y configuraciones avanzadas para distintos navegadores y runtimes.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-lightning-charge" style="color:var(--accent)"></i> Error comun de PowerShell con Angular CLI</h4>
+
+        <div class="callout callout-amber">
+          <strong>Error comun:</strong><br>
+          <code>ng : No se puede cargar el archivo ... porque la ejecucion de scripts esta deshabilitada en este sistema.</code><br><br>
+          <strong>Por que ocurre:</strong> PowerShell tiene politicas de restriccion para ejecutar scripts. El CMD no
+          tiene esta restriccion por defecto.
+        </div>
+
+        <p class="fw-semibold mb-2">Soluciones:</p>
+
+        <div class="code-block">
+          <div class="code-header"><span>Opcion 1 - temporal por sesion</span><span class="lang-badge lang-bash">powershell</span></div>
+          <pre>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force</pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span>Opcion 2 - permanente recomendada</span><span class="lang-badge lang-bash">powershell</span></div>
+          <pre>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</pre>
+        </div>
+
+        <div class="callout callout-cyan">
+          <strong>Opcion 3:</strong> si no quieres cambiar la politica de PowerShell, usa <strong>CMD</strong> en lugar
+          de PowerShell para ejecutar <code>ng</code> y <code>npm</code>.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-bug" style="color:var(--accent)"></i> Por que Run and Debug es mejor que la terminal manual</h4>
+        <ul class="checklist">
+          <li class="done">El breakpoint se mantiene aunque recargues la pagina.</li>
+          <li class="done">Puedes inspeccionar variables en tiempo real sin llenar el codigo de <code>console.log()</code>.</li>
+          <li class="done">El servidor se detiene automaticamente al terminar la sesion de depuracion.</li>
+          <li class="done">La configuracion se comparte con el equipo mediante <code>.vscode/launch.json</code>.</li>
+        </ul>
       </div>
     </section>
 
