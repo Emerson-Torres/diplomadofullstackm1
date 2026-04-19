@@ -2324,65 +2324,138 @@ ng g c products
       </div>
 
       <div class="theory-block">
-        <h4><i class="bi bi-exclamation-triangle" style="color:var(--accent)"></i> Que esta mal en este intento de mejora</h4>
-        <p>Esta idea parece natural al principio, pero mezcla responsabilidades y puede confundir mucho al alumno:</p>
+        <h4><i class="bi bi-box-arrow-in-down" style="color:var(--accent)"></i> Input() - bajar datos del padre al hijo (sin eventos todavia)</h4>
+        <p>Primero aprende una sola direccion: el padre envia datos y el hijo los recibe. Aqui todavia no hay
+          eventos de vuelta.</p>
+
+        <p class="fw-semibold mt-2 mb-1" style="font-size:.88rem">Paso 1 (archivo nuevo) <code>product-card.ts</code> recibe el producto</p>
         <div class="code-block">
-          <div class="code-header"><span>products.html - intento que parece correcto pero no lo es</span><span
+          <div class="code-header"><span>src/app/product-card/product-card.ts</span><span
+              class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, Input } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+
+<span class="dec">@Component</span>({
+  <span class="prop">selector</span>: <span class="str">'app-product-card'</span>,
+  <span class="prop">standalone</span>: <span class="bool">false</span>,
+  <span class="prop">templateUrl</span>: <span class="str">'./product-card.html'</span>,
+  <span class="prop">styleUrl</span>: <span class="str">'./product-card.css'</span>,
+})
+<span class="kw">export class</span> <span class="typ">ProductCard</span> {
+  <span class="dec">@Input</span>() product: <span class="typ">any</span> = <span class="kw">null</span>;
+}</pre>
+        </div>
+
+        <p class="fw-semibold mt-3 mb-1" style="font-size:.88rem">Paso 2 (archivo nuevo) <code>product-card.html</code> muestra los datos</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-card/product-card.html</span><span
               class="lang-badge lang-html">HTML</span></div>
-          <pre><span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
+          <pre><span class="tag">&lt;td&gt;</span><span class="bind">{{product?.id}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.title}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span>$<span class="bind">{{product?.price}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.category}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;&lt;img</span> <span class="attr">height</span>=<span class="str">"80px"</span> <span class="bind">[src]</span>=<span class="str">"product?.image"</span><span class="tag">/&gt;&lt;/td&gt;</span></pre>
+        </div>
+
+        <p class="fw-semibold mt-3 mb-1" style="font-size:.88rem">Paso 3 (archivo existente) <code>products.html</code> usa el componente hijo dentro del <code>*ngFor</code></p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/products/products.html</span><span
+              class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;tbody&gt;</span>
+  <span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;app-product-card</span> <span class="bind">[product]</span>=<span class="str">"product"</span><span class="tag">&gt;&lt;/app-product-card&gt;</span>
+  <span class="tag">&lt;/tr&gt;</span>
+<span class="tag">&lt;/tbody&gt;</span></pre>
+        </div>
+
+        <div class="callout callout-amber">
+          <strong>Que se crea y que se modifica en este paso:</strong><br>
+          <code>ng generate component product-card</code> crea los archivos nuevos
+          <code>product-card.ts</code>, <code>product-card.html</code> y <code>product-card.css</code>.<br>
+          Luego tu editas el archivo existente <code>products.html</code> para usar
+          <code>&lt;app-product-card [product]="product"&gt;&lt;/app-product-card&gt;</code> dentro del <code>*ngFor</code>.
+        </div>
+
+        <div class="callout callout-red mt-3">
+          <strong>Por que la tabla puede verse rara en este punto:</strong><br>
+          En HTML puro, un <code>&lt;tr&gt;</code> solo deberia contener <code>&lt;td&gt;</code> o <code>&lt;th&gt;</code>.
+          Aqui metimos <code>&lt;app-product-card&gt;</code> dentro del <code>&lt;tr&gt;</code>, y ese elemento no es una celda valida.
+          El navegador intenta "arreglar" el DOM automaticamente, por eso a veces ves una estructura como
+          <code>&lt;tr&gt;&lt;app-product-card&gt;&lt;td&gt;...&lt;/td&gt;&lt;/app-product-card&gt;&lt;/tr&gt;</code>
+          y el render puede verse inconsistente.
+        </div>
+
+        <div class="callout callout-cyan mt-3">
+          <strong>Esto es intencional en la secuencia didactica:</strong>
+          primero entiendes <code>@Input()</code> aislado (padre -&gt; hijo).
+          En el siguiente bloque resolvemos el problema estructural de la tabla cambiando a
+          <code>selector: 'tr[app-product-card]'</code>, para que el componente se monte sobre el
+          <code>&lt;tr&gt;</code> nativo y las celdas <code>&lt;td&gt;</code> queden en un HTML valido.
+        </div>
+
+        <div class="callout callout-green">
+          <strong>@Input() es la unica herramienta necesaria para bajar datos del padre al hijo.</strong>
+          El padre pasa <code>[product]="product"</code>, el hijo lo recibe con <code>@Input() product</code>.
+        </div>
+
+        <div class="callout callout-cyan mt-3">
+          <strong>El operador <code>?.</code> en <code>product?.title</code></strong> evita errores mientras Angular enlaza el dato.
+          Si <code>product</code> aun es <code>null</code>, el template no explota.
+        </div>
+
+        <div class="callout callout-blue mt-3">
+          <strong>Nota Angular 20:</strong> La documentacion oficial muestra una API nueva basada en senales:
+          <code>value = input(0)</code> en lugar de <code>@Input()</code>. En este modulo usamos <code>@Input()</code>
+          porque el proyecto usa modulos tradicionales (<code>standalone: false</code>). Ambas formas son validas;
+          <code>@Input()</code> sigue siendo compatible con Angular 20.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-exclamation-triangle" style="color:var(--accent)"></i> Y si el hijo necesita avisarle algo al padre?</h4>
+
+        <p class="fw-semibold mb-2" style="font-size:.88rem">El intento que parece logico pero no lo es</p>
+        <div class="p-3 rounded-3" style="background:#fef2f2;border:1px solid #fecaca">
+          <div class="code-block" style="margin:0">
+            <div class="code-header"><span>products.html - intento incorrecto</span><span
+                class="lang-badge lang-html">HTML</span></div>
+            <pre><span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;app-product-card</span>
     <span class="bind">[product]</span>=<span class="str">"product"</span>
     <span class="bind">(click)</span>=<span class="str">"detallePro(product.id)"</span>
   <span class="tag">&gt;&lt;/app-product-card&gt;</span>
 <span class="tag">&lt;/tr&gt;</span></pre>
+          </div>
         </div>
 
-        <table class="os-table">
+        <table class="os-table mt-3">
           <thead>
             <tr>
               <th>Problema</th>
-              <th>Por que confunde</th>
+              <th>Por que esta mal</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><code>(click)</code> en <code>&lt;app-product-card&gt;</code></td>
-              <td>No es un evento propio del componente hijo. Es solo un click DOM que se propaga desde algun elemento interno. Eso no define una API clara entre padre e hijo.</td>
+              <td><code>(click)</code> colgado en <code>&lt;app-product-card&gt;</code></td>
+              <td>No es un evento propio del componente hijo. Es un click DOM nativo que se dispara desde cualquier elemento interno, incluyendo la imagen o el precio. No defines una API clara; cualquier clic en cualquier parte del hijo dispara <code>detallePro()</code>.</td>
             </tr>
             <tr>
-              <td><code>Input</code> y <code>click</code> mezclados</td>
-              <td><code>Input()</code> sirve para enviar datos <strong>del padre al hijo</strong>. Si el hijo quiere avisar algo al padre, la herramienta correcta es <code>Output()</code>.</td>
+              <td>El padre controla que evento se emite</td>
+              <td>El padre no deberia saber que interaccion interna tiene el hijo. Si el hijo cambia su boton por un doble clic o un hover, el padre se rompe.</td>
             </tr>
             <tr>
-              <td><code>&lt;app-product-card&gt;</code> dentro de <code>&lt;tr&gt;</code></td>
-              <td>Una fila de tabla debe mantener estructura HTML valida. Angular permite selectores por atributo, y en este caso conviene montar el componente sobre el <code>&lt;tr&gt;</code> nativo.</td>
+              <td><code>Input()</code> y el evento mezclados sin contrato</td>
+              <td><code>Input()</code> comunica datos del padre al hijo. Para la direccion contraria (hijo -&gt; padre), Angular tiene <code>Output()</code>. Mezclar <code>(click)</code> nativo con <code>Input()</code> sin <code>Output()</code> es ignorar la herramienta correcta.</td>
             </tr>
           </tbody>
         </table>
 
-        <div class="callout callout-blue">
-          <strong>Documentacion oficial:</strong> Angular documenta que <code>Input</code> se usa para pasar datos a un
-          componente hijo y que los eventos personalizados deben salir mediante <code>Output</code>. Tambien documenta
-          que un componente puede usar <strong>selectores por atributo</strong> cuando quieres aprovechar un elemento
-          HTML nativo como <code>&lt;tr&gt;</code>.
-          <a href="https://angular.dev/guide/components/inputs" target="_blank" rel="noopener noreferrer">Inputs</a>
-          |
-          <a href="https://angular.dev/guide/components/outputs" target="_blank" rel="noopener noreferrer">Outputs</a>
-          |
-          <a href="https://angular.dev/guide/components/selectors#when-to-use-an-attribute-selector" target="_blank" rel="noopener noreferrer">Attribute selectors</a>
-        </div>
-      </div>
-
-      <div class="theory-block">
-        <h4><i class="bi bi-box-arrow-in-down" style="color:var(--accent)"></i> Paso correcto: Input para bajar datos y Output para subir eventos</h4>
-        <p>La refactorizacion correcta queda asi: el padre envia un producto al hijo con <code>[product]</code>, y el hijo
-          emite un evento propio cuando el usuario pulsa <strong>Ver detalle</strong>. Asi cada componente tiene una
-          responsabilidad clara.</p>
-
-        <div class="code-block">
-          <div class="code-header"><span>src/app/product-card/product-card.ts</span><span
-              class="lang-badge lang-ts">TypeScript</span></div>
-          <pre><span class="kw">import</span> { Component, EventEmitter, Input, Output } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+        <p class="fw-semibold mt-3 mb-2" style="font-size:.88rem">La solucion: <code>Output()</code> para que el hijo avise al padre</p>
+        <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+          <div class="code-block" style="margin:0">
+            <div class="code-header"><span>src/app/product-card/product-card.ts</span><span
+                class="lang-badge lang-ts">TypeScript</span></div>
+            <pre><span class="kw">import</span> { Component, Input, Output, EventEmitter } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>: <span class="str">'tr[app-product-card]'</span>,
@@ -2391,7 +2464,6 @@ ng g c products
   <span class="prop">styleUrl</span>: <span class="str">'./product-card.css'</span>,
 })
 <span class="kw">export class</span> <span class="typ">ProductCard</span> {
-
   <span class="dec">@Input</span>() product: <span class="typ">any</span> = <span class="kw">null</span>;
   <span class="dec">@Output</span>() detalle = <span class="kw">new</span> <span class="typ">EventEmitter</span>&lt;<span class="typ">number</span>&gt;();
 
@@ -2401,6 +2473,15 @@ ng g c products
     }
   }
 }</pre>
+          </div>
+        </div>
+
+        <div class="callout callout-blue mt-3">
+          <strong><code>selector: 'tr[app-product-card]'</code></strong> monta el componente sobre el <code>&lt;tr&gt;</code>
+          nativo en lugar de crear una etiqueta nueva. Asi el HTML de la tabla sigue siendo valido
+          (un <code>&lt;tr&gt;</code> no puede contener otro elemento que no sea <code>&lt;td&gt;</code>).
+          Angular llama a esto <em>attribute selector</em>. Se usa cuando necesitas aprovechar
+          un elemento HTML nativo existente.
         </div>
 
         <div class="code-block">
@@ -2425,7 +2506,6 @@ ng g c products
           <div class="code-header"><span>src/app/products/products.html</span><span
               class="lang-badge lang-html">HTML</span></div>
           <pre><span class="tag">&lt;tbody&gt;</span>
-  <span class="cm">&lt;!-- El padre itera, le pasa el producto al hijo y escucha el evento personalizado --&gt;</span>
   <span class="tag">&lt;tr</span> <span class="attr">app-product-card</span>
       <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span>
       <span class="bind">[product]</span>=<span class="str">"product"</span>
@@ -2433,36 +2513,61 @@ ng g c products
 <span class="tag">&lt;/tbody&gt;</span></pre>
         </div>
 
+        <div class="callout callout-green">
+          <strong><code>@Input()</code> -&gt; baja datos del padre al hijo -&gt; <code>[product]="product"</code></strong><br>
+          <strong><code>@Output()</code> -&gt; sube eventos del hijo al padre -&gt; <code>(detalle)="detallePro($event)"</code></strong><br>
+          Cada uno tiene su direccion. No se mezclan con clicks nativos.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-arrow-left-right" style="color:var(--accent)"></i> Flujo de datos padre hijo</h4>
         <div class="code-block">
-          <div class="code-header"><span>src/app/products/products.ts - este paso casi no cambia</span><span
-              class="lang-badge lang-ts">TypeScript</span></div>
-          <pre><span class="cm">// El padre sigue recibiendo el id y buscando el producto para mostrar el modal</span>
-<span class="fn">detallePro</span>(productId: <span class="typ">number</span>): <span class="typ">void</span> {
-  const producto = <span class="kw">this</span>.productosMock.<span class="fn">find</span>(p =&gt; p.id === productId);
-  <span class="kw">this</span>.detalle = producto;
-  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">'Producto seleccionado:'</span>, producto);
-}
-</pre>
-        </div>
+          <div class="code-header"><span>flujo conceptual</span><span class="lang-badge lang-ts">Flow</span></div>
+          <pre><span class="cm">Products (padre)</span>
+data = [ ... ]
 
-        <div class="callout callout-blue">
-          <strong>Lectura correcta del flujo:</strong> <code>[product]</code> manda datos del padre al hijo con
-          <code>Input()</code>. <code>(detalle)</code> escucha un evento propio del hijo con <code>Output()</code>.
-          Este patron es mucho mas claro que colgar un <code>(click)</code> directo sobre la etiqueta del componente.
-        </div>
+<span class="cm">1) El padre itera con *ngFor</span>
+<span class="cm">2) El padre envia [product]="product" al hijo</span>
 
-        <div class="callout callout-cyan mt-3">
-          <strong><code>product?.title</code> y compania</strong>: el operador opcional <code>?.</code> evita errores
-          mientras Angular termina de enlazar el dato. Si <code>product</code> todavia es <code>null</code>, el template
-          no explota; simplemente no muestra valor.
-        </div>
+<span class="cm">ProductCard (hijo)</span>
+<span class="cm">@Input() product recibe datos</span>
+<span class="cm">(click) en el boton ejecuta verDetalle()</span>
+<span class="cm">@Output() detalle emite el id</span>
 
-        <div class="callout callout-amber mt-3">
-          <strong>Idea clave para el alumno:</strong> <code>Input</code> no reemplaza a <code>click</code>.
-          <code>Input</code> sirve para <strong>recibir datos</strong>. Si el hijo necesita avisarle algo al padre,
-          entonces no usas un click "colgado" en la etiqueta del componente: usas <code>Output</code> y emites un
-          evento con nombre claro.
+<span class="cm">Products (padre)</span>
+<span class="cm">(detalle)="detallePro($event)" recibe el id y abre el modal</span></pre>
         </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-check2-square" style="color:var(--accent)"></i> Ventajas de este patron</h4>
+        <table class="os-table">
+          <thead>
+            <tr>
+              <th>Antes (incorrecto)</th>
+              <th>Despues (segun documentacion)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fila acoplada al <code>&lt;tbody&gt;</code> de <code>Products</code></td>
+              <td><code>ProductCard</code> reutilizable en cualquier vista</td>
+            </tr>
+            <tr>
+              <td>Click nativo sin contrato claro</td>
+              <td>Contrato claro: <code>@Input() product</code> y <code>@Output() detalle</code></td>
+            </tr>
+            <tr>
+              <td>Si cambia el HTML interno, el padre se rompe</td>
+              <td>El padre solo escucha <code>(detalle)</code>, sin depender de la estructura interna del hijo</td>
+            </tr>
+            <tr>
+              <td>Responsabilidades mezcladas en un solo componente</td>
+              <td>Responsabilidades separadas: <code>Products</code> lista, <code>ProductCard</code> fila</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="sandbox">

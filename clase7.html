@@ -1,320 +1,337 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Clase 7 — Autenticacion, Carrito y Cierre</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
   <style>
-    :root { --accent:#8b5cf6; --accent-dark:#7c3aed; --accent-faint:#f5f3ff; --accent-border:#ddd6fe; }
-    body { font-family:'Inter',sans-serif; background:#f0f2f5; color:#1e293b; }
+    :root {
+      --accent: #8b5cf6;
+      --accent-dark: #7c3aed;
+      --accent-faint: #f5f3ff;
+      --accent-border: #ddd6fe;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #1e293b; }
 
     /* ── SIDEBAR ── */
-    #sidebar { position:fixed;top:0;left:0;width:270px;height:100vh;background:#0f172a;color:#e2e8f0;overflow-y:auto;z-index:1000;padding-bottom:2rem;border-right:1px solid #1e293b; }
-    #sidebar .brand { padding:1.5rem 1.25rem 1rem;border-bottom:1px solid #1e293b; }
-    #sidebar .brand .badge-mod { background:var(--accent);color:#fff;font-size:.7rem;padding:.25rem .6rem;border-radius:20px;letter-spacing:.05em;font-weight:700; }
-    #sidebar .brand h6 { color:#f8fafc;font-weight:700;margin-top:.5rem;font-size:1rem; }
-    #sidebar nav a { display:flex;align-items:center;gap:.65rem;padding:.55rem 1.25rem;color:#94a3b8;text-decoration:none;font-size:.83rem;border-left:3px solid transparent;transition:all .15s; }
-    #sidebar nav a:hover, #sidebar nav a.active { color:#f8fafc;background:#1e293b;border-left-color:var(--accent); }
-    #sidebar .section-label { font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:#475569;padding:1.1rem 1.25rem .35rem;font-weight:700; }
-    #sidebar .progress-wrap { padding:.5rem 1.25rem 0; }
-    #sidebar .progress { height:4px;background:#1e293b; }
-    #sidebar .progress-bar { background:var(--accent);transition:width .4s ease; }
+    #sidebar { position: fixed; top: 0; left: 0; width: 270px; height: 100vh; background: #0f172a; color: #e2e8f0; overflow-y: auto; z-index: 1000; padding-bottom: 2rem; border-right: 1px solid #1e293b; }
+    #sidebar .brand { padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid #1e293b; }
+    #sidebar .brand .badge-mod { background: var(--accent); color: #fff; font-size: .7rem; padding: .25rem .6rem; border-radius: 20px; letter-spacing: .05em; font-weight: 700; }
+    #sidebar .brand h6 { color: #f8fafc; font-weight: 700; margin-top: .5rem; font-size: 1rem; }
+    #sidebar nav a { display: flex; align-items: center; gap: .65rem; padding: .55rem 1.25rem; color: #94a3b8; text-decoration: none; font-size: .83rem; border-left: 3px solid transparent; transition: all .15s; }
+    #sidebar nav a:hover, #sidebar nav a.active { color: #f8fafc; background: #1e293b; border-left-color: var(--accent); }
+    #sidebar .section-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: #475569; padding: 1.1rem 1.25rem .35rem; font-weight: 700; }
+    #sidebar .progress-wrap { padding: .5rem 1.25rem 0; }
+    #sidebar .progress { height: 4px; background: #1e293b; }
+    #sidebar .progress-bar { background: var(--accent); transition: width .4s ease; }
 
     /* ── MAIN ── */
-    #main { margin-left:270px;min-height:100vh; }
-    .topbar { background:#fff;border-bottom:1px solid #e2e8f0;padding:.75rem 2rem;position:sticky;top:0;z-index:900;display:flex;align-items:center;gap:1rem; }
-    .topbar .breadcrumb { margin:0;font-size:.8rem; }
-    .content-section { display:none;padding:2rem;animation:fadeIn .25s ease; }
-    .content-section.active { display:block; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
+    #main { margin-left: 270px; min-height: 100vh; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 2rem; position: sticky; top: 0; z-index: 900; display: flex; align-items: center; gap: 1rem; }
+    .topbar .breadcrumb { margin: 0; font-size: .8rem; }
+    .content-section { display: none; padding: 2rem; animation: fadeIn .25s ease; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ── HERO ── */
-    .hero-card { background:linear-gradient(135deg,#0f172a 0%,#1e0a2e 100%);color:#fff;border-radius:16px;padding:2.5rem 3rem;margin-bottom:2rem; }
-    .hero-card .clase-badge { background:rgba(139,92,246,.25);border:1px solid rgba(139,92,246,.5);color:#c4b5fd;font-size:.75rem;padding:.3rem .8rem;border-radius:20px;display:inline-block;margin-bottom:1rem;letter-spacing:.06em;text-transform:uppercase; }
-    .hero-card h1 { font-size:2rem;font-weight:700;margin-bottom:.5rem; }
-    .hero-card p { color:#94a3b8;font-size:1rem; }
-    .hero-meta span { background:rgba(255,255,255,.1);border-radius:8px;padding:.4rem .9rem;font-size:.82rem;margin-right:.5rem;color:#e2e8f0; }
+    .hero-card { background: linear-gradient(135deg, #0f172a 0%, #1e0a2e 100%); color: #fff; border-radius: 16px; padding: 2.5rem 3rem; margin-bottom: 2rem; }
+    .hero-card .clase-badge { background: rgba(139,92,246,.25); border: 1px solid rgba(139,92,246,.5); color: #c4b5fd; font-size: .75rem; padding: .3rem .8rem; border-radius: 20px; display: inline-block; margin-bottom: 1rem; letter-spacing: .06em; text-transform: uppercase; }
+    .hero-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .hero-card p { color: #94a3b8; font-size: 1rem; }
+    .hero-meta span { background: rgba(255,255,255,.1); border-radius: 8px; padding: .4rem .9rem; font-size: .82rem; margin-right: .5rem; color: #e2e8f0; }
 
     /* ── BLOCKS ── */
-    .theory-block { background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.75rem;margin-bottom:1.5rem; }
-    .theory-block h4 { font-weight:700;font-size:1.05rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem; }
-    .theory-block p, .theory-block li { font-size:.9rem;color:#374151;line-height:1.75; }
-    .theory-block ul, .theory-block ol { padding-left:1.4rem; }
-    .info-card { background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem;height:100%; }
-    .info-card .ic-icon { width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem; }
-    .info-card h5 { font-weight:700;font-size:.95rem;margin-bottom:.5rem; }
-    .info-card p { font-size:.85rem;color:#64748b;margin:0; }
+    .theory-block { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.75rem; margin-bottom: 1.5rem; }
+    .theory-block h4 { font-weight: 700; font-size: 1.05rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
+    .theory-block p, .theory-block li { font-size: .9rem; color: #374151; line-height: 1.75; }
+    .theory-block ul, .theory-block ol { padding-left: 1.4rem; }
+    .info-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.5rem; height: 100%; }
+    .info-card .ic-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1rem; }
+    .info-card h5 { font-weight: 700; font-size: .95rem; margin-bottom: .5rem; }
+    .info-card p { font-size: .85rem; color: #64748b; margin: 0; }
 
     /* ── CALLOUTS ── */
-    .callout { border-left:4px solid;border-radius:0 8px 8px 0;padding:.9rem 1.2rem;margin:1rem 0;font-size:.88rem; }
-    .callout-blue   { border-color:#3b82f6;background:#eff6ff;color:#1e40af; }
-    .callout-green  { border-color:#10b981;background:#f0fdf4;color:#065f46; }
-    .callout-amber  { border-color:#f59e0b;background:#fffbeb;color:#92400e; }
-    .callout-red    { border-color:#ef4444;background:#fef2f2;color:#991b1b; }
-    .callout-purple { border-color:#8b5cf6;background:#f5f3ff;color:#4c1d95; }
-    .callout-cyan   { border-color:#06b6d4;background:#ecfeff;color:#164e63; }
-    .callout-orange { border-color:#f97316;background:#fff7ed;color:#9a3412; }
+    .callout { border-left: 4px solid; border-radius: 0 8px 8px 0; padding: .9rem 1.2rem; margin: 1rem 0; font-size: .88rem; }
+    .callout-blue   { border-color: #3b82f6; background: #eff6ff; color: #1e40af; }
+    .callout-green  { border-color: #10b981; background: #f0fdf4; color: #065f46; }
+    .callout-amber  { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .callout-red    { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+    .callout-purple { border-color: #8b5cf6; background: #f5f3ff; color: #4c1d95; }
+    .callout-cyan   { border-color: #06b6d4; background: #ecfeff; color: #164e63; }
+    .callout-orange { border-color: #f97316; background: #fff7ed; color: #9a3412; }
 
     /* ── CODE ── */
-    .code-block { background:#0f172a;border-radius:10px;overflow:hidden;margin:1rem 0;font-family:'JetBrains Mono',monospace; }
-    .code-block .code-header { background:#1e293b;padding:.5rem 1rem;display:flex;align-items:center;justify-content:space-between; }
-    .code-block .code-header span { font-size:.75rem;color:#64748b;font-family:'Inter',sans-serif; }
-    .code-block .code-header .lang-badge { font-size:.68rem;padding:.15rem .55rem;border-radius:20px;font-weight:700; }
-    .lang-ts   { background:rgba(6,182,212,.2);color:#67e8f9; }
-    .lang-html { background:rgba(239,68,68,.2);color:#fca5a5; }
-    .lang-bash { background:rgba(16,185,129,.2);color:#6ee7b7; }
-    .code-block pre { margin:0;padding:1.25rem;color:#e2e8f0;font-size:.82rem;line-height:1.75;overflow-x:auto; }
-    .kw   { color:#93c5fd; }
-    .fn   { color:#86efac; }
-    .str  { color:#fca5a5; }
-    .cm   { color:#475569;font-style:italic; }
-    .num  { color:#fdba74; }
-    .prop { color:#c4b5fd; }
-    .bool { color:#f9a8d4; }
-    .typ  { color:#67e8f9;font-weight:600; }
-    .dec  { color:#fbbf24;font-weight:600; }
-    .tag  { color:#86efac; }
-    .attr { color:#c4b5fd; }
-    .bind { color:#fcd34d;font-weight:600; }
+    .code-block { background: #0f172a; border-radius: 10px; overflow: hidden; margin: 1rem 0; font-family: 'JetBrains Mono', monospace; }
+    .code-block .code-header { background: #1e293b; padding: .5rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+    .code-block .code-header span { font-size: .75rem; color: #64748b; font-family: 'Inter', sans-serif; }
+    .code-block .code-header .lang-badge { font-size: .68rem; padding: .15rem .55rem; border-radius: 20px; font-weight: 700; }
+    .lang-ts   { background: rgba(6,182,212,.2); color: #67e8f9; }
+    .lang-html { background: rgba(239,68,68,.2); color: #fca5a5; }
+    .lang-bash { background: rgba(16,185,129,.2); color: #6ee7b7; }
+    .code-block pre { margin: 0; padding: 1.25rem; color: #e2e8f0; font-size: .82rem; line-height: 1.75; overflow-x: auto; }
+    .kw   { color: #93c5fd; }
+    .fn   { color: #86efac; }
+    .str  { color: #fca5a5; }
+    .cm   { color: #475569; font-style: italic; }
+    .num  { color: #fdba74; }
+    .prop { color: #c4b5fd; }
+    .bool { color: #f9a8d4; }
+    .typ  { color: #67e8f9; font-weight: 600; }
+    .dec  { color: #fbbf24; font-weight: 600; }
+    .tag  { color: #86efac; }
+    .attr { color: #c4b5fd; }
+    .bind { color: #fcd34d; font-weight: 600; }
 
     /* ── SANDBOX ── */
-    .sandbox { background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:1.5rem; }
-    .sandbox-header { background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem; }
-    .sandbox-header .title { font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:.5rem; }
-    .sandbox-body { padding:1.5rem; }
-    .run-btn { background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.45rem 1.1rem;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:background .15s; }
-    .run-btn:hover   { background:var(--accent-dark); }
-    .run-btn.green   { background:#10b981; } .run-btn.green:hover  { background:#059669; }
-    .run-btn.blue    { background:#3b82f6; } .run-btn.blue:hover   { background:#2563eb; }
-    .run-btn.red     { background:#ef4444; } .run-btn.red:hover    { background:#dc2626; }
-    .run-btn.amber   { background:#f59e0b;color:#1e293b; } .run-btn.amber:hover { background:#d97706; }
-    .run-btn.gray    { background:#64748b; } .run-btn.gray:hover   { background:#475569; }
+    .sandbox { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 1.5rem; }
+    .sandbox-header { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: .75rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; }
+    .sandbox-header .title { font-weight: 600; font-size: .9rem; display: flex; align-items: center; gap: .5rem; }
+    .sandbox-body { padding: 1.5rem; }
+    .run-btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: .45rem 1.1rem; font-size: .82rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: .4rem; transition: background .15s; }
+    .run-btn:hover   { background: var(--accent-dark); }
+    .run-btn.green   { background: #10b981; } .run-btn.green:hover  { background: #059669; }
+    .run-btn.blue    { background: #3b82f6; } .run-btn.blue:hover   { background: #2563eb; }
+    .run-btn.red     { background: #ef4444; } .run-btn.red:hover    { background: #dc2626; }
+    .run-btn.amber   { background: #f59e0b; color: #1e293b; } .run-btn.amber:hover { background: #d97706; }
+    .run-btn.gray    { background: #64748b; } .run-btn.gray:hover   { background: #475569; }
 
     /* ── TIMELINE ── */
-    .timeline { position:relative;padding-left:2rem; }
-    .timeline::before { content:'';position:absolute;left:.55rem;top:0;bottom:0;width:2px;background:#e2e8f0; }
-    .timeline-item { position:relative;margin-bottom:1.25rem; }
-    .timeline-item::before { content:'';position:absolute;left:-1.5rem;top:.35rem;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent); }
-    .timeline-item .t-time  { font-size:.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em; }
-    .timeline-item .t-title { font-weight:600;font-size:.95rem; }
-    .timeline-item .t-desc  { font-size:.85rem;color:#64748b; }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: .55rem; top: 0; bottom: 0; width: 2px; background: #e2e8f0; }
+    .timeline-item { position: relative; margin-bottom: 1.25rem; }
+    .timeline-item::before { content: ''; position: absolute; left: -1.5rem; top: .35rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--accent); }
+    .timeline-item .t-time  { font-size: .72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+    .timeline-item .t-title { font-weight: 600; font-size: .95rem; }
+    .timeline-item .t-desc  { font-size: .85rem; color: #64748b; }
 
     /* ── COMPARE ── */
-    .compare-cols { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0; }
-    .compare-col  { border-radius:10px;padding:1.25rem; }
+    .compare-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .compare-col  { border-radius: 10px; padding: 1.25rem; }
 
     /* ── STEP PILLS ── */
-    .step-pills { display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0; }
-    .step-pill { background:var(--accent-faint);border:1px solid var(--accent-border);color:#4c1d95;border-radius:30px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem; }
-    .step-pill .num { background:var(--accent);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem; }
+    .step-pills { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+    .step-pill  { background: var(--accent-faint); border: 1px solid var(--accent-border); color: #4c1d95; border-radius: 30px; padding: .4rem 1rem; font-size: .82rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+    .step-pill .num { background: var(--accent); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; }
 
     /* ── FILE TREE ── */
-    .file-tree { background:#0f172a;border-radius:10px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:2.1;color:#94a3b8; }
-    .file-tree .dir  { color:#67e8f9; }
-    .file-tree .file { color:#e2e8f0; }
-    .file-tree .ts   { color:#c4b5fd; }
-    .file-tree .html { color:#fca5a5; }
-    .file-tree .css  { color:#86efac; }
-    .file-tree .note { color:#475569;font-style:italic; }
-    .file-tree .new  { color:#fbbf24;font-weight:700; }
+    .file-tree { background: #0f172a; border-radius: 10px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 2.1; color: #94a3b8; }
+    .file-tree .dir  { color: #67e8f9; }
+    .file-tree .ts   { color: #c4b5fd; }
+    .file-tree .html { color: #fca5a5; }
+    .file-tree .note { color: #475569; font-style: italic; }
+    .file-tree .new  { color: #fbbf24; font-weight: 700; }
+
+    /* ── OS TABLE ── */
+    .os-table { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 1rem 0; }
+    .os-table th { background: #0f172a; color: #e2e8f0; padding: .6rem 1rem; text-align: left; font-weight: 600; }
+    .os-table td { padding: .55rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    .os-table tr:last-child td { border-bottom: none; }
+    .os-table tr:nth-child(even) td { background: #f8fafc; }
+    .os-table code { background: #f1f5f9; border-radius: 4px; padding: .1rem .4rem; font-size: .78rem; color: #0f172a; }
 
     /* ── CHECKLIST ── */
-    .checklist { list-style:none;padding:0;margin:0; }
-    .checklist li { display:flex;align-items:flex-start;gap:.6rem;padding:.4rem 0;font-size:.88rem;color:#374151; }
-    .checklist li::before { content:'☐';color:#94a3b8;font-size:1rem;flex-shrink:0;margin-top:.05rem; }
-    .checklist li.done::before { content:'✓';color:#10b981; }
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: .6rem; padding: .4rem 0; font-size: .88rem; color: #374151; }
+    .checklist li::before { content: '☐'; color: #94a3b8; font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+    .checklist li.done::before { content: '✓'; color: #10b981; }
 
     /* ── ERROR BOX ── */
-    .error-box { background:#0f172a;border:1px solid #ef4444;border-radius:10px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.75;color:#fca5a5; }
-    .error-box .file { color:#94a3b8;margin-bottom:.5rem; }
-    .error-box .fix  { background:#134e0a;border:1px solid #16a34a;border-radius:6px;padding:.75rem;margin-top:.75rem;color:#86efac;font-size:.78rem; }
+    .error-box { background: #0f172a; border: 1px solid #ef4444; border-radius: 10px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: .8rem; line-height: 1.75; color: #fca5a5; }
+    .error-box .file { color: #94a3b8; margin-bottom: .5rem; }
+    .error-box .fix  { background: #134e0a; border: 1px solid #16a34a; border-radius: 6px; padding: .75rem; margin-top: .75rem; color: #86efac; font-size: .78rem; }
 
     /* ── OUTPUT AREA ── */
-    .output-area { background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:1rem;min-height:70px;font-size:.82rem;margin-top:1rem;font-family:'JetBrains Mono',monospace;color:#e2e8f0;line-height:1.8; }
-    .output-area .ok   { color:#86efac; }
-    .output-area .er   { color:#fca5a5; }
-    .output-area .info { color:#67e8f9; }
-    .output-area .warn { color:#fcd34d; }
-    .output-area .dim  { color:#475569; }
+    .output-area { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem; min-height: 70px; font-size: .82rem; margin-top: 1rem; font-family: 'JetBrains Mono', monospace; color: #e2e8f0; line-height: 1.8; }
+    .output-area .ok   { color: #86efac; }
+    .output-area .er   { color: #fca5a5; }
+    .output-area .info { color: #67e8f9; }
+    .output-area .warn { color: #fcd34d; }
+    .output-area .dim  { color: #475569; }
 
     /* ── CIERRE FINAL ── */
-    .modulo-badge { display:inline-flex;align-items:center;gap:.5rem;background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);color:#c4b5fd;font-size:.8rem;padding:.4rem 1rem;border-radius:20px;font-weight:600;margin:.25rem; }
-    .skill-pill { display:inline-block;background:#f5f3ff;border:1px solid #ddd6fe;color:#4c1d95;border-radius:8px;padding:.3rem .75rem;font-size:.8rem;font-weight:600;margin:.2rem; }
-    .ruta-card { background:#fff;border-radius:12px;border:2px solid #e2e8f0;padding:1.5rem;transition:border-color .2s; }
-    .ruta-card:hover { border-color:var(--accent); }
-    .ruta-card .ruta-num { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;flex-shrink:0; }
+    .modulo-badge { display: inline-flex; align-items: center; gap: .5rem; background: rgba(139,92,246,.2); border: 1px solid rgba(139,92,246,.4); color: #c4b5fd; font-size: .8rem; padding: .4rem 1rem; border-radius: 20px; font-weight: 600; margin: .25rem; }
+    .skill-pill { display: inline-block; background: #f5f3ff; border: 1px solid #ddd6fe; color: #4c1d95; border-radius: 8px; padding: .3rem .75rem; font-size: .8rem; font-weight: 600; margin: .2rem; }
+    .ruta-card { background: #fff; border-radius: 12px; border: 2px solid #e2e8f0; padding: 1.5rem; transition: border-color .2s; }
+    .ruta-card:hover { border-color: var(--accent); }
+    .ruta-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .85rem; font-weight: 700; color: #fff; flex-shrink: 0; }
 
-    @media(max-width:768px){ #sidebar{transform:translateX(-100%);} #main{margin-left:0;} .compare-cols{grid-template-columns:1fr;} }
+    @media(max-width:768px) { #sidebar { transform: translateX(-100%); } #main { margin-left: 0; } .compare-cols { grid-template-columns: 1fr; } }
   </style>
 </head>
+
 <body>
 
-<!-- ═══════════ SIDEBAR ═══════════ -->
-<nav id="sidebar">
-  <div class="brand">
-    <div class="badge-mod">MODULO 1 · CLASE 7</div>
-    <h6>Frontend con Angular</h6>
-    <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
-  </div>
-  <div class="progress-wrap">
-    <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
-      <span>Progreso de la clase</span><span id="progress-pct">10%</span>
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <nav id="sidebar">
+    <div class="brand">
+      <div class="badge-mod">MODULO 1 · CLASE 7</div>
+      <h6>Frontend con Angular</h6>
+      <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
     </div>
-    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:10%"></div></div>
-    <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Clase 7 de 7 · Modulo 1 — Clase final</div>
-  </div>
-  <div class="section-label">Contenido</div>
-  <nav id="sidenav">
-    <a href="#" class="active" onclick="window.showSection('agenda',this)">      <i class="bi bi-calendar3"></i> Agenda</a>
-    <a href="#" onclick="window.showSection('auth-service',this)">               <i class="bi bi-shield-lock"></i> AuthService y JWT</a>
-    <a href="#" onclick="window.showSection('login',this)">                      <i class="bi bi-person-check"></i> LoginComponent</a>
-    <a href="#" onclick="window.showSection('interceptor',this)">                <i class="bi bi-filter"></i> Interceptor HTTP</a>
-    <a href="#" onclick="window.showSection('guard',this)">                      <i class="bi bi-lock"></i> AuthGuard</a>
-    <a href="#" onclick="window.showSection('carrito',this)">                    <i class="bi bi-cart3"></i> CartService y BehaviorSubject</a>
-    <a href="#" onclick="window.showSection('navbar',this)">                     <i class="bi bi-layout-navbar"></i> Navbar dinamico</a>
-    <a href="#" onclick="window.showSection('ejercicio',this)">                  <i class="bi bi-hammer"></i> Demo final</a>
-    <a href="#" onclick="window.showSection('qa',this)">                         <i class="bi bi-patch-question"></i> Q&A y cierre</a>
-    <a href="#" onclick="window.showSection('cierre',this)">                     <i class="bi bi-trophy"></i> Cierre del diplomado</a>
-  </nav>
-  <div class="section-label">Navegacion</div>
-  <nav>
-    <a href="clase6.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 6</a>
-  </nav>
-</nav>
-
-<!-- ═══════════ MAIN ═══════════ -->
-<div id="main">
-  <div class="topbar">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item text-muted">Modulo 1</li>
-        <li class="breadcrumb-item text-muted">Frontend con Angular</li>
-        <li class="breadcrumb-item active fw-semibold">Clase 7 — Autenticacion, Carrito y Cierre</li>
-      </ol>
+    <div class="progress-wrap">
+      <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+        <span>Progreso de la clase</span><span id="progress-pct">10%</span>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progress-bar" style="width:10%"></div></div>
+      <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Clase 7 de 7 · Modulo 1 — Clase final</div>
+    </div>
+    <div class="section-label">Contenido</div>
+    <nav id="sidenav">
+      <a href="#" class="active" onclick="window.showSection('agenda',this)">       <i class="bi bi-calendar3"></i> Agenda</a>
+      <a href="#" onclick="window.showSection('auth-service',this)">                <i class="bi bi-shield-lock"></i> AuthService y JWT</a>
+      <a href="#" onclick="window.showSection('login',this)">                       <i class="bi bi-person-check"></i> Login</a>
+      <a href="#" onclick="window.showSection('interceptor',this)">                 <i class="bi bi-filter"></i> Interceptor HTTP</a>
+      <a href="#" onclick="window.showSection('guard',this)">                       <i class="bi bi-lock"></i> AuthGuard</a>
+      <a href="#" onclick="window.showSection('carrito',this)">                     <i class="bi bi-cart3"></i> CartService</a>
+      <a href="#" onclick="window.showSection('navbar',this)">                      <i class="bi bi-layout-navbar"></i> Navbar dinamico</a>
+      <a href="#" onclick="window.showSection('ejercicio',this)">                   <i class="bi bi-hammer"></i> Demo final</a>
+      <a href="#" onclick="window.showSection('qa',this)">                          <i class="bi bi-patch-question"></i> Q&A y cierre</a>
+      <a href="#" onclick="window.showSection('cierre',this)">                      <i class="bi bi-trophy"></i> Cierre del diplomado</a>
     </nav>
-    <span class="ms-auto badge" style="background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe">
-      <i class="bi bi-clock me-1"></i>2h efectivas · Clase final
-    </span>
-  </div>
+    <div class="section-label">Navegacion</div>
+    <nav>
+      <a href="clase6.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 6</a>
+    </nav>
+  </nav>
 
-  <!-- ══════════════════════════════ AGENDA ══════════════════════════════ -->
-  <section id="agenda" class="content-section active">
-    <div class="hero-card">
-      <div class="clase-badge"><i class="bi bi-7-circle me-1"></i>Clase 7 de 7 — Clase final</div>
-      <h1>Autenticacion, Carrito y Cierre</h1>
-      <p>La aplicacion ya muestra productos reales y navega entre paginas. Hoy se agrega seguridad real con JWT, un carrito que persiste entre recargas, y se cierra el diplomado con una aplicacion completamente funcional.</p>
-      <div class="hero-meta mt-3">
-        <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
-        <span><i class="bi bi-shield-lock me-1"></i>JWT</span>
-        <span><i class="bi bi-cart3 me-1"></i>BehaviorSubject</span>
-        <span><i class="bi bi-trophy me-1"></i>Clase final</span>
-      </div>
+  <!-- ═══════════ MAIN ═══════════ -->
+  <div id="main">
+    <div class="topbar">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item text-muted">Modulo 1</li>
+          <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+          <li class="breadcrumb-item active fw-semibold">Clase 7 - Autenticacion, Carrito y Cierre</li>
+        </ol>
+      </nav>
+      <span class="ms-auto badge" style="background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe">
+        <i class="bi bi-clock me-1"></i>2h efectivas · Clase final
+      </span>
     </div>
 
-    <div class="callout callout-purple mb-4">
-      <strong>Punto de partida:</strong> La aplicacion Angular 20 de la Clase 6 funcionando: <code>/products</code> con datos reales, filtros, <code>/product/:id</code> con vista de detalle, y <code>ProductService</code> centralizado. Hoy se agrega la capa de seguridad y el carrito.
-    </div>
+    <!-- ══════════════════════════════ AGENDA ══════════════════════════════ -->
+    <section id="agenda" class="content-section active">
+      <div class="hero-card">
+        <div class="clase-badge"><i class="bi bi-7-circle me-1"></i>Clase 7 de 7 — Clase final</div>
+        <h1>Autenticacion, Carrito y Cierre</h1>
+        <p>La aplicacion ya muestra productos reales y navega entre paginas. Hoy se agrega seguridad real con JWT, un carrito que persiste entre recargas, y se cierra el Modulo 1 con una aplicacion completamente funcional.</p>
+        <div class="hero-meta mt-3">
+          <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
+          <span><i class="bi bi-shield-lock me-1"></i>JWT</span>
+          <span><i class="bi bi-cart3 me-1"></i>BehaviorSubject</span>
+          <span><i class="bi bi-trophy me-1"></i>Clase final</span>
+        </div>
+      </div>
 
-    <div class="row g-4 mb-4">
-      <div class="col-md-4">
-        <div class="info-card">
-          <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-shield-lock" style="color:#8b5cf6;font-size:1.3rem"></i></div>
-          <h5>Autenticacion JWT</h5>
-          <p><code>AuthService</code> con login real usando <code>fakestoreapi.com/auth/login</code>. Token guardado en <code>localStorage</code>. Ruta <code>/users</code> protegida con <code>AuthGuard</code>.</p>
-        </div>
+      <div class="callout callout-purple mb-4">
+        <strong>Punto de partida:</strong> La aplicacion de Clase 6 funcionando: <code>/products</code> con datos reales de FakeStore API, filtros por categoria y nombre, <code>/product/:id</code> con vista de detalle, y <code>ProductService</code> centralizado. Hoy se agrega la capa de seguridad y el carrito.
       </div>
-      <div class="col-md-4">
-        <div class="info-card">
-          <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-filter" style="color:#8b5cf6;font-size:1.3rem"></i></div>
-          <h5>Interceptor HTTP</h5>
-          <p>Se configura una sola vez y agrega el token JWT a <em>todas</em> las peticiones automaticamente. No hay que tocarlo en cada componente.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="info-card">
-          <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-cart3" style="color:#8b5cf6;font-size:1.3rem"></i></div>
-          <h5>CartService</h5>
-          <p><code>BehaviorSubject</code> para estado reactivo del carrito. <code>localStorage</code> para persistencia. Navbar con contador dinamico que se actualiza en tiempo real.</p>
-        </div>
-      </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-list-ol" style="color:var(--accent)"></i> Distribucion del tiempo</h4>
-      <div class="timeline mt-3">
-        <div class="timeline-item">
-          <div class="t-time">10 min</div>
-          <div class="t-title">Que es JWT y como funciona el flujo de autenticacion</div>
-          <div class="t-desc">Login → token → localStorage → interceptor agrega el token → guard verifica antes de entrar a rutas protegidas.</div>
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-shield-lock" style="color:#8b5cf6;font-size:1.3rem"></i></div>
+            <h5>Autenticacion JWT</h5>
+            <p><code>auth.service.ts</code> con login real usando <code>fakestoreapi.com/auth/login</code>. Token guardado en <code>localStorage</code>. Ruta <code>/users</code> protegida con <code>AuthGuard</code>.</p>
+          </div>
         </div>
-        <div class="timeline-item">
-          <div class="t-time">40 min</div>
-          <div class="t-title">AuthService, LoginComponent, Interceptor y AuthGuard</div>
-          <div class="t-desc">Login con credenciales reales de FakeStoreAPI. Token persistido. Interceptor que firma cada peticion. Guard que redirige al login si no hay sesion.</div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-filter" style="color:#8b5cf6;font-size:1.3rem"></i></div>
+            <h5>Interceptor HTTP</h5>
+            <p>Se configura una sola vez en <code>app-module.ts</code> y agrega el token JWT a todas las peticiones automaticamente. Sin tocarlo en cada componente.</p>
+          </div>
         </div>
-        <div class="timeline-item">
-          <div class="t-time">40 min</div>
-          <div class="t-title">CartService con BehaviorSubject y Navbar dinamico</div>
-          <div class="t-desc">Carrito con <code>addToCart()</code>, <code>removeFromCart()</code>, <code>clearCart()</code>. Contador en el navbar que reacciona a cada cambio. Persistencia en <code>localStorage</code>.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">20 min</div>
-          <div class="t-title">Demo final — la tienda completa</div>
-          <div class="t-desc">Login, navegar productos, agregar al carrito, ver contador actualizado, visitar pagina protegida, logout.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">10 min</div>
-          <div class="t-title">Q&A y cierre del Modulo 1</div>
-          <div class="t-desc">Preguntas finales y recorrido por todo lo construido.</div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-cart3" style="color:#8b5cf6;font-size:1.3rem"></i></div>
+            <h5>CartService</h5>
+            <p><code>BehaviorSubject</code> para estado reactivo del carrito. <code>localStorage</code> para persistencia. Navbar con contador dinamico que se actualiza en tiempo real.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ══════════════════════════════ AUTH SERVICE ══════════════════════════════ -->
-  <section id="auth-service" class="content-section">
-    <h2 class="fw-bold mb-1">AuthService y JWT</h2>
-    <p class="text-muted mb-4">El servicio que maneja el ciclo completo de autenticacion: login, guardar el token, verificar sesion y logout.</p>
-
-    <div class="theory-block">
-      <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Como funciona el flujo JWT</h4>
-      <div class="step-pills">
-        <div class="step-pill"><div class="num">1</div>Usuario ingresa usuario y contrasena</div>
-        <div class="step-pill"><div class="num">2</div>POST a <code>/auth/login</code> con las credenciales</div>
-        <div class="step-pill"><div class="num">3</div>La API devuelve un <code>token</code> JWT</div>
-        <div class="step-pill"><div class="num">4</div>Se guarda en <code>localStorage</code></div>
-        <div class="step-pill"><div class="num">5</div>El interceptor lo agrega a cada peticion</div>
-        <div class="step-pill"><div class="num">6</div>El guard lo verifica antes de rutas protegidas</div>
+      <div class="theory-block">
+        <h4><i class="bi bi-list-ol" style="color:var(--accent)"></i> Distribucion del tiempo</h4>
+        <div class="timeline mt-3">
+          <div class="timeline-item">
+            <div class="t-time">10 min</div>
+            <div class="t-title">Que es JWT y como funciona el flujo de autenticacion</div>
+            <div class="t-desc">Login — token — localStorage — el interceptor agrega el token — el guard verifica antes de entrar a rutas protegidas.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">40 min</div>
+            <div class="t-title">AuthService, Login, Interceptor y AuthGuard</div>
+            <div class="t-desc">Login con credenciales reales de FakeStoreAPI. Token en localStorage. Interceptor que firma cada peticion. Guard que redirige al login si no hay sesion.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">40 min</div>
+            <div class="t-title">CartService con BehaviorSubject y Navbar dinamico</div>
+            <div class="t-desc">Carrito con <code>addToCart()</code>, <code>removeFromCart()</code>, <code>clearCart()</code>. Contador en el navbar que reacciona a cada cambio. Persistencia en <code>localStorage</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">20 min</div>
+            <div class="t-title">Demo final — la tienda completa</div>
+            <div class="t-desc">Login, navegar productos, agregar al carrito, ver contador actualizado, visitar pagina protegida, logout.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">10 min</div>
+            <div class="t-title">Q&A y cierre del Modulo 1</div>
+            <div class="t-desc">Preguntas finales y recorrido por todo lo que se construyo en el modulo.</div>
+          </div>
+        </div>
       </div>
-      <div class="callout callout-blue mt-2">
-        <strong>Credenciales reales de FakeStoreAPI:</strong> username <code>mor_2314</code> / password <code>83r5^_</code>. El endpoint <code>POST /auth/login</code> devuelve un JWT real que puedes usar en las peticiones.
-      </div>
-    </div>
+    </section>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
-        Generar AuthService
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
-        <pre>ng generate service services/auth
+    <!-- ══════════════════════════════ AUTH SERVICE ══════════════════════════════ -->
+    <section id="auth-service" class="content-section">
+      <h2 class="fw-bold mb-1">AuthService y JWT</h2>
+      <p class="text-muted mb-4">El servicio que maneja el ciclo completo de autenticacion: login, guardar el token, verificar sesion y logout.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Como funciona el flujo JWT</h4>
+        <div class="step-pills">
+          <div class="step-pill"><div class="num">1</div>Usuario ingresa usuario y contrasena</div>
+          <div class="step-pill"><div class="num">2</div>POST a <code>/auth/login</code></div>
+          <div class="step-pill"><div class="num">3</div>La API devuelve un <code>token</code> JWT</div>
+          <div class="step-pill"><div class="num">4</div>Se guarda en <code>localStorage</code></div>
+          <div class="step-pill"><div class="num">5</div>El interceptor lo agrega a cada peticion</div>
+          <div class="step-pill"><div class="num">6</div>El guard lo verifica antes de rutas protegidas</div>
+        </div>
+        <div class="callout callout-blue mt-2">
+          <strong>Credenciales reales de FakeStoreAPI:</strong> username <code>mor_2314</code> / password <code>83r5^_</code>. El endpoint <code>POST /auth/login</code> devuelve un JWT real que puedes usar en las peticiones de la aplicacion.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
+          Generar AuthService
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>ng generate service services/auth
 <span class="cm"># Atajo: ng g s services/auth</span>
-<span class="cm"># Crea: src/app/services/auth.service.ts</span></pre>
+<span class="cm"># Crea: src/app/services/auth.service.ts</span>
+<span class="cm"># Los servicios con providedIn: 'root' no necesitan registrarse en app-module.ts</span></pre>
+        </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 2</span>
-        auth.service.ts
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/services/auth.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 2</span>
+          auth.service.ts
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/services/auth.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { HttpClient } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
 <span class="kw">import</span> { Observable } <span class="kw">from</span> <span class="str">'rxjs'</span>;
 
@@ -345,79 +362,116 @@
     localStorage.<span class="fn">removeItem</span>(<span class="str">'token'</span>);
   }
 }</pre>
-      </div>
-    </div>
-
-    <div class="sandbox">
-      <div class="sandbox-header">
-        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: login real con FakeStoreAPI</div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="run-btn green" onclick="demoLogin()">   <i class="bi bi-play-fill"></i> authService.login()</button>
-          <button class="run-btn red"   onclick="demoLogout()">  <i class="bi bi-box-arrow-right"></i> authService.logout()</button>
-          <button class="run-btn"       onclick="demoIsLogged()"><i class="bi bi-question-circle"></i> isLoggedIn()</button>
-          <button class="run-btn gray"  onclick="demoAuthReset()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>Nota Angular 20:</strong> los servicios no necesitan <code>standalone: false</code>. Ese decorador solo aplica a componentes. Un servicio con <code>providedIn: 'root'</code> funciona igual en Angular 20 que en versiones anteriores.
         </div>
       </div>
-      <div class="sandbox-body">
-        <div id="out-auth" class="output-area">Haz clic en un metodo para ver como funciona AuthService...</div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ══════════════════════════════ LOGIN ══════════════════════════════ -->
-  <section id="login" class="content-section">
-    <h2 class="fw-bold mb-1">LoginComponent</h2>
-    <p class="text-muted mb-4">El formulario de acceso que consume <code>AuthService</code> y guarda el token.</p>
-
-    <div class="theory-block">
-      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 3</span>
-        Generar LoginComponent y agregar ruta
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>terminal</span><span class="lang-badge lang-bash">bash</span></div>
-        <pre>ng generate component login
-<span class="cm"># Crea: src/app/login/login.ts (.html, .css)</span></pre>
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: login real con FakeStoreAPI</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn green" onclick="demoLogin()">    <i class="bi bi-play-fill"></i> authService.login()</button>
+            <button class="run-btn red"   onclick="demoLogout()">   <i class="bi bi-box-arrow-right"></i> authService.logout()</button>
+            <button class="run-btn"       onclick="demoIsLogged()"> <i class="bi bi-question-circle"></i> isLoggedIn()</button>
+            <button class="run-btn gray"  onclick="demoAuthReset()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-auth" class="output-area">Haz clic en un metodo para ver como funciona AuthService...</div>
+        </div>
       </div>
-      <p class="fw-semibold small mt-3 mb-1">Agregar la ruta en <code>app-routing-module.ts</code>:</p>
-      <div class="code-block">
-        <div class="code-header"><span>app-routing-module.ts — agregar ruta /login</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { LoginComponent } <span class="kw">from</span> <span class="str">'./login/login'</span>;
+    </section>
+
+    <!-- ══════════════════════════════ LOGIN ══════════════════════════════ -->
+    <section id="login" class="content-section">
+      <h2 class="fw-bold mb-1">Login</h2>
+      <p class="text-muted mb-4">El componente que consume <code>AuthService</code>, guarda el token y redirige al usuario.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 3</span>
+          Generar Login, Cart y Users
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>terminal</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>ng generate component login
+<span class="cm"># Crea en Angular 20:</span>
+<span class="cm">#   src/app/login/login.ts</span>
+<span class="cm">#   src/app/login/login.html</span>
+<span class="cm">#   src/app/login/login.css</span>
+<span class="cm"># Y agrega Login a declarations en app-module.ts</span>
+
+ng generate component cart
+<span class="cm"># Crea: src/app/cart/cart.ts (.html, .css)</span>
+
+ng generate component users
+<span class="cm"># Solo si no lo creaste en la tarea de Clase 6</span>
+<span class="cm"># Crea: src/app/users/users.ts (.html, .css)</span></pre>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>Nombres en Angular 20:</strong> el CLI genera las clases como <code>Login</code>, <code>Cart</code> y <code>Users</code> — sin el sufijo <code>Component</code>. Los archivos son <code>login.ts</code>, <code>cart.ts</code>, <code>users.ts</code> — sin <code>.component</code> en el nombre.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 4</span>
+          Actualizar app-routing-module.ts
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app-routing-module.ts — version Clase 7</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { RouterModule, Routes } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
+<span class="kw">import</span> { Products } <span class="kw">from</span> <span class="str">'./products/products'</span>;
+<span class="kw">import</span> { ProductDetail } <span class="kw">from</span> <span class="str">'./product-detail/product-detail'</span>;
+<span class="kw">import</span> { Login } <span class="kw">from</span> <span class="str">'./login/login'</span>;           <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { Users } <span class="kw">from</span> <span class="str">'./users/users'</span>;           <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { Cart }  <span class="kw">from</span> <span class="str">'./cart/cart'</span>;             <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { AuthGuard } <span class="kw">from</span> <span class="str">'./guards/auth.guard'</span>; <span class="cm">// NUEVO</span>
 
 <span class="kw">const</span> routes: <span class="typ">Routes</span> = [
   { <span class="prop">path</span>: <span class="str">''</span>,            <span class="prop">redirectTo</span>: <span class="str">'/products'</span>, <span class="prop">pathMatch</span>: <span class="str">'full'</span> },
-  { <span class="prop">path</span>: <span class="str">'products'</span>,    <span class="prop">component</span>: ProductsComponent,      <span class="prop">title</span>: <span class="str">'Gestion de Productos'</span> },
-  { <span class="prop">path</span>: <span class="str">'product/:id'</span>, <span class="prop">component</span>: ProductDetailComponent,    <span class="prop">title</span>: <span class="str">'Detalle Producto'</span> },
-  { <span class="prop">path</span>: <span class="str">'login'</span>,       <span class="prop">component</span>: LoginComponent,           <span class="prop">title</span>: <span class="str">'Login'</span> },           <span class="cm">// NUEVO</span>
-  { <span class="prop">path</span>: <span class="str">'users'</span>,       <span class="prop">component</span>: UsersComponent,           <span class="prop">title</span>: <span class="str">'Gestion de Usuarios'</span>,
-    <span class="prop">canActivate</span>: [<span class="typ">AuthGuard</span>] },                                                        <span class="cm">// NUEVO — Clase 7</span>
-  { <span class="prop">path</span>: <span class="str">'cart'</span>,        <span class="prop">component</span>: CartComponent,            <span class="prop">title</span>: <span class="str">'Carrito'</span> },         <span class="cm">// NUEVO</span>
-];</pre>
-      </div>
-    </div>
+  { <span class="prop">path</span>: <span class="str">'products'</span>,    <span class="prop">component</span>: Products,     <span class="prop">title</span>: <span class="str">'Gestion de Productos'</span> },
+  { <span class="prop">path</span>: <span class="str">'product/:id'</span>, <span class="prop">component</span>: ProductDetail, <span class="prop">title</span>: <span class="str">'Detalle Producto'</span> },
+  { <span class="prop">path</span>: <span class="str">'login'</span>,       <span class="prop">component</span>: Login,         <span class="prop">title</span>: <span class="str">'Login'</span> },           <span class="cm">// NUEVO</span>
+  { <span class="prop">path</span>: <span class="str">'cart'</span>,        <span class="prop">component</span>: Cart,          <span class="prop">title</span>: <span class="str">'Carrito'</span> },         <span class="cm">// NUEVO</span>
+  { <span class="prop">path</span>: <span class="str">'users'</span>,       <span class="prop">component</span>: Users,         <span class="prop">title</span>: <span class="str">'Gestion de Usuarios'</span>,
+    <span class="prop">canActivate</span>: [AuthGuard] },                                                    <span class="cm">// NUEVO — ruta protegida</span>
+];
 
-    <div class="theory-block">
-      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 4</span>
-        login.ts y login.html
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/login/login.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Component } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="dec">@NgModule</span>({
+  <span class="prop">imports</span>: [RouterModule.<span class="fn">forRoot</span>(routes)],
+  <span class="prop">exports</span>: [RouterModule]
+})
+<span class="kw">export class</span> <span class="typ">AppRoutingModule</span> { }</pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 5</span>
+          login.ts y login.html
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/login/login.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
 <span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'../services/auth.service'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-login'</span>,
+  <span class="prop">standalone</span>:  <span class="bool">false</span>,
   <span class="prop">templateUrl</span>: <span class="str">'./login.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./login.css'</span>]
+  <span class="prop">styleUrl</span>:    <span class="str">'./login.css'</span>
 })
-<span class="kw">export class</span> <span class="typ">LoginComponent</span> {
+<span class="kw">export class</span> <span class="typ">Login</span> {
 
-  <span class="cm">// Propiedades</span>
-  username: <span class="typ">string</span> = <span class="str">''</span>;
-  password: <span class="typ">string</span> = <span class="str">''</span>;
-  error:    <span class="typ">string</span> = <span class="str">''</span>;
+  <span class="cm">// Propiedades — mismo patron que Products</span>
+  username: <span class="typ">string</span>  = <span class="str">''</span>;
+  password: <span class="typ">string</span>  = <span class="str">''</span>;
+  error:    <span class="typ">string</span>  = <span class="str">''</span>;
   loading:  <span class="typ">boolean</span> = <span class="bool">false</span>;
 
   <span class="kw">constructor</span>(
@@ -431,8 +485,8 @@
 
     <span class="kw">this</span>.authService.<span class="fn">login</span>(<span class="kw">this</span>.username, <span class="kw">this</span>.password).<span class="fn">subscribe</span>(
       (response) => {
-        <span class="kw">this</span>.authService.<span class="fn">saveToken</span>(response.token);  <span class="cm">// guardar el JWT</span>
-        <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/users'</span>]);              <span class="cm">// redirigir a la ruta protegida</span>
+        <span class="kw">this</span>.authService.<span class="fn">saveToken</span>(response.token);
+        <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/users'</span>]);
       },
       (error) => {
         <span class="kw">this</span>.error   = <span class="str">'Usuario o contrasena incorrectos.'</span>;
@@ -441,65 +495,67 @@
     );
   }
 }</pre>
-      </div>
+        </div>
 
-      <div class="code-block">
-        <div class="code-header"><span>src/app/login/login.html</span><span class="lang-badge lang-html">HTML</span></div>
-        <pre><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container mt-5"</span> <span class="attr">style</span>=<span class="str">"max-width:400px"</span><span class="tag">&gt;</span>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/login/login.html</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container mt-5"</span> <span class="attr">style</span>=<span class="str">"max-width:400px"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;h2</span> <span class="attr">class</span>=<span class="str">"text-center mb-4"</span><span class="tag">&gt;</span>Iniciar sesion<span class="tag">&lt;/h2&gt;</span>
 
   <span class="tag">&lt;div</span> <span class="kw">*ngIf</span>=<span class="str">"error"</span> <span class="attr">class</span>=<span class="str">"alert alert-danger"</span><span class="tag">&gt;</span><span class="bind">{{error}}</span><span class="tag">&lt;/div&gt;</span>
 
   <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"mb-3"</span><span class="tag">&gt;</span>
     <span class="tag">&lt;label</span> <span class="attr">class</span>=<span class="str">"form-label"</span><span class="tag">&gt;</span>Usuario<span class="tag">&lt;/label&gt;</span>
+    <span class="cm">&lt;!-- [(ngModel)] usa FormsModule que ya esta en app-module.ts desde Clase 5 --&gt;</span>
     <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">class</span>=<span class="str">"form-control"</span>
            <span class="bind">[(ngModel)]</span>=<span class="str">"username"</span> <span class="attr">placeholder</span>=<span class="str">"mor_2314"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;/div&gt;</span>
+
   <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"mb-3"</span><span class="tag">&gt;</span>
     <span class="tag">&lt;label</span> <span class="attr">class</span>=<span class="str">"form-label"</span><span class="tag">&gt;</span>Contrasena<span class="tag">&lt;/label&gt;</span>
     <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"password"</span> <span class="attr">class</span>=<span class="str">"form-control"</span>
            <span class="bind">[(ngModel)]</span>=<span class="str">"password"</span> <span class="attr">placeholder</span>=<span class="str">"83r5^_"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;/div&gt;</span>
+
   <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary w-100"</span>
           <span class="bind">(click)</span>=<span class="str">"login()"</span>
           <span class="bind">[disabled]</span>=<span class="str">"loading"</span><span class="tag">&gt;</span>
     <span class="bind">{{loading ? 'Entrando...' : 'Entrar'}}</span>
   <span class="tag">&lt;/button&gt;</span>
 <span class="tag">&lt;/div&gt;</span></pre>
+        </div>
+        <div class="callout callout-green">
+          <strong><code>[(ngModel)]</code> ya funciona sin configuracion adicional.</strong> <code>FormsModule</code> se importo en <code>app-module.ts</code> desde la Clase 5. No hace falta agregarlo de nuevo.
+        </div>
       </div>
-      <div class="callout callout-purple">
-        <strong><code>[(ngModel)]</code> requiere <code>FormsModule</code></strong> en <code>app-module.ts</code>. Agregar <code>import { FormsModule } from '@angular/forms'</code> arriba e incluirlo en el array <code>imports</code>.
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ INTERCEPTOR ══════════════════════════════ -->
-  <section id="interceptor" class="content-section">
-    <h2 class="fw-bold mb-1">Interceptor HTTP</h2>
-    <p class="text-muted mb-4">Se configura una sola vez y agrega el token JWT a todas las peticiones salientes de forma automatica.</p>
+    <!-- ══════════════════════════════ INTERCEPTOR ══════════════════════════════ -->
+    <section id="interceptor" class="content-section">
+      <h2 class="fw-bold mb-1">Interceptor HTTP</h2>
+      <p class="text-muted mb-4">Se configura una sola vez y agrega el token JWT a todas las peticiones salientes automaticamente.</p>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-filter" style="color:var(--accent)"></i> Como funciona un interceptor</h4>
-      <p>Un interceptor es una clase que "intercepta" cada peticion HTTP antes de que salga y puede modificarla. En este caso, agrega el header <code>Authorization: Bearer &lt;token&gt;</code>:</p>
-      <div class="code-block">
-        <div class="code-header"><span>flujo con interceptor</span></div>
-        <pre><span class="cm">// Sin interceptor — hay que agregar el token en cada llamada:</span>
+      <div class="theory-block">
+        <h4><i class="bi bi-filter" style="color:var(--accent)"></i> Como funciona un interceptor</h4>
+        <div class="code-block">
+          <div class="code-header"><span>sin vs con interceptor</span></div>
+          <pre><span class="cm">// Sin interceptor — hay que agregar el token en cada llamada manualmente:</span>
 <span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'url'</span>, { <span class="prop">headers</span>: { Authorization: <span class="str">`Bearer </span>${token}<span class="str">`</span> } });
 
-<span class="cm">// Con interceptor — se agrega automaticamente en TODAS las peticiones:</span>
-<span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'url'</span>);  <span class="cm">// el interceptor agrega el token antes de enviar</span></pre>
+<span class="cm">// Con interceptor — el token se agrega automaticamente en TODAS las peticiones:</span>
+<span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'url'</span>);  <span class="cm">// el interceptor lo intercepta y agrega el token antes de enviar</span></pre>
+        </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 5</span>
-        Generar el interceptor con Angular CLI
-      </h4>
-      <p style="font-size:.9rem">En Angular 20 sí puedes generarlo con el CLI usando <code>ng generate interceptor interceptors/auth</code>. Después completas la lógica del archivo generado:</p>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/interceptors/auth.interceptor.ts — generado con CLI</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-file-earmark-plus" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 6</span>
+          Crear el interceptor manualmente
+        </h4>
+        <p style="font-size:.9rem">El CLI no tiene un comando para generar interceptores con modulos tradicionales. Se crea el archivo manualmente en una nueva carpeta <code>interceptors/</code> dentro de <code>src/app/</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/interceptors/auth.interceptor.ts — archivo nuevo creado manualmente</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { HttpInterceptor, HttpRequest, HttpHandler } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
 
 <span class="dec">@Injectable</span>()
@@ -513,51 +569,83 @@
       <span class="kw">const</span> cloned = req.<span class="fn">clone</span>({
         <span class="prop">setHeaders</span>: { Authorization: <span class="str">`Bearer </span>${token}<span class="str">`</span> }
       });
-      <span class="kw">return</span> next.<span class="fn">handle</span>(cloned);  <span class="cm">// enviar la peticion modificada</span>
+      <span class="kw">return</span> next.<span class="fn">handle</span>(cloned);
     }
 
     <span class="kw">return</span> next.<span class="fn">handle</span>(req);  <span class="cm">// si no hay token, enviar sin modificar</span>
   }
 }</pre>
-      </div>
+        </div>
 
-      <p class="fw-semibold small mt-3 mb-1">Registrar el interceptor en <code>app-module.ts</code>:</p>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/app-module.ts — registrar el interceptor</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { HTTP_INTERCEPTORS } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
-<span class="kw">import</span> { AuthInterceptor } <span class="kw">from</span> <span class="str">'./interceptors/auth.interceptor'</span>;
+        <p class="fw-semibold small mt-3 mb-1">Registrar el interceptor en <code>app-module.ts</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app-module.ts — version Clase 7 completa</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { NgModule, provideBrowserGlobalErrorListeners } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="str">'@angular/platform-browser'</span>;
+<span class="kw">import</span> { FormsModule } <span class="kw">from</span> <span class="str">'@angular/forms'</span>;
+<span class="kw">import</span> { HttpClientModule, HTTP_INTERCEPTORS } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
+
+<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing-module'</span>;
+<span class="kw">import</span> { App }           <span class="kw">from</span> <span class="str">'./app'</span>;
+<span class="kw">import</span> { Products }      <span class="kw">from</span> <span class="str">'./products/products'</span>;
+<span class="kw">import</span> { ProductCard }   <span class="kw">from</span> <span class="str">'./product-card/product-card'</span>;
+<span class="kw">import</span> { ProductDetail } <span class="kw">from</span> <span class="str">'./product-detail/product-detail'</span>;
+<span class="kw">import</span> { Login }         <span class="kw">from</span> <span class="str">'./login/login'</span>;           <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { Users }         <span class="kw">from</span> <span class="str">'./users/users'</span>;           <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { Cart }          <span class="kw">from</span> <span class="str">'./cart/cart'</span>;             <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { AuthInterceptor } <span class="kw">from</span> <span class="str">'./interceptors/auth.interceptor'</span>;  <span class="cm">// NUEVO</span>
 
 <span class="dec">@NgModule</span>({
-  <span class="cm">// ... declarations, imports ...</span>
+  <span class="prop">declarations</span>: [
+    App,
+    Products,
+    ProductCard,
+    ProductDetail,
+    Login,    <span class="cm">// NUEVO</span>
+    Users,    <span class="cm">// NUEVO</span>
+    Cart,     <span class="cm">// NUEVO</span>
+  ],
+  <span class="prop">imports</span>: [
+    BrowserModule,
+    FormsModule,
+    AppRoutingModule,
+    HttpClientModule,
+  ],
   <span class="prop">providers</span>: [
+    provideBrowserGlobalErrorListeners(),
     {
       <span class="prop">provide</span>:  HTTP_INTERCEPTORS,
       <span class="prop">useClass</span>: AuthInterceptor,
       <span class="prop">multi</span>:    <span class="bool">true</span>   <span class="cm">// permite multiples interceptores en la misma app</span>
     }
-  ]
-})</pre>
+  ],
+  <span class="prop">bootstrap</span>: [App]
+})
+<span class="kw">export class</span> <span class="typ">AppModule</span> { }</pre>
+        </div>
+        <div class="callout callout-amber">
+          <strong>Un error comun es</strong> agregar el interceptor en <code>imports</code> en lugar de <code>providers</code>. Los interceptores no son modulos; son servicios que se registran con el token <code>HTTP_INTERCEPTORS</code> dentro del array <code>providers</code>.
+        </div>
+        <div class="callout callout-blue mt-2">
+          <strong>Por que <code>multi: true</code>?</strong> Angular permite tener varios interceptores al mismo tiempo en cadena. El <code>multi: true</code> agrega este interceptor a la lista existente en lugar de reemplazarla.
+        </div>
       </div>
-      <div class="callout callout-amber">
-        <strong>Por que <code>multi: true</code>?</strong> Angular permite tener varios interceptores activos al mismo tiempo. El <code>multi: true</code> le indica que este interceptor se agrega a la lista existente, en lugar de reemplazarla.
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ GUARD ══════════════════════════════ -->
-  <section id="guard" class="content-section">
-    <h2 class="fw-bold mb-1">AuthGuard — Proteger rutas</h2>
-    <p class="text-muted mb-4">Un guard verifica una condicion antes de que Angular active una ruta. Si la condicion falla, redirige al usuario.</p>
+    <!-- ══════════════════════════════ GUARD ══════════════════════════════ -->
+    <section id="guard" class="content-section">
+      <h2 class="fw-bold mb-1">AuthGuard — Proteger rutas</h2>
+      <p class="text-muted mb-4">Un guard verifica una condicion antes de que Angular active una ruta. Si la condicion falla, redirige al usuario al login.</p>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 6</span>
-        Generar el guard con Angular CLI
-      </h4>
-      <p style="font-size:.9rem">En Angular 20 puedes crearlo con <code>ng generate guard guards/auth</code> y luego completar la validación:</p>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/guards/auth.guard.ts — generado con CLI</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-file-earmark-plus" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 7</span>
+          Crear el guard manualmente
+        </h4>
+        <p style="font-size:.9rem">Se crea manualmente en una nueva carpeta <code>guards/</code> dentro de <code>src/app/</code>. El guard usa <code>providedIn: 'root'</code>, por lo que no necesita registrarse en <code>app-module.ts</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/guards/auth.guard.ts — archivo nuevo creado manualmente</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { CanActivate, Router } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
 <span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'../services/auth.service'</span>;
 
@@ -573,87 +661,92 @@
     <span class="kw">if</span> (<span class="kw">this</span>.authService.<span class="fn">isLoggedIn</span>()) {
       <span class="kw">return</span> <span class="bool">true</span>;  <span class="cm">// hay token — puede entrar</span>
     }
-
     <span class="cm">// No hay token — redirigir al login</span>
     <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/login'</span>]);
     <span class="kw">return</span> <span class="bool">false</span>;
   }
 }</pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>Como funciona en la ruta:</strong> cuando el usuario intenta ir a <code>/users</code>, Angular llama a <code>AuthGuard.canActivate()</code> antes de cargar el componente. Si devuelve <code>true</code>, carga la pagina. Si devuelve <code>false</code>, redirige a <code>/login</code>.
+        </div>
       </div>
-      <div class="callout callout-blue">
-        <strong>Como funciona en la ruta:</strong> cuando el usuario intenta navegar a <code>/users</code>, Angular llama a <code>AuthGuard.canActivate()</code> antes de cargar el componente. Si devuelve <code>true</code>, carga la pagina. Si devuelve <code>false</code>, redirige a <code>/login</code>.
-      </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-signpost" style="color:var(--accent)"></i> UsersComponent — la ruta protegida</h4>
-      <p style="font-size:.9rem">El componente que solo se muestra con token valido. Consume el endpoint <code>GET /users</code>:</p>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/users/users.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 8</span>
+          users.ts — la ruta protegida
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/users/users.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { HttpClient } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-users'</span>,
-  <span class="prop">templateUrl</span>: <span class="str">'./users.component.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./users.component.css'</span>]
+  <span class="prop">standalone</span>:  <span class="bool">false</span>,
+  <span class="prop">templateUrl</span>: <span class="str">'./users.html'</span>,
+  <span class="prop">styleUrl</span>:    <span class="str">'./users.css'</span>
 })
-<span class="kw">export class</span> <span class="typ">UsersComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+<span class="kw">export class</span> <span class="typ">Users</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
 
   data: <span class="typ">any</span> = [];
 
   <span class="kw">constructor</span>(<span class="kw">private</span> http: <span class="typ">HttpClient</span>) { }
 
   <span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
-    <span class="cm">// El interceptor agrega el token automaticamente</span>
+    <span class="cm">// El interceptor agrega el token automaticamente a esta peticion</span>
     <span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'https://fakestoreapi.com/users'</span>).<span class="fn">subscribe</span>(
       (response) => { <span class="kw">this</span>.data = response; },
       (error)    => { <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">'Error:'</span>, error); }
     );
   }
 }</pre>
-      </div>
-    </div>
-
-    <div class="sandbox">
-      <div class="sandbox-header">
-        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: flujo completo Login → Guard → Ruta protegida</div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="run-btn green" onclick="demoFlujoLogin()">   <i class="bi bi-play-fill"></i> Login con credenciales reales</button>
-          <button class="run-btn"       onclick="demoFlujoGuard()">   <i class="bi bi-shield"></i> canActivate() con token</button>
-          <button class="run-btn red"   onclick="demoFlujoSinToken()"><i class="bi bi-x-circle"></i> canActivate() sin token</button>
-          <button class="run-btn gray"  onclick="demoFlujoReset()">   <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
         </div>
       </div>
-      <div class="sandbox-body">
-        <div id="out-guard" class="output-area">Haz clic en un boton para simular el flujo de autenticacion...</div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: flujo Login — Guard — Ruta protegida</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn green" onclick="demoFlujoLogin()">    <i class="bi bi-play-fill"></i> Login con credenciales reales</button>
+            <button class="run-btn"       onclick="demoFlujoGuard()">    <i class="bi bi-shield"></i> canActivate() con token</button>
+            <button class="run-btn red"   onclick="demoFlujoSinToken()"> <i class="bi bi-x-circle"></i> canActivate() sin token</button>
+            <button class="run-btn gray"  onclick="demoFlujoReset()">    <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-guard" class="output-area">Haz clic en un boton para simular el flujo de autenticacion...</div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ CARRITO ══════════════════════════════ -->
-  <section id="carrito" class="content-section">
-    <h2 class="fw-bold mb-1">CartService y BehaviorSubject</h2>
-    <p class="text-muted mb-4">Estado compartido del carrito entre todos los componentes. Cualquier cambio se propaga automaticamente al navbar y a la pagina del carrito.</p>
+    <!-- ══════════════════════════════ CARRITO ══════════════════════════════ -->
+    <section id="carrito" class="content-section">
+      <h2 class="fw-bold mb-1">CartService y BehaviorSubject</h2>
+      <p class="text-muted mb-4">Estado compartido del carrito entre todos los componentes. Cualquier cambio se propaga automaticamente al navbar y a la pagina del carrito.</p>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Que es BehaviorSubject</h4>
-      <p>Un <code>BehaviorSubject</code> es un Observable especial que guarda el ultimo valor emitido y lo entrega inmediatamente a cualquier componente que se suscriba. Es la forma recomendada de compartir estado en Angular:</p>
-      <div class="compare-cols">
-        <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
-          <h6 style="color:#991b1b;font-size:.83rem">Codigo que se vuelve dificil de mantener</h6>
-          <pre style="font-size:.78rem;color:#78350f;margin:0;line-height:1.9"><span class="cm">// Cada componente tiene su propia copia</span>
+      <div class="theory-block">
+        <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Que es BehaviorSubject</h4>
+        <p>Un <code>BehaviorSubject</code> es un Observable especial que guarda el ultimo valor emitido y lo entrega inmediatamente a cualquier componente que se suscriba:</p>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
+            <h6 style="color:#991b1b;font-size:.83rem">Codigo que se vuelve dificil de mantener</h6>
+            <pre style="font-size:.78rem;color:#78350f;margin:0;line-height:1.9"><span class="cm">// Products y App tienen copias separadas</span>
 <span class="cm">// y hay que sincronizarlas manualmente</span>
-<span class="cm">// ProductsComponent:</span>
+
+<span class="cm">// App (navbar):</span>
+contadorCarrito = <span class="num">0</span>;
+
+<span class="cm">// Products:</span>
 carrito = [];
 
-<span class="cm">// AppComponent (navbar):</span>
-contadorCarrito = <span class="num">0</span>;
-<span class="cm">// Hay que actualizar ambos en cada cambio</span></pre>
-        </div>
-        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
-          <h6 style="color:#065f46;font-size:.83rem">Como mejorar: BehaviorSubject compartido</h6>
-          <pre style="font-size:.78rem;color:#14532d;margin:0;line-height:1.9"><span class="cm">// Una sola fuente de verdad en CartService</span>
+<span class="cm">// Al agregar un producto hay que actualizar</span>
+<span class="cm">// ambos en cada cambio — codigo fragil</span></pre>
+          </div>
+          <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <h6 style="color:#065f46;font-size:.83rem">Como mejorar: BehaviorSubject compartido</h6>
+            <pre style="font-size:.78rem;color:#14532d;margin:0;line-height:1.9"><span class="cm">// Una sola fuente de verdad en CartService</span>
 cartItems$ = <span class="kw">new</span> <span class="typ">BehaviorSubject</span>([]);
 
 <span class="cm">// Cualquier componente se suscribe:</span>
@@ -661,31 +754,31 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
   <span class="kw">this</span>.contadorCarrito = items.length;
 });
 <span class="cm">// Se actualiza automaticamente</span></pre>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 7</span>
-        Generar CartService y CartComponent
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>terminal</span><span class="lang-badge lang-bash">bash</span></div>
-        <pre>ng generate service services/cart
-ng generate component cart
-<span class="cm"># Atajos: ng g s services/cart  /  ng g c cart</span></pre>
+      <div class="theory-block">
+        <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 9</span>
+          Generar CartService
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>terminal</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>ng generate service services/cart
+<span class="cm"># Atajo: ng g s services/cart</span>
+<span class="cm"># Crea: src/app/services/cart.service.ts</span></pre>
+        </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 8</span>
-        cart.service.ts
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/services/cart.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 10</span>
+          cart.service.ts
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/services/cart.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { BehaviorSubject } <span class="kw">from</span> <span class="str">'rxjs'</span>;
 
 <span class="dec">@Injectable</span>({ <span class="prop">providedIn</span>: <span class="str">'root'</span> })
@@ -696,7 +789,7 @@ ng generate component cart
   cartItems$ = <span class="kw">this</span>.cartItems.asObservable();  <span class="cm">// expuesto como Observable (solo lectura)</span>
 
   <span class="kw">constructor</span>() {
-    <span class="cm">// Cargar el carrito guardado al iniciar la app</span>
+    <span class="cm">// Cargar el carrito guardado en localStorage al iniciar la app</span>
     <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">'cart'</span>);
     <span class="kw">if</span> (saved) {
       <span class="kw">this</span>.cartItems.<span class="fn">next</span>(<span class="fn">JSON</span>.<span class="fn">parse</span>(saved));
@@ -730,71 +823,73 @@ ng generate component cart
     <span class="kw">return</span> <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>().<span class="fn">reduce</span>((sum, item) => sum + item.price, <span class="num">0</span>);
   }
 }</pre>
-      </div>
-    </div>
-
-    <div class="sandbox">
-      <div class="sandbox-header">
-        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: CartService con BehaviorSubject en accion</div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="run-btn green" onclick="demoAddCart()">    <i class="bi bi-cart-plus"></i> addToCart()</button>
-          <button class="run-btn red"   onclick="demoRemoveCart()"> <i class="bi bi-trash"></i> removeFromCart()</button>
-          <button class="run-btn amber" onclick="demoClearCart()">  <i class="bi bi-x-circle"></i> clearCart()</button>
-          <button class="run-btn"       onclick="demoGetTotal()">   <i class="bi bi-calculator"></i> getTotal()</button>
-          <button class="run-btn gray"  onclick="demoCartReset()">  <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
         </div>
       </div>
-      <div class="sandbox-body">
-        <div class="row g-3 mb-3">
-          <div class="col-md-5">
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1rem">
-              <div style="font-size:.75rem;color:#64748b;font-weight:600;margin-bottom:.5rem">Estado del carrito (BehaviorSubject)</div>
-              <div id="cart-state" style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#1e293b;min-height:40px">[ ] — vacio</div>
-              <div style="font-size:.75rem;color:#94a3b8;margin-top:.5rem">cartItems$ → suscriptores se actualizan automaticamente</div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: CartService con BehaviorSubject en accion</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn green" onclick="demoAddCart()">    <i class="bi bi-cart-plus"></i> addToCart()</button>
+            <button class="run-btn red"   onclick="demoRemoveCart()"> <i class="bi bi-trash"></i> removeFromCart()</button>
+            <button class="run-btn amber" onclick="demoClearCart()">  <i class="bi bi-x-circle"></i> clearCart()</button>
+            <button class="run-btn"       onclick="demoGetTotal()">   <i class="bi bi-calculator"></i> getTotal()</button>
+            <button class="run-btn gray"  onclick="demoCartReset()">  <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div class="row g-3 mb-3">
+            <div class="col-md-5">
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:1rem">
+                <div style="font-size:.75rem;color:#64748b;font-weight:600;margin-bottom:.5rem">Estado del carrito (BehaviorSubject)</div>
+                <div id="cart-state" style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#1e293b;min-height:40px">[ ] — vacio</div>
+                <div style="font-size:.75rem;color:#94a3b8;margin-top:.5rem">cartItems$ emite — suscriptores se actualizan automaticamente</div>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <div id="out-cart" class="output-area" style="min-height:80px">Haz clic en un metodo para ver BehaviorSubject en accion...</div>
             </div>
           </div>
-          <div class="col-md-7">
-            <div id="out-cart" class="output-area" style="min-height:80px">Haz clic en un metodo para ver BehaviorSubject en accion...</div>
-          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ NAVBAR ══════════════════════════════ -->
-  <section id="navbar" class="content-section">
-    <h2 class="fw-bold mb-1">Navbar dinamico</h2>
-    <p class="text-muted mb-4">El componente raiz suscrito al carrito y al estado de autenticacion. El contador y el boton Login/Logout reaccionan en tiempo real.</p>
+    <!-- ══════════════════════════════ NAVBAR ══════════════════════════════ -->
+    <section id="navbar" class="content-section">
+      <h2 class="fw-bold mb-1">Navbar dinamico</h2>
+      <p class="text-muted mb-4">El componente raiz suscrito al carrito y al estado de autenticacion. El contador y el boton Login/Logout reaccionan en tiempo real.</p>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 9</span>
-        app.ts actualizado
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/app.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 11</span>
+          app.ts actualizado
+        </h4>
+        <p style="font-size:.9rem">El componente raiz (<code>App</code>) se suscribe al carrito en <code>ngOnInit()</code>. El navbar muestra el contador actualizado y los botones Login/Logout segun el estado de sesion:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app.ts — version Clase 7</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
 <span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'./services/auth.service'</span>;
 <span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'./services/cart.service'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-root'</span>,
+  <span class="prop">standalone</span>:  <span class="bool">false</span>,
   <span class="prop">templateUrl</span>: <span class="str">'./app.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./app.css'</span>]
+  <span class="prop">styleUrl</span>:    <span class="str">'./app.css'</span>
 })
-<span class="kw">export class</span> <span class="typ">AppComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+<span class="kw">export class</span> <span class="typ">App</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
 
   contadorCarrito: <span class="typ">number</span> = <span class="num">0</span>;
 
   <span class="kw">constructor</span>(
-    <span class="kw">public</span>  authService: <span class="typ">AuthService</span>,  <span class="cm">// public para usarlo directamente en el HTML</span>
+    <span class="kw">public</span>  authService: <span class="typ">AuthService</span>,  <span class="cm">// public para usarlo directamente en app.html</span>
     <span class="kw">private</span> cartService: <span class="typ">CartService</span>,
     <span class="kw">private</span> router:      <span class="typ">Router</span>
   ) { }
 
   <span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
-    <span class="cm">// Suscribirse al carrito — el contador se actualiza automaticamente</span>
+    <span class="cm">// Suscribirse al carrito — contadorCarrito se actualiza automaticamente</span>
     <span class="kw">this</span>.cartService.cartItems$.<span class="fn">subscribe</span>(items => {
       <span class="kw">this</span>.contadorCarrito = items.length;
     });
@@ -805,22 +900,25 @@ ng generate component cart
     <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/login'</span>]);
   }
 }</pre>
+        </div>
+        <div class="callout callout-purple">
+          <strong>Por que <code>public authService</code>?</strong> Para poder llamar a <code>authService.isLoggedIn()</code> directamente en <code>app.html</code>. Las propiedades <code>private</code> no son accesibles desde el template. Solo las propiedades <code>public</code> pueden usarse en el HTML.
+        </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 10</span>
-        app.html — navbar completo
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/app.html</span><span class="lang-badge lang-html">HTML</span></div>
-        <pre><span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="str">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="tag">&gt;</span>
+      <div class="theory-block">
+        <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 12</span>
+          app.html — navbar completo con carrito y autenticacion
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app.html — version Clase 7</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="str">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container-fluid"</span><span class="tag">&gt;</span>
     <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"navbar-brand"</span> <span class="attr">routerLink</span>=<span class="str">"/"</span><span class="tag">&gt;</span>Mi Tienda<span class="tag">&lt;/a&gt;</span>
     <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"collapse navbar-collapse"</span><span class="tag">&gt;</span>
 
-      <span class="cm">&lt;!-- Links de navegacion izquierda --&gt;</span>
+      <span class="cm">&lt;!-- Links izquierda --&gt;</span>
       <span class="tag">&lt;ul</span> <span class="attr">class</span>=<span class="str">"navbar-nav me-auto"</span><span class="tag">&gt;</span>
         <span class="tag">&lt;li</span> <span class="attr">class</span>=<span class="str">"nav-item"</span><span class="tag">&gt;</span>
           <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"nav-link"</span> <span class="attr">routerLink</span>=<span class="str">"/products"</span><span class="tag">&gt;</span>Products<span class="tag">&lt;/a&gt;</span>
@@ -831,7 +929,7 @@ ng generate component cart
         <span class="tag">&lt;/li&gt;</span>
       <span class="tag">&lt;/ul&gt;</span>
 
-      <span class="cm">&lt;!-- Links de navegacion derecha --&gt;</span>
+      <span class="cm">&lt;!-- Links derecha --&gt;</span>
       <span class="tag">&lt;ul</span> <span class="attr">class</span>=<span class="str">"navbar-nav"</span><span class="tag">&gt;</span>
         <span class="cm">&lt;!-- Carrito con contador dinamico --&gt;</span>
         <span class="tag">&lt;li</span> <span class="attr">class</span>=<span class="str">"nav-item"</span><span class="tag">&gt;</span>
@@ -856,535 +954,563 @@ ng generate component cart
 <span class="tag">&lt;/nav&gt;</span>
 
 <span class="tag">&lt;router-outlet&gt;&lt;/router-outlet&gt;</span></pre>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════ EJERCICIO ══════════════════════════════ -->
-  <section id="ejercicio" class="content-section">
-    <h2 class="fw-bold mb-1">Demo final — la tienda completa</h2>
-    <p class="text-muted mb-4">Verificacion de que todos los flujos funcionan de extremo a extremo.</p>
-
-    <div class="theory-block">
-      <h4><i class="bi bi-signpost" style="color:var(--accent)"></i> Estructura final del proyecto</h4>
-      <div class="file-tree">
-        <div><span class="dir">src/app/</span></div>
-        <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> HttpClientModule, FormsModule, interceptor</span></div>
-        <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> todas las rutas + canActivate</span></div>
-        <div>&nbsp;&nbsp;<span class="ts">app.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> navbar con contador y logout</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">products/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> tabla, filtros, routerLink</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">product-card/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> fila con @Input() y boton carrito</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">product-detail/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ActivatedRoute, detalle completo</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">login/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — formulario con ngModel</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">users/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — ruta protegida</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">cart/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — pagina del carrito</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">services/</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> getProducts, getById, getByCategory</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">auth.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — login, token, isLoggedIn</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">cart.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — BehaviorSubject, localStorage</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">guards/</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">auth.guard.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — canActivate</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">interceptors/</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">auth.interceptor.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — agrega JWT a cada request</span></div>
-      </div>
-    </div>
-
-    <div class="theory-block">
-      <h4><i class="bi bi-list-check" style="color:var(--accent)"></i> Checklist de validacion final del Modulo 1</h4>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <ul class="checklist">
-            <li class="done"><code>ng serve</code> corre sin errores de compilacion</li>
-            <li class="done">Login con <code>mor_2314</code> / <code>83r5^_</code> devuelve token real</li>
-            <li class="done">Token guardado en <code>localStorage["token"]</code></li>
-            <li class="done">Interceptor agrega <code>Authorization: Bearer ...</code> automaticamente</li>
-            <li class="done">Ruta <code>/users</code> redirige a <code>/login</code> sin token</li>
-            <li class="done">Ruta <code>/users</code> carga la lista con token valido</li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <ul class="checklist">
-            <li class="done">Ruta <code>/products</code> muestra los 20 productos de FakeStore</li>
-            <li class="done">Ruta <code>/product/:id</code> muestra el detalle individual</li>
-            <li class="done">Boton "Agregar al carrito" actualiza el contador del navbar</li>
-            <li class="done">Carrito persiste al recargar la pagina</li>
-            <li class="done">Navbar muestra Login o Logout segun el estado de sesion</li>
-            <li class="done">Logout elimina el token y redirige a <code>/login</code></li>
-          </ul>
         </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-bug" style="color:var(--accent)"></i> Errores comunes y sus soluciones</h4>
+      <div class="theory-block">
+        <h4><i class="bi bi-cart-plus" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 13</span>
+          Agregar boton de carrito en product-card
+        </h4>
+        <p style="font-size:.9rem">Se actualiza <code>product-card.ts</code> para inyectar <code>CartService</code> y agregar el metodo <code>agregarAlCarrito()</code>. Tambien se agrega el boton en <code>product-card.html</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-card/product-card.ts — version Clase 7</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, Input, Output, EventEmitter } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>;  <span class="cm">// NUEVO</span>
 
-      <p class="fw-semibold small mb-1">1 El interceptor no agrega el token</p>
-      <div class="error-box">
-        <div class="file">Red / DevTools — las peticiones no tienen el header Authorization</div>
-        Las peticiones a /users llegan sin token
-        <div class="fix">Verificar que el interceptor esta registrado en <code>providers</code> de <code>app-module.ts</code> con <code>{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }</code>. Es el error mas frecuente al agregar interceptores.</div>
-      </div>
+<span class="dec">@Component</span>({
+  <span class="prop">selector</span>:    <span class="str">'tr[app-product-card]'</span>,
+  <span class="prop">standalone</span>:  <span class="bool">false</span>,
+  <span class="prop">templateUrl</span>: <span class="str">'./product-card.html'</span>,
+  <span class="prop">styleUrl</span>:    <span class="str">'./product-card.css'</span>
+})
+<span class="kw">export class</span> <span class="typ">ProductCard</span> {
+  <span class="dec">@Input</span>() product: <span class="typ">any</span> = <span class="kw">null</span>;
+  <span class="dec">@Output</span>() detalle = <span class="kw">new</span> <span class="typ">EventEmitter</span>&lt;<span class="typ">number</span>&gt;();
 
-      <p class="fw-semibold small mb-1 mt-3">2 El guard no redirige — entra a /users sin login</p>
-      <div class="error-box">
-        <div class="file">app-routing-module.ts</div>
-        Se puede acceder a /users sin haber hecho login
-        <div class="fix">Verificar que la ruta tiene <code>canActivate: [AuthGuard]</code>. Tambien importar <code>AuthGuard</code> en <code>app-routing-module.ts</code>: <code>import { AuthGuard } from './guards/auth.guard'</code>.</div>
-      </div>
+  <span class="kw">constructor</span>(<span class="kw">private</span> cartService: <span class="typ">CartService</span>) { }  <span class="cm">// NUEVO</span>
 
-      <p class="fw-semibold small mb-1 mt-3">3 El contador del carrito no se actualiza en el navbar</p>
-      <div class="error-box">
-        <div class="file">app.ts</div>
-        contadorCarrito siempre muestra 0
-        <div class="fix">Verificar que en <code>ngOnInit()</code> esta la suscripcion: <code>this.cartService.cartItems$.subscribe(items => this.contadorCarrito = items.length)</code>. Sin la suscripcion, el componente no recibe los cambios del BehaviorSubject.</div>
-      </div>
-    </div>
-  </section>
+  <span class="fn">verDetalle</span>(): <span class="typ">void</span> {
+    <span class="kw">if</span> (<span class="kw">this</span>.product) {
+      <span class="kw">this</span>.detalle.<span class="fn">emit</span>(<span class="kw">this</span>.product.id);
+    }
+  }
 
-  <!-- ══════════════════════════════ Q&A ══════════════════════════════ -->
-  <section id="qa" class="content-section">
-    <h2 class="fw-bold mb-1">Q&A y Cierre del Modulo 1</h2>
-    <p class="text-muted mb-4">Ultimas preguntas tecnicas antes de cerrar el modulo.</p>
-
-    <div class="row g-4 mb-4">
-      <div class="col-md-6">
-        <div class="theory-block h-100">
-          <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
-          <ul style="font-size:.9rem;line-height:2.2">
-            <li>Flujo completo de autenticacion JWT: login → token → localStorage</li>
-            <li><code>AuthService</code>: login, saveToken, isLoggedIn, logout</li>
-            <li><code>LoginComponent</code> con <code>[(ngModel)]</code> y <code>FormsModule</code></li>
-            <li>Interceptor HTTP — firma todas las peticiones automaticamente</li>
-            <li><code>AuthGuard</code> — protege rutas con <code>canActivate</code></li>
-            <li><code>BehaviorSubject</code> — estado reactivo compartido entre componentes</li>
-            <li><code>CartService</code> con addToCart, removeFromCart, clearCart, getTotal</li>
-            <li>Navbar dinamico suscrito al carrito y al estado de sesion</li>
-            <li>Persistencia del carrito con localStorage</li>
-          </ul>
+  <span class="fn">agregarAlCarrito</span>(): <span class="typ">void</span> {    <span class="cm">// NUEVO</span>
+    <span class="kw">if</span> (<span class="kw">this</span>.product) {
+      <span class="kw">this</span>.cartService.<span class="fn">addToCart</span>(<span class="kw">this</span>.product);
+    }
+  }
+}</pre>
         </div>
-      </div>
-      <div class="col-md-6">
-        <div class="theory-block h-100">
-          <h4><i class="bi bi-patch-question" style="color:var(--accent)"></i> Preguntas frecuentes</h4>
-          <div class="p-3 rounded-3 mb-2" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#4c1d95">Por que <code>public authService</code> en AppComponent?</p>
-            <p class="small mb-0" style="color:#374151">Para poder llamar a <code>authService.isLoggedIn()</code> directamente en el HTML. Las propiedades <code>private</code> no son accesibles desde el template. Solo las propiedades <code>public</code> (o sin modificador) pueden usarse en el HTML.</p>
-          </div>
-          <div class="p-3 rounded-3 mb-2" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#4c1d95">Cual es la diferencia entre <code>Observable</code> y <code>BehaviorSubject</code>?</p>
-            <p class="small mb-0" style="color:#374151">Un Observable normal solo emite valores cuando hay nuevos datos. Un BehaviorSubject siempre tiene un valor actual y lo entrega inmediatamente a cualquier nuevo suscriptor. Por eso es ideal para el estado del carrito: cuando el navbar se carga, recibe el conteo actual sin esperar.</p>
-          </div>
-          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#4c1d95">El token de FakeStoreAPI es seguro para produccion?</p>
-            <p class="small mb-0" style="color:#374151">No — es una API de prueba para aprendizaje. En produccion el JWT lo genera tu propio backend (Spring Boot en Modulo 2) con una clave secreta real. El flujo es identico: POST login → token → localStorage → interceptor.</p>
-          </div>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-card/product-card.html — version Clase 7</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;td&gt;</span><span class="bind">{{product?.id}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.title}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span>$<span class="bind">{{product?.price}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.category}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;&lt;img</span> <span class="attr">height</span>=<span class="str">"80px"</span> <span class="bind">[src]</span>=<span class="str">"product?.image"</span><span class="tag">/&gt;&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span>
+  <span class="cm">&lt;!-- Ver detalle: navega a /product/:id --&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm me-1"</span>
+     <span class="bind">[routerLink]</span>=<span class="str">"['/product', product?.id]"</span><span class="tag">&gt;</span>
+    Ver detalle
+  <span class="tag">&lt;/a&gt;</span>
+  <span class="cm">&lt;!-- Agregar al carrito: llama al metodo del componente hijo --&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary btn-sm"</span>
+          <span class="bind">(click)</span>=<span class="str">"agregarAlCarrito()"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-cart-plus"</span><span class="tag">&gt;&lt;/i&gt;</span>
+  <span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/td&gt;</span></pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>Por que inyectar <code>CartService</code> en <code>ProductCard</code>?</strong> El hijo es quien tiene el boton y sabe que producto mostrar. Al inyectar el servicio directamente en el hijo, evita tener que emitir un evento al padre solo para agregar al carrito. El servicio es la capa compartida.
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ CIERRE DEL DIPLOMADO ══════════════════════════════ -->
-  <section id="cierre" class="content-section">
+    <!-- ══════════════════════════════ EJERCICIO ══════════════════════════════ -->
+    <section id="ejercicio" class="content-section">
+      <h2 class="fw-bold mb-1">Demo final — la tienda completa</h2>
+      <p class="text-muted mb-4">Verificacion de que todos los flujos funcionan de extremo a extremo.</p>
 
-    <!-- Hero de cierre -->
-    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e0a2e 60%,#0a2e1e 100%);border-radius:16px;padding:3rem;margin-bottom:2rem;color:#fff;text-align:center">
-      <i class="bi bi-trophy" style="font-size:3rem;color:#fbbf24;display:block;margin-bottom:1rem"></i>
-      <h1 style="font-size:2rem;font-weight:700;margin-bottom:.75rem">Modulo 1 completado</h1>
-      <p style="color:#94a3b8;font-size:1rem;max-width:600px;margin:0 auto 2rem">Hace siete clases no existia nada. Hoy tienes una aplicacion con autenticacion real, datos de una API, navegacion entre paginas, y un carrito que persiste entre sesiones.</p>
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem">
-        <span class="modulo-badge"><i class="bi bi-0-circle me-1"></i>JavaScript</span>
-        <span class="modulo-badge"><i class="bi bi-1-circle me-1"></i>APIs y fetch</span>
-        <span class="modulo-badge"><i class="bi bi-2-circle me-1"></i>JS Avanzado</span>
-        <span class="modulo-badge"><i class="bi bi-3-circle me-1"></i>jQuery</span>
-        <span class="modulo-badge"><i class="bi bi-4-circle me-1"></i>TypeScript</span>
-        <span class="modulo-badge"><i class="bi bi-5-circle me-1"></i>Componentes</span>
-        <span class="modulo-badge"><i class="bi bi-6-circle me-1"></i>HttpClient</span>
-        <span class="modulo-badge"><i class="bi bi-7-circle me-1"></i>Auth y Carrito</span>
-      </div>
-    </div>
-
-    <!-- Como se conecta todo -->
-    <div class="theory-block">
-      <h4><i class="bi bi-diagram-3" style="color:var(--accent)"></i> Como se conectan las siete clases</h4>
-      <p style="font-size:.9rem;color:#374151">Cada clase resolvio exactamente el problema que dejo abierta la anterior. No fue una lista de temas — fue una construccion progresiva:</p>
-
-      <div class="timeline mt-3">
-        <div class="timeline-item">
-          <div class="t-time">Clase 0</div>
-          <div class="t-title">JavaScript: el lenguaje base</div>
-          <div class="t-desc">Variables, funciones, arreglos, objetos, DOM. Sin esto, nada de lo siguiente tiene sentido. Es la base que sostiene todo el modulo.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">Clases 1 y 2</div>
-          <div class="t-title">APIs, fetch y eventos — el mundo real</div>
-          <div class="t-desc">Conectar JavaScript con un servidor externo. Entender que una aplicacion web vive de datos que llegan de otro lugar. FakeStoreAPI como primer contacto con datos reales.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">Clase 3</div>
-          <div class="t-title">jQuery — leer el codigo que ya existe</div>
-          <div class="t-desc">El 75% de los sitios en produccion usan jQuery. DataTables y Select2 siguen siendo estandar en sistemas empresariales. Conocerlo es una habilidad laboral concreta.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">Clase 4</div>
-          <div class="t-title">TypeScript — el lenguaje que Angular exige</div>
-          <div class="t-desc">Sin tipos, Angular no tendria sentido. Los errores de typo que en JavaScript llegaban a produccion, en TypeScript aparecen en el editor antes de ejecutar.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">Clase 5</div>
-          <div class="t-title">Angular — organizar una aplicacion grande</div>
-          <div class="t-desc">El salto del archivo suelto a la aplicacion estructurada. Componentes, binding, <code>*ngFor</code>. El DOM ya no se toca manualmente — Angular lo gestiona.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">Clase 6</div>
-          <div class="t-title">HttpClient y Routing — datos reales y navegacion</div>
-          <div class="t-desc">Servicios para centralizar la logica HTTP. Rutas con parametros para que cada producto tenga su propia URL. La arquitectura empieza a parecerse a los proyectos reales.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">Clase 7</div>
-          <div class="t-title">Auth y Carrito — la capa de seguridad y estado</div>
-          <div class="t-desc">JWT, interceptores y guards. Estado compartido con BehaviorSubject. La aplicacion ya no es un prototipo — tiene autenticacion real y comportamiento persistente.</div>
+      <div class="theory-block">
+        <h4><i class="bi bi-signpost" style="color:var(--accent)"></i> Estructura final del proyecto</h4>
+        <div class="file-tree">
+          <div><span class="dir">src/app/</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> App — navbar con contador y logout</span></div>
+          <div>&nbsp;&nbsp;<span class="html">app.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> navbar completo + router-outlet</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> todos los componentes + interceptor en providers</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> todas las rutas + canActivate en /users</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">products/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> Products — usa ProductService</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">product-card/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ProductCard — CartService inyectado</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">product-detail/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ProductDetail — sin cambios de Clase 6</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">login/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — Login con ngModel</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">users/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — Users, ruta protegida</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">cart/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — Cart, pagina del carrito</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">services/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> sin cambios de Clase 6</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">auth.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — login, token, isLoggedIn</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">cart.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — BehaviorSubject, localStorage</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">guards/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">auth.guard.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — canActivate</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">interceptors/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">auth.interceptor.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO — agrega JWT a cada request</span></div>
         </div>
       </div>
-    </div>
 
-    <!-- Habilidades construidas -->
-    <div class="theory-block">
-      <h4><i class="bi bi-tools" style="color:var(--accent)"></i> Las habilidades que te llevas</h4>
-      <p style="font-size:.9rem;color:#374151;margin-bottom:1rem">Estas no son solo habilidades teoricas. Son las que vas a usar en el trabajo desde el primer dia:</p>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-code-slash me-1"></i>Leer cualquier proyecto</div>
-            <p class="small mb-2" style="color:#374151">Puedes abrir un proyecto con JavaScript puro, jQuery, TypeScript o Angular y entender que hace cada archivo. Eso es raro y valioso.</p>
-            <div>
-              <span class="skill-pill">JS vanilla</span>
-              <span class="skill-pill">jQuery legacy</span>
-              <span class="skill-pill">TypeScript</span>
-              <span class="skill-pill">Angular NgModule</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-arrow-left-right me-1"></i>Consumir cualquier API REST</div>
-            <p class="small mb-2" style="color:#374151">fetch, $.ajax, HttpClient — tres formas de hacer lo mismo. Puedes elegir la correcta segun el contexto y entender el codigo sin importar cual se uso.</p>
-            <div>
-              <span class="skill-pill">fetch + async/await</span>
-              <span class="skill-pill">$.ajax</span>
-              <span class="skill-pill">HttpClient</span>
-              <span class="skill-pill">Observable + subscribe</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-shield-check me-1"></i>Construir apps seguras</div>
-            <p class="small mb-2" style="color:#374151">Autenticacion JWT, interceptores, guards, localStorage. Los patrones de seguridad que se usan en proyectos reales, no solo en ejercicios academicos.</p>
-            <div>
-              <span class="skill-pill">JWT</span>
-              <span class="skill-pill">Interceptor</span>
-              <span class="skill-pill">AuthGuard</span>
-              <span class="skill-pill">BehaviorSubject</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- El camino al Modulo 2 -->
-    <div class="theory-block">
-      <h4><i class="bi bi-map" style="color:var(--accent)"></i> Lo que viene: Modulos 2, 3 y 4</h4>
-      <p style="font-size:.9rem;color:#374151;margin-bottom:1.25rem">El Modulo 1 fue el Frontend. Los siguientes modulos construyen la otra mitad de la aplicacion y la conectan:</p>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div class="ruta-card">
-            <div class="d-flex align-items-center gap-2 mb-2">
-              <div class="ruta-num" style="background:#10b981">2</div>
-              <div class="fw-bold" style="font-size:.95rem">Backend con Spring Boot</div>
-            </div>
-            <p class="small mb-2" style="color:#374151">Construir tu propia API en Java: endpoints REST, autenticacion JWT con clave propia, base de datos real. Lo que FakeStoreAPI simulo, ahora lo creas tu.</p>
-            <div><span class="skill-pill" style="background:#f0fdf4;border-color:#bbf7d0;color:#065f46">Spring Boot</span><span class="skill-pill" style="background:#f0fdf4;border-color:#bbf7d0;color:#065f46">JPA</span><span class="skill-pill" style="background:#f0fdf4;border-color:#bbf7d0;color:#065f46">JWT propio</span></div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="ruta-card">
-            <div class="d-flex align-items-center gap-2 mb-2">
-              <div class="ruta-num" style="background:#3b82f6">3</div>
-              <div class="fw-bold" style="font-size:.95rem">Base de datos e integracion</div>
-            </div>
-            <p class="small mb-2" style="color:#374151">Persistencia real con PostgreSQL o MySQL. Conectar el frontend Angular con el backend Spring Boot. Tu aplicacion ya no usa datos de prueba.</p>
-            <div><span class="skill-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1e40af">PostgreSQL</span><span class="skill-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1e40af">CORS</span><span class="skill-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1e40af">Full integration</span></div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="ruta-card">
-            <div class="d-flex align-items-center gap-2 mb-2">
-              <div class="ruta-num" style="background:#f97316">4</div>
-              <div class="fw-bold" style="font-size:.95rem">Microservicios</div>
-            </div>
-            <p class="small mb-2" style="color:#374151">Dividir la aplicacion en servicios independientes. Docker, despliegue en la nube. La arquitectura que usan las empresas grandes.</p>
-            <div><span class="skill-pill" style="background:#fff7ed;border-color:#fed7aa;color:#9a3412">Docker</span><span class="skill-pill" style="background:#fff7ed;border-color:#fed7aa;color:#9a3412">API Gateway</span><span class="skill-pill" style="background:#fff7ed;border-color:#fed7aa;color:#9a3412">Cloud</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lo que construiste -->
-    <div class="theory-block">
-      <h4><i class="bi bi-layout-text-window-reverse" style="color:var(--accent)"></i> La aplicacion que construiste</h4>
-      <p style="font-size:.9rem;color:#374151;margin-bottom:1.25rem">No es un ejercicio academico. Es una tienda online con todas las piezas que un proyecto real necesita:</p>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="p-3 rounded-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
-            <p class="fw-semibold mb-2" style="color:#065f46;font-size:.88rem"><i class="bi bi-check-circle-fill me-1"></i>Funcionalidades implementadas</p>
+      <div class="theory-block">
+        <h4><i class="bi bi-list-check" style="color:var(--accent)"></i> Checklist de validacion final del Modulo 1</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
             <ul class="checklist">
-              <li class="done">Catalogo de productos con filtros por categoria y nombre</li>
-              <li class="done">Vista de detalle individual con URL propia</li>
-              <li class="done">Autenticacion JWT con token real</li>
-              <li class="done">Ruta protegida que redirige si no hay sesion</li>
-              <li class="done">Carrito de compras que persiste al recargar</li>
-              <li class="done">Navbar que reacciona al estado de sesion y al carrito</li>
-              <li class="done">Servicio HTTP centralizado con interceptor</li>
+              <li class="done"><code>ng serve</code> corre sin errores de compilacion</li>
+              <li class="done">Login con <code>mor_2314</code> / <code>83r5^_</code> devuelve token real</li>
+              <li class="done">Token guardado en <code>localStorage["token"]</code></li>
+              <li class="done">Interceptor agrega <code>Authorization: Bearer ...</code> automaticamente</li>
+              <li class="done">Ruta <code>/users</code> redirige a <code>/login</code> sin token</li>
+              <li class="done">Ruta <code>/users</code> carga con token valido</li>
             </ul>
           </div>
-        </div>
-        <div class="col-md-6">
-          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <p class="fw-semibold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-layers me-1"></i>Patrones de arquitectura aplicados</p>
+          <div class="col-md-6">
             <ul class="checklist">
-              <li class="done">Componentes reutilizables con <code>@Input()</code></li>
-              <li class="done">Servicios como capa de logica de negocio</li>
-              <li class="done">Routing declarativo con parametros</li>
-              <li class="done">Guards para control de acceso</li>
-              <li class="done">Interceptores para logica transversal</li>
-              <li class="done">Estado reactivo con BehaviorSubject</li>
-              <li class="done">Persistencia con localStorage</li>
+              <li class="done">Ruta <code>/products</code> muestra los productos de FakeStore</li>
+              <li class="done">Ruta <code>/product/:id</code> muestra el detalle individual</li>
+              <li class="done">Boton carrito actualiza el contador del navbar</li>
+              <li class="done">Carrito persiste al recargar la pagina</li>
+              <li class="done">Navbar muestra Login o Logout segun el estado de sesion</li>
+              <li class="done">Logout elimina el token y redirige a <code>/login</code></li>
             </ul>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Mensaje de cierre -->
-    <div style="background:linear-gradient(135deg,#1e0a2e 0%,#0a1929 100%);border-radius:16px;padding:2.5rem 3rem;color:#fff;text-align:center;margin-top:1rem">
-      <i class="bi bi-code-slash" style="font-size:2rem;color:#c4b5fd;display:block;margin-bottom:1rem"></i>
-      <h3 style="font-size:1.4rem;font-weight:700;color:#f8fafc;margin-bottom:1rem">El primer paso ya esta dado</h3>
-      <p style="color:#94a3b8;font-size:.95rem;max-width:620px;margin:0 auto 1.5rem;line-height:1.8">
-        Aprender a programar no es memorizar sintaxis — es aprender a pensar en problemas y soluciones. Cada vez que escribiste codigo que funciono, entrenaste esa forma de pensar. Eso no se pierde.
-      </p>
-      <p style="color:#94a3b8;font-size:.95rem;max-width:620px;margin:0 auto 1.5rem;line-height:1.8">
-        Los tres modulos que siguen construyen sobre lo que tienes hoy. No empiezas de cero — empiezas desde un frontend funcional y real que ya creaste.
-      </p>
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;margin-top:1.5rem">
-        <a href="clase6.html" class="btn btn-outline-light btn-sm">
-          <i class="bi bi-arrow-left me-1"></i>Clase 6
-        </a>
-        <a href="clase0.html" class="btn btn-sm" style="background:#8b5cf6;border-color:#8b5cf6;color:#fff">
-          <i class="bi bi-skip-start me-1"></i>Repasar desde Clase 0
-        </a>
+      <div class="theory-block">
+        <h4><i class="bi bi-bug" style="color:var(--accent)"></i> Errores comunes y sus soluciones</h4>
+
+        <p class="fw-semibold small mb-1">1 El interceptor no agrega el token</p>
+        <div class="error-box">
+          <div class="file">DevTools — Network — las peticiones no tienen el header Authorization</div>
+          Las peticiones a /users llegan sin token
+          <div class="fix">Verificar que el interceptor esta en <code>providers</code> de <code>app-module.ts</code>: <code>{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }</code>. Un error comun es agregarlo en <code>imports</code> en lugar de <code>providers</code>.</div>
+        </div>
+
+        <p class="fw-semibold small mb-1 mt-3">2 El guard no redirige — entra a /users sin login</p>
+        <div class="error-box">
+          <div class="file">app-routing-module.ts</div>
+          Se puede acceder a /users sin haber hecho login
+          <div class="fix">Verificar que la ruta tiene <code>canActivate: [AuthGuard]</code> y que <code>AuthGuard</code> esta importado en <code>app-routing-module.ts</code>: <code>import { AuthGuard } from './guards/auth.guard'</code>.</div>
+        </div>
+
+        <p class="fw-semibold small mb-1 mt-3">3 El contador del carrito siempre muestra 0</p>
+        <div class="error-box">
+          <div class="file">app.ts</div>
+          contadorCarrito siempre muestra 0 aunque se agregan productos
+          <div class="fix">Verificar que en <code>ngOnInit()</code> de <code>app.ts</code> esta la suscripcion: <code>this.cartService.cartItems$.subscribe(items => this.contadorCarrito = items.length)</code>. Sin ella, el componente no recibe los cambios del BehaviorSubject.</div>
+        </div>
+
+        <p class="fw-semibold small mb-1 mt-3">4 Error: Login is not a known element</p>
+        <div class="error-box">
+          <div class="file">Compilacion Angular</div>
+          'app-login' is not a known element
+          <div class="fix">El componente no esta en <code>declarations</code> de <code>app-module.ts</code>. Si lo generaste con el CLI deberia estar registrado automaticamente. Verificar que el import apunta al archivo correcto: <code>import { Login } from './login/login'</code> (sin sufijo <code>.component</code>).</div>
+        </div>
       </div>
-    </div>
+    </section>
 
-  </section>
+    <!-- ══════════════════════════════ Q&A ══════════════════════════════ -->
+    <section id="qa" class="content-section">
+      <h2 class="fw-bold mb-1">Q&A y Cierre del Modulo 1</h2>
+      <p class="text-muted mb-4">Ultimas preguntas tecnicas antes de cerrar el modulo.</p>
 
-</div>
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <div class="theory-block h-100">
+            <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
+            <ul style="font-size:.9rem;line-height:2.2">
+              <li>Flujo completo JWT: login — token — localStorage</li>
+              <li><code>auth.service.ts</code>: login, saveToken, isLoggedIn, logout</li>
+              <li><code>Login</code> con <code>[(ngModel)]</code> y <code>FormsModule</code> (ya disponible desde Clase 5)</li>
+              <li>Interceptor HTTP — firma todas las peticiones automaticamente</li>
+              <li><code>AuthGuard</code> — protege rutas con <code>canActivate</code></li>
+              <li><code>BehaviorSubject</code> — estado reactivo compartido entre componentes</li>
+              <li><code>cart.service.ts</code> con addToCart, removeFromCart, clearCart, getTotal</li>
+              <li>Navbar dinamico suscrito al carrito y al estado de sesion</li>
+              <li>Persistencia del carrito con localStorage</li>
+              <li>Inyectar servicios en componentes hijos (<code>ProductCard</code>)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="theory-block h-100">
+            <h4><i class="bi bi-patch-question" style="color:var(--accent)"></i> Preguntas frecuentes</h4>
+            <div class="p-3 rounded-3 mb-2" style="background:#f5f3ff;border:1px solid #ddd6fe">
+              <p class="fw-semibold mb-1" style="font-size:.85rem;color:#4c1d95">Por que <code>public authService</code> en <code>app.ts</code>?</p>
+              <p class="small mb-0" style="color:#374151">Para poder llamar a <code>authService.isLoggedIn()</code> desde <code>app.html</code>. Las propiedades <code>private</code> no son accesibles en el template. Solo las <code>public</code> pueden usarse en el HTML.</p>
+            </div>
+            <div class="p-3 rounded-3 mb-2" style="background:#f5f3ff;border:1px solid #ddd6fe">
+              <p class="fw-semibold mb-1" style="font-size:.85rem;color:#4c1d95">Diferencia entre <code>Observable</code> y <code>BehaviorSubject</code>?</p>
+              <p class="small mb-0" style="color:#374151">Un Observable normal solo emite valores cuando hay nuevos datos. Un BehaviorSubject siempre tiene un valor actual y lo entrega inmediatamente a cualquier nuevo suscriptor. Por eso es ideal para el carrito: cuando el navbar se carga, recibe el conteo actual sin esperar.</p>
+            </div>
+            <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
+              <p class="fw-semibold mb-1" style="font-size:.85rem;color:#4c1d95">El token de FakeStoreAPI es seguro para produccion?</p>
+              <p class="small mb-0" style="color:#374151">No — es una API de prueba para aprendizaje. En produccion el JWT lo genera tu propio backend con una clave secreta real. El flujo es identico: POST login — token — localStorage — interceptor.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-/* ══ NAVEGACION + PROGRESO ══ */
-const sections7 = ['agenda','auth-service','login','interceptor','guard','carrito','navbar','ejercicio','qa','cierre'];
+    <!-- ══════════════════════════════ CIERRE DEL DIPLOMADO ══════════════════════════════ -->
+    <section id="cierre" class="content-section">
 
-function _upd(id) {
-  const pct = Math.round(((sections7.indexOf(id)+1)/sections7.length)*100);
-  document.getElementById('progress-bar').style.width  = pct+'%';
-  document.getElementById('progress-pct').textContent  = pct+'%';
-}
-window.showSection = function(id, el) {
-  event.preventDefault();
-  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  el.classList.add('active');
-  _upd(id);
-  window.scrollTo(0,0);
-};
-_upd('agenda');
+      <div style="background:linear-gradient(135deg,#0f172a 0%,#1e0a2e 60%,#0a2e1e 100%);border-radius:16px;padding:3rem;margin-bottom:2rem;color:#fff;text-align:center">
+        <i class="bi bi-trophy" style="font-size:3rem;color:#fbbf24;display:block;margin-bottom:1rem"></i>
+        <h1 style="font-size:2rem;font-weight:700;margin-bottom:.75rem">Modulo 1 completado</h1>
+        <p style="color:#94a3b8;font-size:1rem;max-width:600px;margin:0 auto 2rem;line-height:1.8">Hace siete clases no existia nada. Hoy tienes una aplicacion con autenticacion real, datos de una API, navegacion entre paginas, y un carrito que persiste entre sesiones.</p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem">
+          <span class="modulo-badge"><i class="bi bi-0-circle me-1"></i>JavaScript</span>
+          <span class="modulo-badge"><i class="bi bi-1-circle me-1"></i>APIs y fetch</span>
+          <span class="modulo-badge"><i class="bi bi-2-circle me-1"></i>JS Avanzado</span>
+          <span class="modulo-badge"><i class="bi bi-3-circle me-1"></i>jQuery</span>
+          <span class="modulo-badge"><i class="bi bi-4-circle me-1"></i>TypeScript</span>
+          <span class="modulo-badge"><i class="bi bi-5-circle me-1"></i>Componentes</span>
+          <span class="modulo-badge"><i class="bi bi-6-circle me-1"></i>HttpClient</span>
+          <span class="modulo-badge"><i class="bi bi-7-circle me-1"></i>Auth y Carrito</span>
+        </div>
+      </div>
 
-/* ══ HELPERS ══ */
-function ok(t)  { return `<div><span class="ok">  </span> ${t}</div>`; }
-function er(t)  { return `<div><span class="er">  </span> ${t}</div>`; }
-function inf(t) { return `<div><span class="info">→</span> ${t}</div>`; }
-function dim(t) { return `<div><span class="dim">//</span> ${t}</div>`; }
-function w(t)   { return `<div><span class="warn">!</span> ${t}</div>`; }
+      <div class="theory-block">
+        <h4><i class="bi bi-diagram-3" style="color:var(--accent)"></i> Como se conectan las siete clases</h4>
+        <p style="font-size:.9rem;color:#374151">Cada clase resolvio exactamente el problema que dejo abierto la anterior. No fue una lista de temas — fue una construccion progresiva:</p>
+        <div class="timeline mt-3">
+          <div class="timeline-item">
+            <div class="t-time">Clase 0</div>
+            <div class="t-title">JavaScript: el lenguaje base</div>
+            <div class="t-desc">Variables, funciones, arreglos, objetos, DOM. Sin esto, nada de lo siguiente tiene sentido. Es la base que sostiene todo el modulo.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">Clases 1 y 2</div>
+            <div class="t-title">APIs, fetch y eventos — el mundo real</div>
+            <div class="t-desc">Conectar JavaScript con un servidor externo. Entender que una aplicacion web vive de datos que llegan de otro lugar. FakeStoreAPI como primer contacto con datos reales.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">Clase 3</div>
+            <div class="t-title">jQuery — leer el codigo que ya existe</div>
+            <div class="t-desc">El 75% de los sitios en produccion usan jQuery. DataTables y Select2 siguen siendo estandar en sistemas empresariales. Conocerlo es una habilidad laboral concreta.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">Clase 4</div>
+            <div class="t-title">TypeScript — el lenguaje que Angular exige</div>
+            <div class="t-desc">Sin tipos, Angular no tendria sentido. Los errores de typo que en JavaScript llegaban a produccion, en TypeScript aparecen en el editor antes de ejecutar.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">Clase 5</div>
+            <div class="t-title">Angular — organizar una aplicacion grande</div>
+            <div class="t-desc">El salto del archivo suelto a la aplicacion estructurada. Componentes, binding, <code>*ngFor</code>. El DOM ya no se toca manualmente — Angular lo gestiona.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">Clase 6</div>
+            <div class="t-title">HttpClient y Routing — datos reales y navegacion</div>
+            <div class="t-desc">Servicios para centralizar la logica HTTP. Rutas con parametros para que cada producto tenga su propia URL. La arquitectura empieza a parecerse a los proyectos reales.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">Clase 7</div>
+            <div class="t-title">Auth y Carrito — la capa de seguridad y estado</div>
+            <div class="t-desc">JWT, interceptores y guards. Estado compartido con BehaviorSubject. La aplicacion ya no es un prototipo — tiene autenticacion real y comportamiento persistente.</div>
+          </div>
+        </div>
+      </div>
 
-/* ══ DEMO AUTH SERVICE ══ */
-let _demoToken = null;
+      <div class="theory-block">
+        <h4><i class="bi bi-tools" style="color:var(--accent)"></i> Las habilidades que te llevas</h4>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+              <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-code-slash me-1"></i>Leer cualquier proyecto</div>
+              <p class="small mb-2" style="color:#374151">Puedes abrir un proyecto con JavaScript puro, jQuery, TypeScript o Angular y entender que hace cada archivo.</p>
+              <div>
+                <span class="skill-pill">JS vanilla</span>
+                <span class="skill-pill">jQuery legacy</span>
+                <span class="skill-pill">TypeScript</span>
+                <span class="skill-pill">Angular NgModule</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+              <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-arrow-left-right me-1"></i>Consumir cualquier API REST</div>
+              <p class="small mb-2" style="color:#374151">fetch, $.ajax, HttpClient — tres formas de hacer lo mismo. Puedes elegir la correcta segun el contexto.</p>
+              <div>
+                <span class="skill-pill">fetch + async/await</span>
+                <span class="skill-pill">$.ajax</span>
+                <span class="skill-pill">HttpClient</span>
+                <span class="skill-pill">Observable + subscribe</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3 h-100" style="background:#f5f3ff;border:1px solid #ddd6fe">
+              <div class="fw-bold mb-2" style="color:#4c1d95;font-size:.88rem"><i class="bi bi-shield-check me-1"></i>Construir apps seguras</div>
+              <p class="small mb-2" style="color:#374151">Autenticacion JWT, interceptores, guards, localStorage. Los patrones que se usan en proyectos reales.</p>
+              <div>
+                <span class="skill-pill">JWT</span>
+                <span class="skill-pill">Interceptor</span>
+                <span class="skill-pill">AuthGuard</span>
+                <span class="skill-pill">BehaviorSubject</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-async function demoLogin() {
-  const out = document.getElementById('out-auth');
-  out.innerHTML = inf('authService.login("mor_2314", "83r5^_").subscribe(...)');
-  try {
-    const res  = await fetch('https://fakestoreapi.com/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'mor_2314', password: '83r5^_' })
-    });
-    const data = await res.json();
-    _demoToken = data.token;
-    out.innerHTML =
-      ok('subscribe() ejecutado — respuesta de la API:') +
-      inf(`response.token: <strong>"${data.token.substring(0,40)}..."</strong>`) +
-      ok('authService.saveToken(response.token)') +
-      inf(`localStorage["token"] = "${data.token.substring(0,25)}..."`) +
-      ok('router.navigate(["/users"])') +
-      dim('authService.isLoggedIn() → true');
-  } catch(e) {
-    out.innerHTML = er('Error de red: ' + e.message);
-  }
-}
+      <div class="theory-block">
+        <h4><i class="bi bi-map" style="color:var(--accent)"></i> Lo que viene: Modulos 2, 3 y 4</h4>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="ruta-card">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="ruta-num" style="background:#10b981">2</div>
+                <div class="fw-bold" style="font-size:.95rem">Backend con Spring Boot</div>
+              </div>
+              <p class="small mb-2" style="color:#374151">Construir tu propia API en Java: endpoints REST, autenticacion JWT con clave propia, base de datos real. Lo que FakeStoreAPI simulo, ahora lo creas tu.</p>
+              <div>
+                <span class="skill-pill" style="background:#f0fdf4;border-color:#bbf7d0;color:#065f46">Spring Boot</span>
+                <span class="skill-pill" style="background:#f0fdf4;border-color:#bbf7d0;color:#065f46">JPA</span>
+                <span class="skill-pill" style="background:#f0fdf4;border-color:#bbf7d0;color:#065f46">JWT real</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="ruta-card">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="ruta-num" style="background:#3b82f6">3</div>
+                <div class="fw-bold" style="font-size:.95rem">Base de datos e integracion</div>
+              </div>
+              <p class="small mb-2" style="color:#374151">Persistencia real con PostgreSQL o MySQL. Conectar el frontend Angular con el backend Spring Boot. Tu aplicacion ya no usa datos de prueba.</p>
+              <div>
+                <span class="skill-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1e40af">PostgreSQL</span>
+                <span class="skill-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1e40af">CORS</span>
+                <span class="skill-pill" style="background:#eff6ff;border-color:#bfdbfe;color:#1e40af">Full stack</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="ruta-card">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div class="ruta-num" style="background:#f97316">4</div>
+                <div class="fw-bold" style="font-size:.95rem">Microservicios y despliegue</div>
+              </div>
+              <p class="small mb-2" style="color:#374151">Dividir la aplicacion en servicios independientes. Docker, despliegue en la nube. La arquitectura que usan las empresas grandes.</p>
+              <div>
+                <span class="skill-pill" style="background:#fff7ed;border-color:#fed7aa;color:#9a3412">Docker</span>
+                <span class="skill-pill" style="background:#fff7ed;border-color:#fed7aa;color:#9a3412">API Gateway</span>
+                <span class="skill-pill" style="background:#fff7ed;border-color:#fed7aa;color:#9a3412">Cloud</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-function demoLogout() {
-  _demoToken = null;
-  const out = document.getElementById('out-auth');
-  out.innerHTML =
-    ok('authService.logout() ejecutado:') +
-    inf('localStorage.removeItem("token")') +
-    ok('router.navigate(["/login"])') +
-    dim('authService.isLoggedIn() → false');
-}
+      <div style="background:linear-gradient(135deg,#1e0a2e 0%,#0a1929 100%);border-radius:16px;padding:2.5rem 3rem;color:#fff;text-align:center">
+        <i class="bi bi-code-slash" style="font-size:2rem;color:#c4b5fd;display:block;margin-bottom:1rem"></i>
+        <h3 style="font-size:1.4rem;font-weight:700;color:#f8fafc;margin-bottom:1rem">El primer paso ya esta dado</h3>
+        <p style="color:#94a3b8;font-size:.95rem;max-width:620px;margin:0 auto 1rem;line-height:1.8">
+          Aprender a programar no es memorizar sintaxis — es aprender a pensar en problemas y soluciones. Cada vez que escribiste codigo que funciono, entrenaste esa forma de pensar. Eso no se pierde.
+        </p>
+        <p style="color:#94a3b8;font-size:.95rem;max-width:620px;margin:0 auto;line-height:1.8">
+          Los tres modulos que siguen construyen sobre lo que tienes hoy. No empiezas de cero — empiezas desde un frontend funcional y real que ya creaste con Angular 20.
+        </p>
+        <div style="margin-top:1.5rem">
+          <a href="clase6.html" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Clase 6
+          </a>
+        </div>
+      </div>
 
-function demoIsLogged() {
-  const out = document.getElementById('out-auth');
-  const tiene = !!_demoToken;
-  out.innerHTML =
-    inf('authService.isLoggedIn()') +
-    inf(`localStorage.getItem("token") → ${tiene ? '"' + (_demoToken?.substring(0,20)) + '..."' : 'null'}`) +
-    (tiene
-      ? ok('isLoggedIn() → <strong>true</strong> — usuario autenticado')
-      : w('isLoggedIn() → <strong>false</strong> — sin sesion activa'));
-}
+    </section>
 
-function demoAuthReset() {
-  _demoToken = null;
-  document.getElementById('out-auth').innerHTML = 'Haz clic en un metodo para ver como funciona AuthService...';
-}
+  </div><!-- /main -->
 
-/* ══ DEMO GUARD ══ */
-async function demoFlujoLogin() {
-  const out = document.getElementById('out-guard');
-  out.innerHTML = inf('POST https://fakestoreapi.com/auth/login...');
-  try {
-    const res  = await fetch('https://fakestoreapi.com/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'mor_2314', password: '83r5^_' })
-    });
-    const data = await res.json();
-    out.innerHTML =
-      ok('Login exitoso — token recibido:') +
-      inf(`"${data.token.substring(0,45)}..."`) +
-      ok('saveToken() → localStorage["token"] guardado') +
-      ok('router.navigate(["/users"]) — redirigiendo a la ruta protegida') +
-      dim('En /users: AuthGuard.canActivate() es llamado por Angular');
-  } catch(e) { out.innerHTML = er(e.message); }
-}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ══ NAVEGACION + PROGRESO ══ */
+    const sections7 = ['agenda', 'auth-service', 'login', 'interceptor', 'guard', 'carrito', 'navbar', 'ejercicio', 'qa', 'cierre'];
 
-function demoFlujoGuard() {
-  const out = document.getElementById('out-guard');
-  out.innerHTML =
-    inf('Angular verifica canActivate() antes de cargar /users') +
-    ok('authService.isLoggedIn() → localStorage tiene token → true') +
-    ok('canActivate() devuelve <strong>true</strong>') +
-    ok('UsersComponent se carga — el interceptor agrega el JWT a GET /users') +
-    dim('Authorization: Bearer eyJhbGciOi...');
-}
+    function _upd(id) {
+      const pct = Math.round(((sections7.indexOf(id) + 1) / sections7.length) * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-pct').textContent = pct + '%';
+    }
+    window.showSection = function (id, el) {
+      event.preventDefault();
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      el.classList.add('active');
+      _upd(id);
+      window.scrollTo(0, 0);
+    };
+    _upd('agenda');
 
-function demoFlujoSinToken() {
-  const out = document.getElementById('out-guard');
-  out.innerHTML =
-    inf('Usuario intenta ir a /users sin hacer login') +
-    inf('Angular llama a AuthGuard.canActivate()') +
-    w('authService.isLoggedIn() → localStorage vacio → false') +
-    er('canActivate() devuelve <strong>false</strong>') +
-    inf('router.navigate(["/login"]) — redirigido al formulario de login') +
-    dim('UsersComponent NUNCA se carga');
-}
+    /* ══ HELPERS ══ */
+    function ok(t)  { return `<div><span class="ok">  </span> ${t}</div>`; }
+    function er(t)  { return `<div><span class="er">  </span> ${t}</div>`; }
+    function inf(t) { return `<div><span class="info">→</span> ${t}</div>`; }
+    function dim(t) { return `<div><span class="dim">//</span> ${t}</div>`; }
+    function w(t)   { return `<div><span class="warn">!</span> ${t}</div>`; }
 
-function demoFlujoReset() {
-  document.getElementById('out-guard').innerHTML = 'Haz clic en un boton para simular el flujo de autenticacion...';
-}
+    /* ══ DEMO AUTH SERVICE ══ */
+    let _demoToken = null;
 
-/* ══ DEMO CARRITO ══ */
-const mockCartProducts = [
-  { id:1, title:'Fjallraven Backpack',   price:109.95 },
-  { id:2, title:'Mens Casual Slim Fit',  price:22.30  },
-  { id:5, title:'John Hardy Bracelet',   price:695.00 },
-];
-let _cart = [];
+    async function demoLogin() {
+      const out = document.getElementById('out-auth');
+      out.innerHTML = inf('authService.login("mor_2314", "83r5^_").subscribe(...)');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: 'mor_2314', password: '83r5^_' })
+        });
+        const data = await res.json();
+        _demoToken = data.token;
+        out.innerHTML =
+          ok('subscribe() ejecutado — respuesta de la API:') +
+          inf(`response.token: <strong>"${data.token.substring(0, 40)}..."</strong>`) +
+          ok('authService.saveToken(response.token)') +
+          inf(`localStorage["token"] = "${data.token.substring(0, 25)}..."`) +
+          ok('router.navigate(["/users"])') +
+          dim('authService.isLoggedIn() → true');
+      } catch(e) {
+        out.innerHTML = er('Error de red: ' + e.message);
+      }
+    }
 
-function _renderCartState() {
-  const el = document.getElementById('cart-state');
-  if (!_cart.length) { el.textContent = '[ ] — vacio'; el.style.color = '#94a3b8'; return; }
-  el.style.color = '#1e293b';
-  el.innerHTML = `[${_cart.map(p=>`<span style="color:#c4b5fd"> "${p.title.substring(0,15)}..." </span>`).join(',')}]<br><span style="color:#86efac">length: ${_cart.length}</span>`;
-}
+    function demoLogout() {
+      _demoToken = null;
+      document.getElementById('out-auth').innerHTML =
+        ok('authService.logout() ejecutado:') +
+        inf('localStorage.removeItem("token")') +
+        ok('router.navigate(["/login"])') +
+        dim('authService.isLoggedIn() → false');
+    }
 
-function demoAddCart() {
-  const p = mockCartProducts[_cart.length % mockCartProducts.length];
-  _cart.push(p);
-  _renderCartState();
-  const out = document.getElementById('out-cart');
-  out.innerHTML =
-    ok(`cartService.addToCart({ id:${p.id}, title:"${p.title.substring(0,20)}...", price:${p.price} })`) +
-    inf(`getValue() → array anterior`) +
-    inf(`[...current, product] → nuevo array con ${_cart.length} items`) +
-    ok(`cartItems.next(updated) — todos los suscriptores reciben el nuevo array`) +
-    ok(`saveToLocalStorage() — persiste en localStorage["cart"]`) +
-    dim(`cartItems$ → navbar.contadorCarrito = ${_cart.length}`);
-}
+    function demoIsLogged() {
+      const tiene = !!_demoToken;
+      document.getElementById('out-auth').innerHTML =
+        inf('authService.isLoggedIn()') +
+        inf(`localStorage.getItem("token") → ${tiene ? '"' + (_demoToken?.substring(0, 20)) + '..."' : 'null'}`) +
+        (tiene
+          ? ok('isLoggedIn() → <strong>true</strong> — usuario autenticado')
+          : w('isLoggedIn() → <strong>false</strong> — sin sesion activa'));
+    }
 
-function demoRemoveCart() {
-  if (!_cart.length) {
-    document.getElementById('out-cart').innerHTML = w('El carrito esta vacio — agrega productos primero con addToCart()');
-    return;
-  }
-  const removed = _cart.splice(0, 1)[0];
-  _renderCartState();
-  const out = document.getElementById('out-cart');
-  out.innerHTML =
-    ok(`cartService.removeFromCart(0) — elimina el primer item`) +
-    inf(`Elemento eliminado: "${removed.title.substring(0,25)}..."`) +
-    ok(`cartItems.next([...current]) — suscriptores actualizados`) +
-    ok(`saveToLocalStorage() — localStorage["cart"] actualizado`) +
-    dim(`cartItems$ → navbar.contadorCarrito = ${_cart.length}`);
-}
+    function demoAuthReset() {
+      _demoToken = null;
+      document.getElementById('out-auth').innerHTML = 'Haz clic en un metodo para ver como funciona AuthService...';
+    }
 
-function demoClearCart() {
-  _cart = [];
-  _renderCartState();
-  const out = document.getElementById('out-cart');
-  out.innerHTML =
-    ok('cartService.clearCart() ejecutado') +
-    inf('cartItems.next([]) — BehaviorSubject emite array vacio') +
-    ok('saveToLocalStorage([]) — localStorage["cart"] = "[]"') +
-    dim('cartItems$ → navbar.contadorCarrito = 0');
-}
+    /* ══ DEMO GUARD ══ */
+    async function demoFlujoLogin() {
+      const out = document.getElementById('out-guard');
+      out.innerHTML = inf('POST https://fakestoreapi.com/auth/login...');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: 'mor_2314', password: '83r5^_' })
+        });
+        const data = await res.json();
+        out.innerHTML =
+          ok('Login exitoso — token recibido:') +
+          inf(`"${data.token.substring(0, 45)}..."`) +
+          ok('saveToken() → localStorage["token"] guardado') +
+          ok('router.navigate(["/users"]) — redirigiendo a la ruta protegida') +
+          dim('En /users: AuthGuard.canActivate() es llamado por Angular');
+      } catch(e) { out.innerHTML = er(e.message); }
+    }
 
-function demoGetTotal() {
-  const total = _cart.reduce((s, p) => s + p.price, 0);
-  const out = document.getElementById('out-cart');
-  out.innerHTML =
-    inf('cartService.getTotal()') +
-    inf(`getValue() → [${_cart.map(p=>`$${p.price}`).join(', ') || 'vacio'}]`) +
-    inf(`reduce((sum, item) => sum + item.price, 0)`) +
-    ok(`getTotal() → <strong>$${total.toFixed(2)}</strong>`);
-}
+    function demoFlujoGuard() {
+      document.getElementById('out-guard').innerHTML =
+        inf('Angular verifica canActivate() antes de cargar /users') +
+        ok('authService.isLoggedIn() → localStorage tiene token → true') +
+        ok('canActivate() devuelve <strong>true</strong>') +
+        ok('Users se carga — el interceptor agrega el JWT a GET /users') +
+        dim('Authorization: Bearer eyJhbGciOi...');
+    }
 
-function demoCartReset() {
-  _cart = [];
-  _renderCartState();
-  document.getElementById('out-cart').innerHTML = 'Haz clic en un metodo para ver BehaviorSubject en accion...';
-}
-</script>
+    function demoFlujoSinToken() {
+      document.getElementById('out-guard').innerHTML =
+        inf('Usuario intenta ir a /users sin hacer login') +
+        inf('Angular llama a AuthGuard.canActivate()') +
+        w('authService.isLoggedIn() → localStorage vacio → false') +
+        er('canActivate() devuelve <strong>false</strong>') +
+        inf('router.navigate(["/login"]) — redirigido al formulario de login') +
+        dim('Users NUNCA se carga');
+    }
+
+    function demoFlujoReset() {
+      document.getElementById('out-guard').innerHTML = 'Haz clic en un boton para simular el flujo de autenticacion...';
+    }
+
+    /* ══ DEMO CARRITO ══ */
+    const mockCartProducts = [
+      { id: 1, title: 'Fjallraven Backpack',   price: 109.95 },
+      { id: 2, title: 'Mens Casual Slim Fit',  price: 22.30  },
+      { id: 5, title: 'John Hardy Bracelet',   price: 695.00 },
+    ];
+    let _cart = [];
+
+    function _renderCartState() {
+      const el = document.getElementById('cart-state');
+      if (!_cart.length) { el.textContent = '[ ] — vacio'; el.style.color = '#94a3b8'; return; }
+      el.style.color = '#1e293b';
+      el.innerHTML = `[${_cart.map(p => `<span style="color:#c4b5fd">"${p.title.substring(0, 12)}..."</span>`).join(', ')}]<br><span style="color:#86efac">length: ${_cart.length}</span>`;
+    }
+
+    function demoAddCart() {
+      const p = mockCartProducts[_cart.length % mockCartProducts.length];
+      _cart.push(p);
+      _renderCartState();
+      document.getElementById('out-cart').innerHTML =
+        ok(`cartService.addToCart({ id:${p.id}, title:"${p.title.substring(0, 20)}...", price:${p.price} })`) +
+        inf('getValue() → array anterior') +
+        inf(`[...current, product] → nuevo array con ${_cart.length} item(s)`) +
+        ok('cartItems.next(updated) — todos los suscriptores reciben el nuevo array') +
+        ok('saveToLocalStorage() — persiste en localStorage["cart"]') +
+        dim(`cartItems$ → App.contadorCarrito = ${_cart.length}`);
+    }
+
+    function demoRemoveCart() {
+      if (!_cart.length) {
+        document.getElementById('out-cart').innerHTML = w('El carrito esta vacio — agrega productos primero con addToCart()');
+        return;
+      }
+      const removed = _cart.splice(0, 1)[0];
+      _renderCartState();
+      document.getElementById('out-cart').innerHTML =
+        ok(`cartService.removeFromCart(0) — elimina el primer item`) +
+        inf(`Elemento eliminado: "${removed.title.substring(0, 25)}..."`) +
+        ok('cartItems.next([...current]) — suscriptores actualizados') +
+        ok('saveToLocalStorage() — localStorage["cart"] actualizado') +
+        dim(`cartItems$ → App.contadorCarrito = ${_cart.length}`);
+    }
+
+    function demoClearCart() {
+      _cart = [];
+      _renderCartState();
+      document.getElementById('out-cart').innerHTML =
+        ok('cartService.clearCart() ejecutado') +
+        inf('cartItems.next([]) — BehaviorSubject emite array vacio') +
+        ok('saveToLocalStorage([]) — localStorage["cart"] = "[]"') +
+        dim('cartItems$ → App.contadorCarrito = 0');
+    }
+
+    function demoGetTotal() {
+      const total = _cart.reduce((s, p) => s + p.price, 0);
+      document.getElementById('out-cart').innerHTML =
+        inf('cartService.getTotal()') +
+        inf(`getValue() → [${_cart.map(p => '$' + p.price).join(', ') || 'vacio'}]`) +
+        inf('reduce((sum, item) => sum + item.price, 0)') +
+        ok(`getTotal() → <strong>$${total.toFixed(2)}</strong>`);
+    }
+
+    function demoCartReset() {
+      _cart = [];
+      _renderCartState();
+      document.getElementById('out-cart').innerHTML = 'Haz clic en un metodo para ver BehaviorSubject en accion...';
+    }
+  </script>
 </body>
+
 </html>

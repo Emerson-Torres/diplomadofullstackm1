@@ -1,379 +1,725 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Clase 6 — HttpClient y Routing</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
   <style>
-    :root { --accent:#f97316; --accent-dark:#ea6c04; --accent-faint:#fff7ed; --accent-border:#fed7aa; }
-    body { font-family:'Inter',sans-serif; background:#f0f2f5; color:#1e293b; }
+    :root {
+      --accent: #f97316;
+      --accent-dark: #ea6c04;
+      --accent-faint: #fff7ed;
+      --accent-border: #fed7aa;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
+      color: #1e293b;
+    }
 
     /* ── SIDEBAR ── */
-    #sidebar { position:fixed;top:0;left:0;width:270px;height:100vh;background:#0f172a;color:#e2e8f0;overflow-y:auto;z-index:1000;padding-bottom:2rem;border-right:1px solid #1e293b; }
-    #sidebar .brand { padding:1.5rem 1.25rem 1rem;border-bottom:1px solid #1e293b; }
-    #sidebar .brand .badge-mod { background:var(--accent);color:#fff;font-size:.7rem;padding:.25rem .6rem;border-radius:20px;letter-spacing:.05em;font-weight:700; }
-    #sidebar .brand h6 { color:#f8fafc;font-weight:700;margin-top:.5rem;font-size:1rem; }
-    #sidebar nav a { display:flex;align-items:center;gap:.65rem;padding:.55rem 1.25rem;color:#94a3b8;text-decoration:none;font-size:.83rem;border-left:3px solid transparent;transition:all .15s; }
-    #sidebar nav a:hover, #sidebar nav a.active { color:#f8fafc;background:#1e293b;border-left-color:var(--accent); }
-    #sidebar .section-label { font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:#475569;padding:1.1rem 1.25rem .35rem;font-weight:700; }
-    #sidebar .progress-wrap { padding:.5rem 1.25rem 0; }
-    #sidebar .progress { height:4px;background:#1e293b; }
-    #sidebar .progress-bar { background:var(--accent);transition:width .4s ease; }
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 270px;
+      height: 100vh;
+      background: #0f172a;
+      color: #e2e8f0;
+      overflow-y: auto;
+      z-index: 1000;
+      padding-bottom: 2rem;
+      border-right: 1px solid #1e293b;
+    }
+
+    #sidebar .brand {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    #sidebar .brand .badge-mod {
+      background: var(--accent);
+      color: #fff;
+      font-size: .7rem;
+      padding: .25rem .6rem;
+      border-radius: 20px;
+      letter-spacing: .05em;
+      font-weight: 700;
+    }
+
+    #sidebar .brand h6 {
+      color: #f8fafc;
+      font-weight: 700;
+      margin-top: .5rem;
+      font-size: 1rem;
+    }
+
+    #sidebar nav a {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      padding: .55rem 1.25rem;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: .83rem;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+
+    #sidebar nav a:hover,
+    #sidebar nav a.active {
+      color: #f8fafc;
+      background: #1e293b;
+      border-left-color: var(--accent);
+    }
+
+    #sidebar .section-label {
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #475569;
+      padding: 1.1rem 1.25rem .35rem;
+      font-weight: 700;
+    }
+
+    #sidebar .progress-wrap {
+      padding: .5rem 1.25rem 0;
+    }
+
+    #sidebar .progress {
+      height: 4px;
+      background: #1e293b;
+    }
+
+    #sidebar .progress-bar {
+      background: var(--accent);
+      transition: width .4s ease;
+    }
 
     /* ── MAIN ── */
-    #main { margin-left:270px;min-height:100vh; }
-    .topbar { background:#fff;border-bottom:1px solid #e2e8f0;padding:.75rem 2rem;position:sticky;top:0;z-index:900;display:flex;align-items:center;gap:1rem; }
-    .topbar .breadcrumb { margin:0;font-size:.8rem; }
-    .content-section { display:none;padding:2rem;animation:fadeIn .25s ease; }
-    .content-section.active { display:block; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
+    #main {
+      margin-left: 270px;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar .breadcrumb {
+      margin: 0;
+      font-size: .8rem;
+    }
+
+    .content-section {
+      display: none;
+      padding: 2rem;
+      animation: fadeIn .25s ease;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
     /* ── HERO ── */
-    .hero-card { background:linear-gradient(135deg,#0f172a 0%,#2d1a0a 100%);color:#fff;border-radius:16px;padding:2.5rem 3rem;margin-bottom:2rem; }
-    .hero-card .clase-badge { background:rgba(249,115,22,.25);border:1px solid rgba(249,115,22,.5);color:#fdba74;font-size:.75rem;padding:.3rem .8rem;border-radius:20px;display:inline-block;margin-bottom:1rem;letter-spacing:.06em;text-transform:uppercase; }
-    .hero-card h1 { font-size:2rem;font-weight:700;margin-bottom:.5rem; }
-    .hero-card p { color:#94a3b8;font-size:1rem; }
-    .hero-meta span { background:rgba(255,255,255,.1);border-radius:8px;padding:.4rem .9rem;font-size:.82rem;margin-right:.5rem;color:#e2e8f0; }
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #2d1a0a 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: 2.5rem 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .hero-card .clase-badge {
+      background: rgba(249, 115, 22, .25);
+      border: 1px solid rgba(249, 115, 22, .5);
+      color: #fdba74;
+      font-size: .75rem;
+      padding: .3rem .8rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 1rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .hero-card h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .hero-card p {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .hero-meta span {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 8px;
+      padding: .4rem .9rem;
+      font-size: .82rem;
+      margin-right: .5rem;
+      color: #e2e8f0;
+    }
 
     /* ── BLOCKS ── */
-    .theory-block { background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.75rem;margin-bottom:1.5rem; }
-    .theory-block h4 { font-weight:700;font-size:1.05rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem; }
-    .theory-block p, .theory-block li { font-size:.9rem;color:#374151;line-height:1.75; }
-    .theory-block ul, .theory-block ol { padding-left:1.4rem; }
-    .info-card { background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem;height:100%; }
-    .info-card .ic-icon { width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem; }
-    .info-card h5 { font-weight:700;font-size:.95rem;margin-bottom:.5rem; }
-    .info-card p { font-size:.85rem;color:#64748b;margin:0; }
+    .theory-block {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .theory-block h4 {
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .theory-block p,
+    .theory-block li {
+      font-size: .9rem;
+      color: #374151;
+      line-height: 1.75;
+    }
+
+    .theory-block ul,
+    .theory-block ol {
+      padding-left: 1.4rem;
+    }
+
+    .info-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem;
+      height: 100%;
+    }
+
+    .info-card .ic-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-card h5 {
+      font-weight: 700;
+      font-size: .95rem;
+      margin-bottom: .5rem;
+    }
+
+    .info-card p {
+      font-size: .85rem;
+      color: #64748b;
+      margin: 0;
+    }
 
     /* ── CALLOUTS ── */
-    .callout { border-left:4px solid;border-radius:0 8px 8px 0;padding:.9rem 1.2rem;margin:1rem 0;font-size:.88rem; }
-    .callout-blue   { border-color:#3b82f6;background:#eff6ff;color:#1e40af; }
-    .callout-green  { border-color:#10b981;background:#f0fdf4;color:#065f46; }
-    .callout-amber  { border-color:#f59e0b;background:#fffbeb;color:#92400e; }
-    .callout-red    { border-color:#ef4444;background:#fef2f2;color:#991b1b; }
-    .callout-purple { border-color:#8b5cf6;background:#f5f3ff;color:#4c1d95; }
-    .callout-cyan   { border-color:#06b6d4;background:#ecfeff;color:#164e63; }
-    .callout-orange { border-color:#f97316;background:#fff7ed;color:#9a3412; }
+    .callout {
+      border-left: 4px solid;
+      border-radius: 0 8px 8px 0;
+      padding: .9rem 1.2rem;
+      margin: 1rem 0;
+      font-size: .88rem;
+    }
+
+    .callout-blue {
+      border-color: #3b82f6;
+      background: #eff6ff;
+      color: #1e40af;
+    }
+
+    .callout-green {
+      border-color: #10b981;
+      background: #f0fdf4;
+      color: #065f46;
+    }
+
+    .callout-amber {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    .callout-red {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .callout-purple {
+      border-color: #8b5cf6;
+      background: #f5f3ff;
+      color: #4c1d95;
+    }
+
+    .callout-cyan {
+      border-color: #06b6d4;
+      background: #ecfeff;
+      color: #164e63;
+    }
+
+    .callout-orange {
+      border-color: #f97316;
+      background: #fff7ed;
+      color: #9a3412;
+    }
 
     /* ── CODE ── */
-    .code-block { background:#0f172a;border-radius:10px;overflow:hidden;margin:1rem 0;font-family:'JetBrains Mono',monospace; }
-    .code-block .code-header { background:#1e293b;padding:.5rem 1rem;display:flex;align-items:center;justify-content:space-between; }
-    .code-block .code-header span { font-size:.75rem;color:#64748b;font-family:'Inter',sans-serif; }
-    .code-block .code-header .lang-badge { font-size:.68rem;padding:.15rem .55rem;border-radius:20px;font-weight:700; }
-    .lang-ts   { background:rgba(6,182,212,.2);color:#67e8f9; }
-    .lang-html { background:rgba(239,68,68,.2);color:#fca5a5; }
-    .lang-bash { background:rgba(16,185,129,.2);color:#6ee7b7; }
-    .lang-json { background:rgba(245,158,11,.2);color:#fcd34d; }
-    .code-block pre { margin:0;padding:1.25rem;color:#e2e8f0;font-size:.82rem;line-height:1.75;overflow-x:auto; }
-    .kw   { color:#93c5fd; }
-    .fn   { color:#86efac; }
-    .str  { color:#fca5a5; }
-    .cm   { color:#475569;font-style:italic; }
-    .num  { color:#fdba74; }
-    .prop { color:#c4b5fd; }
-    .bool { color:#f9a8d4; }
-    .typ  { color:#67e8f9;font-weight:600; }
-    .dec  { color:#fbbf24;font-weight:600; }
-    .tag  { color:#86efac; }
-    .attr { color:#c4b5fd; }
-    .bind { color:#fcd34d;font-weight:600; }
+    .code-block {
+      background: #0f172a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-block .code-header {
+      background: #1e293b;
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .code-block .code-header span {
+      font-size: .75rem;
+      color: #64748b;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .code-block .code-header .lang-badge {
+      font-size: .68rem;
+      padding: .15rem .55rem;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+
+    .lang-ts {
+      background: rgba(6, 182, 212, .2);
+      color: #67e8f9;
+    }
+
+    .lang-html {
+      background: rgba(239, 68, 68, .2);
+      color: #fca5a5;
+    }
+
+    .lang-bash {
+      background: rgba(16, 185, 129, .2);
+      color: #6ee7b7;
+    }
+
+    .lang-json {
+      background: rgba(245, 158, 11, .2);
+      color: #fcd34d;
+    }
+
+    .code-block pre {
+      margin: 0;
+      padding: 1.25rem;
+      color: #e2e8f0;
+      font-size: .82rem;
+      line-height: 1.75;
+      overflow-x: auto;
+    }
+
+    .kw   { color: #93c5fd; }
+    .fn   { color: #86efac; }
+    .str  { color: #fca5a5; }
+    .cm   { color: #475569; font-style: italic; }
+    .num  { color: #fdba74; }
+    .prop { color: #c4b5fd; }
+    .bool { color: #f9a8d4; }
+    .typ  { color: #67e8f9; font-weight: 600; }
+    .dec  { color: #fbbf24; font-weight: 600; }
+    .tag  { color: #86efac; }
+    .attr { color: #c4b5fd; }
+    .bind { color: #fcd34d; font-weight: 600; }
 
     /* ── SANDBOX ── */
-    .sandbox { background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:1.5rem; }
-    .sandbox-header { background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem; }
-    .sandbox-header .title { font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:.5rem; }
-    .sandbox-body { padding:1.5rem; }
-    .run-btn { background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.45rem 1.1rem;font-size:.82rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:background .15s; }
-    .run-btn:hover   { background:var(--accent-dark); }
-    .run-btn.green   { background:#10b981; } .run-btn.green:hover  { background:#059669; }
-    .run-btn.blue    { background:#3b82f6; } .run-btn.blue:hover   { background:#2563eb; }
-    .run-btn.red     { background:#ef4444; } .run-btn.red:hover    { background:#dc2626; }
-    .run-btn.amber   { background:#f59e0b;color:#1e293b; } .run-btn.amber:hover { background:#d97706; }
-    .run-btn.purple  { background:#8b5cf6; } .run-btn.purple:hover { background:#7c3aed; }
-    .run-btn.gray    { background:#64748b; } .run-btn.gray:hover   { background:#475569; }
+    .sandbox {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .sandbox-header {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: .75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .sandbox-header .title {
+      font-weight: 600;
+      font-size: .9rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .sandbox-body {
+      padding: 1.5rem;
+    }
+
+    .run-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .45rem 1.1rem;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      transition: background .15s;
+    }
+
+    .run-btn:hover   { background: var(--accent-dark); }
+    .run-btn.green   { background: #10b981; } .run-btn.green:hover  { background: #059669; }
+    .run-btn.blue    { background: #3b82f6; } .run-btn.blue:hover   { background: #2563eb; }
+    .run-btn.red     { background: #ef4444; } .run-btn.red:hover    { background: #dc2626; }
+    .run-btn.amber   { background: #f59e0b; color: #1e293b; } .run-btn.amber:hover { background: #d97706; }
+    .run-btn.purple  { background: #8b5cf6; } .run-btn.purple:hover { background: #7c3aed; }
+    .run-btn.gray    { background: #64748b; } .run-btn.gray:hover   { background: #475569; }
 
     /* ── TIMELINE ── */
-    .timeline { position:relative;padding-left:2rem; }
-    .timeline::before { content:'';position:absolute;left:.55rem;top:0;bottom:0;width:2px;background:#e2e8f0; }
-    .timeline-item { position:relative;margin-bottom:1.25rem; }
-    .timeline-item::before { content:'';position:absolute;left:-1.5rem;top:.35rem;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent); }
-    .timeline-item .t-time  { font-size:.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em; }
-    .timeline-item .t-title { font-weight:600;font-size:.95rem; }
-    .timeline-item .t-desc  { font-size:.85rem;color:#64748b; }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: .55rem; top: 0; bottom: 0; width: 2px; background: #e2e8f0; }
+    .timeline-item { position: relative; margin-bottom: 1.25rem; }
+    .timeline-item::before { content: ''; position: absolute; left: -1.5rem; top: .35rem; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--accent); }
+    .timeline-item .t-time  { font-size: .72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+    .timeline-item .t-title { font-weight: 600; font-size: .95rem; }
+    .timeline-item .t-desc  { font-size: .85rem; color: #64748b; }
 
     /* ── COMPARE ── */
-    .compare-cols { display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0; }
-    .compare-col  { border-radius:10px;padding:1.25rem; }
+    .compare-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .compare-col  { border-radius: 10px; padding: 1.25rem; }
 
     /* ── STEP PILLS ── */
-    .step-pills { display:flex;flex-wrap:wrap;gap:.75rem;margin:1rem 0; }
-    .step-pill { background:var(--accent-faint);border:1px solid var(--accent-border);color:#9a3412;border-radius:30px;padding:.4rem 1rem;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:.4rem; }
-    .step-pill .num { background:var(--accent);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem; }
+    .step-pills { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+    .step-pill  { background: var(--accent-faint); border: 1px solid var(--accent-border); color: #9a3412; border-radius: 30px; padding: .4rem 1rem; font-size: .82rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+    .step-pill .num { background: var(--accent); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; }
 
     /* ── FILE TREE ── */
-    .file-tree { background:#0f172a;border-radius:10px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:2.1;color:#94a3b8; }
-    .file-tree .dir   { color:#67e8f9; }
-    .file-tree .file  { color:#e2e8f0; }
-    .file-tree .ts    { color:#c4b5fd; }
-    .file-tree .html  { color:#fca5a5; }
-    .file-tree .css   { color:#86efac; }
-    .file-tree .json  { color:#fcd34d; }
-    .file-tree .note  { color:#475569;font-style:italic; }
-    .file-tree .new   { color:#fbbf24;font-weight:700; }
+    .file-tree { background: #0f172a; border-radius: 10px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 2.1; color: #94a3b8; }
+    .file-tree .dir  { color: #67e8f9; }
+    .file-tree .file { color: #e2e8f0; }
+    .file-tree .ts   { color: #c4b5fd; }
+    .file-tree .html { color: #fca5a5; }
+    .file-tree .css  { color: #86efac; }
+    .file-tree .note { color: #475569; font-style: italic; }
+    .file-tree .new  { color: #fbbf24; font-weight: 700; }
 
     /* ── OS TABLE ── */
-    .os-table { width:100%;border-collapse:collapse;font-size:.82rem;margin:1rem 0; }
-    .os-table th { background:#0f172a;color:#e2e8f0;padding:.6rem 1rem;text-align:left;font-weight:600; }
-    .os-table td { padding:.55rem 1rem;border-bottom:1px solid #e2e8f0;vertical-align:top; }
-    .os-table tr:last-child td { border-bottom:none; }
-    .os-table tr:nth-child(even) td { background:#f8fafc; }
-    .os-table code { background:#f1f5f9;border-radius:4px;padding:.1rem .4rem;font-size:.78rem;color:#0f172a; }
+    .os-table { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 1rem 0; }
+    .os-table th { background: #0f172a; color: #e2e8f0; padding: .6rem 1rem; text-align: left; font-weight: 600; }
+    .os-table td { padding: .55rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    .os-table tr:last-child td { border-bottom: none; }
+    .os-table tr:nth-child(even) td { background: #f8fafc; }
+    .os-table code { background: #f1f5f9; border-radius: 4px; padding: .1rem .4rem; font-size: .78rem; color: #0f172a; }
 
     /* ── CHECKLIST ── */
-    .checklist { list-style:none;padding:0;margin:0; }
-    .checklist li { display:flex;align-items:flex-start;gap:.6rem;padding:.4rem 0;font-size:.88rem;color:#374151; }
-    .checklist li::before { content:'☐';color:#94a3b8;font-size:1rem;flex-shrink:0;margin-top:.05rem; }
-    .checklist li.done::before { content:'✓';color:#10b981; }
+    .checklist { list-style: none; padding: 0; margin: 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: .6rem; padding: .4rem 0; font-size: .88rem; color: #374151; }
+    .checklist li::before { content: '☐'; color: #94a3b8; font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+    .checklist li.done::before { content: '✓'; color: #10b981; }
 
     /* ── ERROR BOX ── */
-    .error-box { background:#0f172a;border:1px solid #ef4444;border-radius:10px;padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.75;color:#fca5a5; }
-    .error-box .file { color:#94a3b8;margin-bottom:.5rem; }
-    .error-box .fix  { background:#134e0a;border:1px solid #16a34a;border-radius:6px;padding:.75rem;margin-top:.75rem;color:#86efac;font-size:.78rem; }
+    .error-box { background: #0f172a; border: 1px solid #ef4444; border-radius: 10px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: .8rem; line-height: 1.75; color: #fca5a5; }
+    .error-box .file { color: #94a3b8; margin-bottom: .5rem; }
+    .error-box .fix  { background: #134e0a; border: 1px solid #16a34a; border-radius: 6px; padding: .75rem; margin-top: .75rem; color: #86efac; font-size: .78rem; }
 
     /* ── OUTPUT AREA ── */
-    .output-area { background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:1rem;min-height:70px;font-size:.82rem;margin-top:1rem;font-family:'JetBrains Mono',monospace;color:#e2e8f0;line-height:1.8; }
-    .output-area .ok   { color:#86efac; }
-    .output-area .er   { color:#fca5a5; }
-    .output-area .info { color:#67e8f9; }
-    .output-area .warn { color:#fcd34d; }
-    .output-area .dim  { color:#475569; }
+    .output-area { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 1rem; min-height: 70px; font-size: .82rem; margin-top: 1rem; font-family: 'JetBrains Mono', monospace; color: #e2e8f0; line-height: 1.8; }
+    .output-area .ok   { color: #86efac; }
+    .output-area .er   { color: #fca5a5; }
+    .output-area .info { color: #67e8f9; }
+    .output-area .warn { color: #fcd34d; }
+    .output-area .dim  { color: #475569; }
 
-    @media(max-width:768px){ #sidebar{transform:translateX(-100%);} #main{margin-left:0;} .compare-cols{grid-template-columns:1fr;} }
+    @media(max-width:768px) {
+      #sidebar { transform: translateX(-100%); }
+      #main { margin-left: 0; }
+      .compare-cols { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
+
 <body>
 
-<!-- ═══════════ SIDEBAR ═══════════ -->
-<nav id="sidebar">
-  <div class="brand">
-    <div class="badge-mod">MODULO 1 · CLASE 6</div>
-    <h6>Frontend con Angular</h6>
-    <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
-  </div>
-  <div class="progress-wrap">
-    <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
-      <span>Progreso de la clase</span><span id="progress-pct">9%</span>
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <nav id="sidebar">
+    <div class="brand">
+      <div class="badge-mod">MODULO 1 · CLASE 6</div>
+      <h6>Frontend con Angular</h6>
+      <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
     </div>
-    <div class="progress"><div class="progress-bar" id="progress-bar" style="width:9%"></div></div>
-    <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Clase 6 de 7 · Modulo 1</div>
-  </div>
-  <div class="section-label">Contenido</div>
-  <nav id="sidenav">
-    <a href="#" class="active" onclick="window.showSection('agenda',this)">        <i class="bi bi-calendar3"></i> Agenda</a>
-    <a href="#" onclick="window.showSection('httpclient',this)">                   <i class="bi bi-arrow-left-right"></i> HttpClient</a>
-    <a href="#" onclick="window.showSection('servicio',this)">                     <i class="bi bi-gear"></i> Servicios</a>
-    <a href="#" onclick="window.showSection('refactor',this)">                     <i class="bi bi-wrench"></i> Refactor ProductsComponent</a>
-    <a href="#" onclick="window.showSection('routing',this)">                      <i class="bi bi-signpost-split"></i> Routing</a>
-    <a href="#" onclick="window.showSection('detalle',this)">                      <i class="bi bi-card-text"></i> Vista de detalle</a>
-    <a href="#" onclick="window.showSection('routerlink',this)">                   <i class="bi bi-link-45deg"></i> routerLink y navegacion</a>
-    <a href="#" onclick="window.showSection('ejercicio',this)">                    <i class="bi bi-hammer"></i> Ejercicio final</a>
-    <a href="#" onclick="window.showSection('qa',this)">                           <i class="bi bi-patch-question"></i> Q&A y cierre</a>
-    <a href="#" onclick="window.showSection('conexion',this)">                     <i class="bi bi-arrow-right-circle"></i> Conexion con Clase 7</a>
-  </nav>
-  <div class="section-label">Navegacion</div>
-  <nav>
-    <a href="clase5.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 5</a>
-    <a href="clase7.html"><i class="bi bi-arrow-right-circle"></i> Clase 7 →</a>
-  </nav>
-</nav>
-
-<!-- ═══════════ MAIN ═══════════ -->
-<div id="main">
-  <div class="topbar">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item text-muted">Modulo 1</li>
-        <li class="breadcrumb-item text-muted">Frontend con Angular</li>
-        <li class="breadcrumb-item active fw-semibold">Clase 6 - HttpClient y Routing</li>
-      </ol>
+    <div class="progress-wrap">
+      <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+        <span>Progreso de la clase</span><span id="progress-pct">9%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" id="progress-bar" style="width:9%"></div>
+      </div>
+      <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">
+        Clase 6 de 7 · Modulo 1</div>
+    </div>
+    <div class="section-label">Contenido</div>
+    <nav id="sidenav">
+      <a href="#" class="active" onclick="window.showSection('agenda',this)">        <i class="bi bi-calendar3"></i> Agenda</a>
+      <a href="#" onclick="window.showSection('httpclient',this)">                   <i class="bi bi-arrow-left-right"></i> HttpClient</a>
+      <a href="#" onclick="window.showSection('servicio',this)">                     <i class="bi bi-gear"></i> Servicios</a>
+      <a href="#" onclick="window.showSection('refactor',this)">                     <i class="bi bi-wrench"></i> Refactor Products</a>
+      <a href="#" onclick="window.showSection('routing',this)">                      <i class="bi bi-signpost-split"></i> Routing</a>
+      <a href="#" onclick="window.showSection('detalle',this)">                      <i class="bi bi-card-text"></i> Vista de detalle</a>
+      <a href="#" onclick="window.showSection('routerlink',this)">                   <i class="bi bi-link-45deg"></i> routerLink y navegacion</a>
+      <a href="#" onclick="window.showSection('ejercicio',this)">                    <i class="bi bi-hammer"></i> Ejercicio final</a>
+      <a href="#" onclick="window.showSection('qa',this)">                           <i class="bi bi-patch-question"></i> Q&A y cierre</a>
+      <a href="#" onclick="window.showSection('conexion',this)">                     <i class="bi bi-arrow-right-circle"></i> Conexion con Clase 7</a>
     </nav>
-    <span class="ms-auto badge" style="background:#fff7ed;color:#9a3412;border:1px solid #fed7aa">
-      <i class="bi bi-clock me-1"></i>2h efectivas
-    </span>
-  </div>
+    <div class="section-label">Navegacion</div>
+    <nav>
+      <a href="clase5.html"><i class="bi bi-arrow-left-circle"></i> ← Clase 5</a>
+      <a href="clase7.html"><i class="bi bi-arrow-right-circle"></i> Clase 7 →</a>
+    </nav>
+  </nav>
 
-  <!-- ══════════════════════════════ AGENDA ══════════════════════════════ -->
-  <section id="agenda" class="content-section active">
-    <div class="hero-card">
-      <div class="clase-badge"><i class="bi bi-6-circle me-1"></i>Clase 6 de 7</div>
-      <h1>HttpClient y Routing</h1>
-      <p>Los datos mock quedan atras. Hoy la tabla de productos se alimentara de FakeStore API, los filtros seguiran funcionando exactamente igual, y cada producto tendra su propia URL con vista de detalle.</p>
-      <div class="hero-meta mt-3">
-        <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
-        <span><i class="bi bi-arrow-left-right me-1"></i>HttpClient</span>
-        <span><i class="bi bi-signpost-split me-1"></i>Routing</span>
-      </div>
+  <!-- ═══════════ MAIN ═══════════ -->
+  <div id="main">
+    <div class="topbar">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item text-muted">Modulo 1</li>
+          <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+          <li class="breadcrumb-item active fw-semibold">Clase 6 - HttpClient y Routing</li>
+        </ol>
+      </nav>
+      <span class="ms-auto badge" style="background:#fff7ed;color:#9a3412;border:1px solid #fed7aa">
+        <i class="bi bi-clock me-1"></i>2h efectivas
+      </span>
     </div>
 
-    <div class="callout callout-orange mb-4">
-      <strong>Punto de partida:</strong> Llegas con tu proyecto Angular 20 de la Clase 5 funcionando: <code>ng serve</code> activo, tabla de productos con datos mock en <code>/products</code>, filtros por categoria y nombre, y <code>ProductCardComponent</code> con <code>Input()</code>. Hoy reemplazas el mock por la API real y agregas rutas con detalle.
-    </div>
-
-    <div class="row g-4 mb-4">
-      <div class="col-md-4">
-        <div class="info-card">
-          <div class="ic-icon" style="background:#fff7ed"><i class="bi bi-arrow-left-right" style="color:#f97316;font-size:1.3rem"></i></div>
-          <h5>HttpClient</h5>
-          <p>El modulo de Angular para hacer peticiones HTTP. Reemplaza <code>fetch()</code> y <code>$.ajax()</code>. Se inyecta en el constructor y devuelve <code>Observable</code> en lugar de <code>Promise</code>.</p>
+    <!-- ══════════════════════════════ AGENDA ══════════════════════════════ -->
+    <section id="agenda" class="content-section active">
+      <div class="hero-card">
+        <div class="clase-badge"><i class="bi bi-6-circle me-1"></i>Clase 6 de 7</div>
+        <h1>HttpClient y Routing</h1>
+        <p>Los datos mock quedan atras. Hoy la tabla de productos se alimentara de FakeStore API, los filtros seguiran funcionando exactamente igual, y cada producto tendra su propia URL con vista de detalle.</p>
+        <div class="hero-meta mt-3">
+          <span><i class="bi bi-clock me-1"></i>2h efectivas</span>
+          <span><i class="bi bi-arrow-left-right me-1"></i>HttpClient</span>
+          <span><i class="bi bi-signpost-split me-1"></i>Routing</span>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="info-card">
-          <div class="ic-icon" style="background:#fff7ed"><i class="bi bi-gear" style="color:#f97316;font-size:1.3rem"></i></div>
-          <h5>Servicios</h5>
-          <p>Clases que centralizan la logica de negocio. El <code>ProductService</code> tendra todos los metodos de la API. Los componentes lo consumen sin saber los detalles.</p>
+
+      <div class="callout callout-orange mb-4">
+        <strong>Punto de partida:</strong> Llegas con la Clase 5 funcionando: <code>ng serve</code> activo, tabla de productos con datos mock, filtros por categoria y nombre, <code>ProductCard</code> con <code>@Input()</code> y <code>@Output()</code>, y el modal de detalle abriendo correctamente.
+      </div>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#fff7ed"><i class="bi bi-arrow-left-right" style="color:#f97316;font-size:1.3rem"></i></div>
+            <h5>HttpClient</h5>
+            <p>El modulo de Angular para hacer peticiones HTTP. Reemplaza los datos mock del array. Se inyecta en el constructor y devuelve <code>Observable</code>.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#fff7ed"><i class="bi bi-gear" style="color:#f97316;font-size:1.3rem"></i></div>
+            <h5>Servicios</h5>
+            <p>Clases con <code>@Injectable()</code> que centralizan la logica de negocio. El <code>ProductService</code> tendra todos los metodos de la API. Los componentes lo consumen sin conocer los detalles.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#fff7ed"><i class="bi bi-signpost-split" style="color:#f97316;font-size:1.3rem"></i></div>
+            <h5>Routing con parametros</h5>
+            <p>Ruta <code>/product/:id</code> para la vista de detalle. El componente lee el <code>:id</code> de la URL y carga el producto correspondiente desde la API.</p>
+          </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="info-card">
-          <div class="ic-icon" style="background:#fff7ed"><i class="bi bi-signpost-split" style="color:#f97316;font-size:1.3rem"></i></div>
-          <h5>Routing con parametros</h5>
-          <p>Ruta <code>/product/:id</code> para la vista de detalle. El componente lee el <code>:id</code> de la URL y carga el producto correspondiente desde la API.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-list-ol" style="color:var(--accent)"></i> Distribucion del tiempo</h4>
+        <div class="timeline mt-3">
+          <div class="timeline-item">
+            <div class="t-time">10 min</div>
+            <div class="t-title">HttpClient y Observable</div>
+            <div class="t-desc">Por que Angular usa <code>Observable</code> en lugar de <code>Promise</code>. Como funciona <code>.subscribe()</code>. Activar <code>HttpClientModule</code> en <code>app-module.ts</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">30 min</div>
+            <div class="t-title">Crear ProductService y refactorizar Products</div>
+            <div class="t-desc"><code>ng generate service services/product</code>. Metodos <code>getProducts()</code>, <code>getProductById()</code>, <code>getProductsByCategory()</code>. Inyectar el servicio. Los filtros no cambian.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">30 min</div>
+            <div class="t-title">Routing: agregar ruta /product/:id</div>
+            <div class="t-desc">Activar rutas en <code>app-routing-module.ts</code>. Crear <code>ProductDetail</code>. Agregar <code>&lt;router-outlet&gt;</code> en <code>app.html</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">30 min</div>
+            <div class="t-title">Navegacion: routerLink desde la tabla al detalle</div>
+            <div class="t-desc">Reemplazar el boton del modal por un enlace con <code>[routerLink]</code>. Mostrar datos del producto en la vista de detalle con <code>ActivatedRoute</code>.</div>
+          </div>
+          <div class="timeline-item">
+            <div class="t-time">10 min</div>
+            <div class="t-title">Q&A y conexion con Clase 7</div>
+            <div class="t-desc">Preguntas frecuentes y el puente: hoy todos pueden ver los productos. En Clase 7, la vista de usuarios estara protegida con autenticacion JWT.</div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-list-ol" style="color:var(--accent)"></i> Distribucion del tiempo</h4>
-      <div class="timeline mt-3">
-        <div class="timeline-item">
-          <div class="t-time">10 min</div>
-          <div class="t-title">HttpClient y Observable vs Promise</div>
-          <div class="t-desc">Por que Angular usa <code>Observable</code> en lugar de <code>Promise</code>. Como funciona <code>.subscribe()</code>. Activar <code>HttpClientModule</code> en <code>app-module.ts</code>.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">30 min</div>
-          <div class="t-title">Crear ProductService y refactorizar ProductsComponent</div>
-          <div class="t-desc"><code>ng generate service services/product</code>. Metodos <code>getProducts()</code> y <code>getProductById()</code>. Inyectar el servicio en el componente. Los filtros no cambian.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">30 min</div>
-          <div class="t-title">Routing: agregar ruta <code>/product/:id</code></div>
-          <div class="t-desc">Crear <code>ProductDetailComponent</code>. Registrar la ruta en <code>app-routing-module.ts</code>. Leer el parametro <code>:id</code> con <code>ActivatedRoute</code>.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">30 min</div>
-          <div class="t-title">Navegacion: routerLink desde la tabla al detalle</div>
-          <div class="t-desc">Reemplazar el boton del modal por un enlace con <code>routerLink</code>. Mostrar los datos del producto en la vista de detalle.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-time">10 min</div>
-          <div class="t-title">Q&A y conexion con Clase 7</div>
-          <div class="t-desc">Preguntas frecuentes y el puente: hoy todos pueden ver los productos. En Clase 7, la vista de usuarios estara protegida con autenticacion JWT.</div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <!-- ══════════════════════════════ HTTPCLIENT ══════════════════════════════ -->
+    <section id="httpclient" class="content-section">
+      <h2 class="fw-bold mb-1">HttpClient</h2>
+      <p class="text-muted mb-4">El modulo oficial de Angular para consumir APIs. Mismo concepto que <code>fetch()</code> pero integrado con el sistema de Angular.</p>
 
-  <!-- ══════════════════════════════ HTTPCLIENT ══════════════════════════════ -->
-  <section id="httpclient" class="content-section">
-    <h2 class="fw-bold mb-1">HttpClient</h2>
-    <p class="text-muted mb-4">El modulo oficial de Angular para consumir APIs. Mismo concepto que <code>fetch()</code> o <code>$.ajax()</code>, pero integrado con el sistema de Angular.</p>
-
-    <div class="theory-block">
-      <h4><i class="bi bi-diagram-3" style="color:var(--accent)"></i> Observable vs Promise</h4>
-      <p>La diferencia principal con <code>fetch()</code> es que HttpClient devuelve un <strong>Observable</strong> en lugar de una <strong>Promise</strong>. Funcionalmente para este proyecto son equivalentes, pero el Observable tiene mas capacidades:</p>
-      <div class="compare-cols">
-        <div class="compare-col" style="background:#fffbeb;border:1px solid #fde68a">
-          <h6 style="color:#92400e;font-size:.83rem"><i class="bi bi-braces me-1"></i>fetch() — Clases 1 a 5</h6>
-          <pre style="font-size:.78rem;color:#78350f;margin:0;line-height:1.9"><span class="kw">async function</span> <span class="fn">cargar</span>() {
+      <div class="theory-block">
+        <h4><i class="bi bi-diagram-3" style="color:var(--accent)"></i> Observable vs Promise</h4>
+        <p>La diferencia principal con <code>fetch()</code> es que HttpClient devuelve un <strong>Observable</strong> en lugar de una <strong>Promise</strong>. Para este curso son funcionalmente equivalentes:</p>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fffbeb;border:1px solid #fde68a">
+            <h6 style="color:#92400e;font-size:.83rem"><i class="bi bi-braces me-1"></i>fetch() — Clases 1 a 5</h6>
+            <pre style="font-size:.78rem;color:#78350f;margin:0;line-height:1.9"><span class="kw">async function</span> <span class="fn">cargar</span>() {
   <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'url'</span>);
   <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
   <span class="kw">this</span>.data = data;
 }</pre>
-        </div>
-        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
-          <h6 style="color:#065f46;font-size:.83rem"><i class="bi bi-lightning me-1"></i>HttpClient — desde Clase 6</h6>
-          <pre style="font-size:.78rem;color:#14532d;margin:0;line-height:1.9"><span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
+          </div>
+          <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <h6 style="color:#065f46;font-size:.83rem"><i class="bi bi-lightning me-1"></i>HttpClient — desde Clase 6</h6>
+            <pre style="font-size:.78rem;color:#14532d;margin:0;line-height:1.9"><span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
   <span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'url'</span>).<span class="fn">subscribe</span>(
     (response) => {
       <span class="kw">this</span>.data = response;
     }
   );
 }</pre>
+          </div>
+        </div>
+        <div class="callout callout-blue mt-2">
+          <strong>Por que <code>.subscribe()</code>?</strong> Un Observable es como una suscripcion a un canal: no llegan los datos hasta que te suscribes. <code>.subscribe(callback)</code> es el equivalente a <code>.then(callback)</code> en Promesas. El callback recibe los datos cuando llegan.
         </div>
       </div>
-      <div class="callout callout-blue mt-2">
-        <strong>Por que <code>.subscribe()</code>?</strong> Un Observable es como una "suscripcion a una revista": no llegan los datos hasta que te suscribes. <code>.subscribe(callback)</code> es el equivalente a <code>.then(callback)</code> en Promesas. El callback recibe los datos cuando llegan.
-      </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-puzzle" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
-        Activar HttpClientModule en app-module.ts
-      </h4>
-      <p style="font-size:.9rem">HttpClient no esta disponible por defecto. Hay que importar <code>HttpClientModule</code> en <code>app-module.ts</code>. Se hace una sola vez y queda disponible en toda la aplicacion:</p>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/app-module.ts — agregar HttpClientModule</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-puzzle" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
+          Activar HttpClientModule en app-module.ts
+        </h4>
+        <p style="font-size:.9rem">HttpClient no esta disponible por defecto. Hay que importar <code>HttpClientModule</code> en <code>app-module.ts</code>. Se hace una sola vez y queda disponible en toda la aplicacion:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app-module.ts — agregar HttpClientModule</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { NgModule, provideBrowserGlobalErrorListeners } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="str">'@angular/platform-browser'</span>;
-<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing-module'</span>;
-<span class="kw">import</span> { AppComponent } <span class="kw">from</span> <span class="str">'./app'</span>;
+<span class="kw">import</span> { FormsModule } <span class="kw">from</span> <span class="str">'@angular/forms'</span>;
 <span class="kw">import</span> { HttpClientModule } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;  <span class="cm">// AGREGAR</span>
-<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products'</span>;
-<span class="kw">import</span> { ProductCardComponent } <span class="kw">from</span> <span class="str">'./product-card/product-card'</span>;
+
+<span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing-module'</span>;
+<span class="kw">import</span> { App } <span class="kw">from</span> <span class="str">'./app'</span>;
+<span class="kw">import</span> { Products } <span class="kw">from</span> <span class="str">'./products/products'</span>;
+<span class="kw">import</span> { ProductCard } <span class="kw">from</span> <span class="str">'./product-card/product-card'</span>;
 
 <span class="dec">@NgModule</span>({
   <span class="prop">declarations</span>: [
-    AppComponent,
-    ProductsComponent,
-    ProductCardComponent
+    App,
+    Products,
+    ProductCard,
   ],
   <span class="prop">imports</span>: [
     BrowserModule,
+    FormsModule,
     AppRoutingModule,
-    HttpClientModule   <span class="cm">// AGREGAR AQUI</span>
+    HttpClientModule,  <span class="cm">// AGREGAR AQUI</span>
   ],
-  <span class="prop">providers</span>: [],
-  <span class="prop">bootstrap</span>: [AppComponent]
+  <span class="prop">providers</span>: [
+    provideBrowserGlobalErrorListeners()
+  ],
+  <span class="prop">bootstrap</span>: [App]
 })
 <span class="kw">export class</span> <span class="typ">AppModule</span> { }</pre>
-      </div>
-      <div class="callout callout-amber">
-        <strong>Un error comun es</strong> intentar usar <code>HttpClient</code> sin agregar <code>HttpClientModule</code> a <code>imports</code>. El error que aparece es <code>NullInjectorError: No provider for HttpClient</code>. La solucion es siempre revisar que <code>HttpClientModule</code> este en el array <code>imports</code> de <code>app-module.ts</code>.
-      </div>
-    </div>
-
-    <div class="sandbox">
-      <div class="sandbox-header">
-        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: HttpClient en accion — peticion real a FakeStore</div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="run-btn"      onclick="demoGet()">       <i class="bi bi-play-fill"></i> http.get() — lista</button>
-          <button class="run-btn blue" onclick="demoGetById()">   <i class="bi bi-play-fill"></i> http.get() — por ID</button>
-          <button class="run-btn gray" onclick="demoReset()">     <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        </div>
+        <div class="callout callout-amber">
+          <strong>Un error comun es</strong> intentar usar <code>HttpClient</code> sin agregar <code>HttpClientModule</code> a <code>imports</code>. El error que aparece es <code>NullInjectorError: No provider for HttpClient</code>. La solucion es revisar que <code>HttpClientModule</code> este en el array <code>imports</code> de <code>app-module.ts</code>.
         </div>
       </div>
-      <div class="sandbox-body">
-        <div id="out-http" class="output-area">Haz clic en un boton para ver como responde HttpClient...</div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: HttpClient en accion — peticion real a FakeStore</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn"     onclick="demoGet()">     <i class="bi bi-play-fill"></i> http.get() — lista</button>
+            <button class="run-btn blue" onclick="demoGetById()"> <i class="bi bi-play-fill"></i> http.get() — por ID</button>
+            <button class="run-btn gray" onclick="demoReset()">   <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-http" class="output-area">Haz clic en un boton para ver como responde HttpClient...</div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ SERVICIOS ══════════════════════════════ -->
-  <section id="servicio" class="content-section">
-    <h2 class="fw-bold mb-1">Servicios</h2>
-    <p class="text-muted mb-4">Una clase con <code>Injectable()</code> que centraliza la logica de negocio. Los componentes consumen el servicio sin conocer los detalles de la API.</p>
+    <!-- ══════════════════════════════ SERVICIOS ══════════════════════════════ -->
+    <section id="servicio" class="content-section">
+      <h2 class="fw-bold mb-1">Servicios</h2>
+      <p class="text-muted mb-4">Una clase con <code>@Injectable()</code> que centraliza la logica de negocio. Los componentes lo consumen sin conocer los detalles.</p>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Por que usar un servicio?</h4>
-      <div class="compare-cols">
-        <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
-          <h6 style="color:#991b1b;font-size:.83rem">Codigo que se vuelve dificil de mantener</h6>
-          <pre style="font-size:.77rem;color:#78350f;margin:0;line-height:1.9"><span class="cm">// En ProductsComponent.ts</span>
+      <div class="theory-block">
+        <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Por que usar un servicio?</h4>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
+            <h6 style="color:#991b1b;font-size:.83rem">Codigo que se vuelve dificil de mantener</h6>
+            <pre style="font-size:.77rem;color:#78350f;margin:0;line-height:1.9"><span class="cm">// En products.ts</span>
 <span class="kw">constructor</span>(<span class="kw">private</span> http: <span class="typ">HttpClient</span>) {}
 
 <span class="fn">ngOnInit</span>() {
@@ -381,17 +727,17 @@
     .<span class="fn">subscribe</span>(r => <span class="kw">this</span>.data = r);
 }
 
-<span class="cm">// En ProductDetailComponent.ts — repetido</span>
+<span class="cm">// En product-detail.ts — repetido</span>
 <span class="kw">constructor</span>(<span class="kw">private</span> http: <span class="typ">HttpClient</span>) {}
 
 <span class="fn">ngOnInit</span>() {
   <span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'...fakestoreapi.com/products/'+id</span>)
     .<span class="fn">subscribe</span>(r => <span class="kw">this</span>.detalle = r);
 }</pre>
-        </div>
-        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
-          <h6 style="color:#065f46;font-size:.83rem">Como mejorar: centralizar en un servicio</h6>
-          <pre style="font-size:.77rem;color:#14532d;margin:0;line-height:1.9"><span class="cm">// En product.service.ts — un solo lugar</span>
+          </div>
+          <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <h6 style="color:#065f46;font-size:.83rem">Como mejorar: centralizar en un servicio</h6>
+            <pre style="font-size:.77rem;color:#14532d;margin:0;line-height:1.9"><span class="cm">// En product.service.ts — un solo lugar</span>
 <span class="fn">getProducts</span>() {
   <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">get</span>(<span class="str">'...fakestoreapi.com/products'</span>);
 }
@@ -404,41 +750,43 @@
   <span class="kw">this</span>.productService.<span class="fn">getProducts</span>()
     .<span class="fn">subscribe</span>(r => <span class="kw">this</span>.data = r);
 }</pre>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 2</span>
-        Generar el servicio
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
-        <pre>ng generate service services/product
+      <div class="theory-block">
+        <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 2</span>
+          Generar el servicio
+        </h4>
+        <p style="font-size:.9rem">El CLI crea el archivo en la subcarpeta <code>services/</code>. El servicio se genera con <code>providedIn: 'root'</code> — Angular lo registra automaticamente de forma global, sin tocarlo en <code>app-module.ts</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>ng generate service services/product
 <span class="cm"># Atajo equivalente:</span>
 ng g s services/product
 
-<span class="cm"># El CLI crea:</span>
+<span class="cm"># El CLI crea (en Angular 20):</span>
 <span class="cm">#   src/app/services/product.service.ts</span>
 <span class="cm">#   src/app/services/product.service.spec.ts  (tests - ignorar por ahora)</span>
 <span class="cm">#</span>
 <span class="cm"># Los servicios con providedIn: 'root' NO necesitan registrarse en app-module.ts</span>
 <span class="cm"># Angular los registra automaticamente de forma global</span></pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>Por que <code>services/product</code> y no solo <code>product</code>?</strong> La barra <code>/</code> le dice al CLI que cree el archivo dentro de la carpeta <code>services/</code>. Si la carpeta no existe, la crea. Es una convencion para mantener los servicios organizados separados de los componentes.
+        </div>
       </div>
-      <div class="callout callout-blue">
-        <strong>Por que <code>services/product</code> y no solo <code>product</code>?</strong> La barra <code>/</code> indica que el CLI debe crear el archivo dentro de la carpeta <code>services/</code>. Si la carpeta no existe, la crea. Es una convencion para mantener los servicios organizados.
-      </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 3</span>
-        Escribir product.service.ts
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/services/product.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 3</span>
+          Escribir product.service.ts
+        </h4>
+        <p style="font-size:.9rem">El CLI genera el archivo con la estructura base. Agrega los tres metodos que usara la aplicacion:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/services/product.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { HttpClient } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
 <span class="kw">import</span> { Observable } <span class="kw">from</span> <span class="str">'rxjs'</span>;
 
@@ -463,40 +811,59 @@ ng g s services/product
     <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">get</span>&lt;<span class="typ">any</span>[]&gt;(<span class="str">`</span>${<span class="kw">this</span>.apiUrl}/category/${category}<span class="str">`</span>);
   }
 }</pre>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>Nota Angular 20:</strong> los servicios no cambian su API entre versiones. <code>@Injectable({ providedIn: 'root' })</code> funciona exactamente igual en Angular 20 que en versiones anteriores. No necesitas <code>standalone: false</code> en servicios — ese decorador solo aplica a componentes.
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ══════════════════════════════ REFACTOR ══════════════════════════════ -->
-  <section id="refactor" class="content-section">
-    <h2 class="fw-bold mb-1">Refactor de ProductsComponent</h2>
-    <p class="text-muted mb-4">Reemplazar el array mock por llamadas reales a la API usando el servicio. El template HTML no cambia.</p>
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: ProductService consumiendo FakeStore API</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn"       onclick="demoServicioAll()">   <i class="bi bi-play-fill"></i> getProducts()</button>
+            <button class="run-btn blue"  onclick="demoServicioCat()">   <i class="bi bi-funnel"></i> getProductsByCategory()</button>
+            <button class="run-btn amber" onclick="demoServicioId()">    <i class="bi bi-search"></i> getProductById(3)</button>
+            <button class="run-btn gray"  onclick="demoServicioReset()"> <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-servicio" class="output-area">Haz clic en un metodo del servicio para ver su respuesta...</div>
+        </div>
+      </div>
+    </section>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-wrench" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 4</span>
-        products.ts actualizado
-      </h4>
-      <p style="font-size:.9rem">Los cambios son minimos: se agrega la inyeccion del servicio en el constructor y se actualizan los metodos que hacian referencia al mock. El template HTML no requiere ninguna modificacion.</p>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/products/products.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+    <!-- ══════════════════════════════ REFACTOR ══════════════════════════════ -->
+    <section id="refactor" class="content-section">
+      <h2 class="fw-bold mb-1">Refactor de Products</h2>
+      <p class="text-muted mb-4">Reemplazar el array mock por llamadas reales a la API usando el servicio. El template HTML no cambia.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-wrench" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 4</span>
+          products.ts actualizado
+        </h4>
+        <p style="font-size:.9rem">Los cambios son minimos: se agrega la inyeccion del servicio en el constructor y se actualizan los metodos que usaban el mock. El template <code>products.html</code> no requiere ninguna modificacion.</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/products/products.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { ProductService } <span class="kw">from</span> <span class="str">'../services/product.service'</span>;  <span class="cm">// NUEVO</span>
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-products'</span>,
+  <span class="prop">standalone</span>:  <span class="bool">false</span>,
   <span class="prop">templateUrl</span>: <span class="str">'./products.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./products.css'</span>]
+  <span class="prop">styleUrl</span>:    <span class="str">'./products.css'</span>
 })
-<span class="kw">export class</span> <span class="typ">ProductsComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+<span class="kw">export class</span> <span class="typ">Products</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
 
   <span class="cm">// Propiedades — igual que en Clase 5</span>
-  titulo = <span class="str">'Proyecto API'</span>;
-  valor  = <span class="str">''</span>;
+  titulo   = <span class="str">'Proyecto API'</span>;
+  valor    = <span class="str">''</span>;
   data:    <span class="typ">any</span> = [];
   detalle: <span class="typ">any</span> = <span class="kw">null</span>;
 
-  <span class="cm">// Constructor — ahora inyecta el servicio en lugar de HttpClient directo</span>
+  <span class="cm">// Constructor — ahora inyecta el servicio en lugar del HttpClient directo</span>
   <span class="kw">constructor</span>(<span class="kw">private</span> productService: <span class="typ">ProductService</span>) { }
 
   <span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
@@ -506,10 +873,9 @@ ng g s services/product
     );
   }
 
-  <span class="cm">// filtrarCat — ahora usa la API por categoria</span>
+  <span class="cm">// filtrarCat — ahora llama a la API por categoria</span>
   <span class="fn">filtrarCat</span>(event: <span class="typ">any</span>): <span class="typ">void</span> {
     <span class="kw">this</span>.valor = event.target.value;
-
     <span class="kw">if</span> (<span class="kw">this</span>.valor === <span class="str">'all'</span>) {
       <span class="kw">this</span>.productService.<span class="fn">getProducts</span>().<span class="fn">subscribe</span>(
         (response) => { <span class="kw">this</span>.data = response; },
@@ -523,11 +889,9 @@ ng g s services/product
     }
   }
 
-  <span class="cm">// filtrarNombre — sigue filtrando el array local</span>
+  <span class="cm">// filtrarNombre — ahora filtra sobre los datos ya cargados</span>
   <span class="fn">filtrarNombre</span>(event: <span class="typ">any</span>): <span class="typ">void</span> {
-    <span class="kw">const</span> tituloInput = document.<span class="fn">getElementById</span>(<span class="str">'txtTitle'</span>) <span class="kw">as</span> <span class="typ">HTMLInputElement</span>;
     <span class="kw">this</span>.valor = event.target.value;
-
     <span class="kw">if</span> (<span class="kw">this</span>.valor === <span class="str">''</span>) {
       <span class="kw">this</span>.productService.<span class="fn">getProducts</span>().<span class="fn">subscribe</span>(
         (response) => { <span class="kw">this</span>.data = response; },
@@ -537,14 +901,14 @@ ng g s services/product
       <span class="kw">this</span>.productService.<span class="fn">getProducts</span>().<span class="fn">subscribe</span>(
         (response) => {
           <span class="kw">const</span> v = <span class="kw">this</span>.valor.toLowerCase();
-          <span class="kw">this</span>.data = (<span class="typ">response</span> <span class="kw">as</span> <span class="typ">any</span>[]).<span class="fn">filter</span>(p => p.title.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(v));
+          <span class="kw">this</span>.data = (response <span class="kw">as</span> <span class="typ">any</span>[]).<span class="fn">filter</span>(p => p.title.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(v));
         },
         (error) => { <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">'Error:'</span>, error); }
       );
     }
   }
 
-  <span class="cm">// detallePro — igual que en Clase 5</span>
+  <span class="cm">// detallePro — ahora llama a la API por id</span>
   <span class="fn">detallePro</span>(productId: <span class="typ">number</span>): <span class="typ">void</span> {
     <span class="kw">this</span>.productService.<span class="fn">getProductById</span>(productId).<span class="fn">subscribe</span>(
       (response) => { <span class="kw">this</span>.detalle = response; },
@@ -552,70 +916,105 @@ ng g s services/product
     );
   }
 }</pre>
-      </div>
+        </div>
 
-      <div class="callout callout-green mt-3">
-        <strong>El template HTML no cambia nada.</strong> La tabla, los filtros y el modal de la Clase 5 siguen funcionando exactamente igual. Solo cambia de donde vienen los datos: antes del array local, ahora de la API.
-      </div>
-    </div>
+        <div class="callout callout-green mt-3">
+          <strong>El template products.html no cambia nada.</strong> La tabla, los filtros y el modal de la Clase 5 siguen funcionando exactamente igual. Solo cambia de donde vienen los datos: antes del array mock, ahora de la API.
+        </div>
 
-    <div class="sandbox">
-      <div class="sandbox-header">
-        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: ProductService consumiendo FakeStore API</div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="run-btn"        onclick="demoServicioAll()">      <i class="bi bi-play-fill"></i> getProducts()</button>
-          <button class="run-btn blue"   onclick="demoServicioCat()">     <i class="bi bi-funnel"></i> getProductsByCategory()</button>
-          <button class="run-btn amber"  onclick="demoServicioId()">      <i class="bi bi-search"></i> getProductById(3)</button>
-          <button class="run-btn gray"   onclick="demoServicioReset()">   <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        <div class="callout callout-amber mt-2">
+          <strong>Nota sobre busqueda:</strong> <code>filtrarNombre()</code> hace dos llamadas a la API: una para obtener todos los productos y luego filtra en memoria. En produccion esto seria ineficiente para listas grandes, pero para este curso y FakeStoreAPI es suficiente.
         </div>
       </div>
-      <div class="sandbox-body">
-        <div id="out-servicio" class="output-area">Haz clic en un metodo del servicio para ver su respuesta...</div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: Products refactorizado con el servicio</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn"       onclick="demoRefAll()">    <i class="bi bi-play-fill"></i> ngOnInit()</button>
+            <button class="run-btn blue"  onclick="demoRefCat()">    <i class="bi bi-funnel"></i> filtrarCat('electronics')</button>
+            <button class="run-btn amber" onclick="demoRefNombre()"> <i class="bi bi-search"></i> filtrarNombre('gold')</button>
+            <button class="run-btn gray"  onclick="demoRefReset()">  <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <div id="out-refactor" class="output-area">Haz clic en un metodo para ver la respuesta de la API real...</div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ ROUTING ══════════════════════════════ -->
-  <section id="routing" class="content-section">
-    <h2 class="fw-bold mb-1">Routing con parametros</h2>
-    <p class="text-muted mb-4">Agregar la ruta <code>/product/:id</code> para que cada producto tenga su propia URL.</p>
+    <!-- ══════════════════════════════ ROUTING ══════════════════════════════ -->
+    <section id="routing" class="content-section">
+      <h2 class="fw-bold mb-1">Routing con parametros</h2>
+      <p class="text-muted mb-4">Activar el sistema de rutas de Angular y agregar la ruta <code>/product/:id</code> para que cada producto tenga su propia URL.</p>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 5</span>
-        Generar ProductDetailComponent
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
-        <pre>ng generate component product-detail
-<span class="cm"># Atajo:</span>
-ng g c product-detail
+      <div class="theory-block">
+        <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Que cambio entre Clase 5 y Clase 6 respecto al routing</h4>
+        <p>En la Clase 5, las rutas en <code>app-routing-module.ts</code> estaban comentadas y el componente <code>Products</code> se renderizaba directamente desde <code>app.html</code> con la etiqueta <code>&lt;app-products&gt;</code>. Ahora activamos las rutas correctamente:</p>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
+            <h6 style="color:#991b1b;font-size:.83rem">Clase 5 — renderizado directo (sin rutas)</h6>
+            <pre style="font-size:.77rem;color:#78350f;margin:0;line-height:1.9"><span class="cm">&lt;!-- app.html — Clase 5 --&gt;</span>
+<span class="tag">&lt;nav&gt;</span>...<span class="tag">&lt;/nav&gt;</span>
+<span class="tag">&lt;app-products&gt;&lt;/app-products&gt;</span>
+<span class="cm">&lt;!-- etiqueta directa, sin router --&gt;</span></pre>
+          </div>
+          <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <h6 style="color:#065f46;font-size:.83rem">Clase 6 — routing con router-outlet</h6>
+            <pre style="font-size:.77rem;color:#14532d;margin:0;line-height:1.9"><span class="cm">&lt;!-- app.html — Clase 6 --&gt;</span>
+<span class="tag">&lt;nav&gt;</span>...<span class="tag">&lt;/nav&gt;</span>
+<span class="tag">&lt;router-outlet&gt;&lt;/router-outlet&gt;</span>
+<span class="cm">&lt;!-- Angular inserta aqui el componente
+  de la ruta activa --&gt;</span></pre>
+          </div>
+        </div>
+      </div>
 
-<span class="cm"># El CLI crea:</span>
+      <div class="theory-block">
+        <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 5</span>
+          Generar ProductDetail
+        </h4>
+        <p style="font-size:.9rem">El CLI genera el componente con la nomenclatura corta de Angular 20 y lo registra automaticamente en <code>app-module.ts</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>ng generate component product-detail
+<span class="cm"># Atajo: ng g c product-detail</span>
+
+<span class="cm"># El CLI crea en Angular 20:</span>
 <span class="cm">#   src/app/product-detail/product-detail.ts</span>
 <span class="cm">#   src/app/product-detail/product-detail.html</span>
 <span class="cm">#   src/app/product-detail/product-detail.css</span>
-<span class="cm"># Y lo registra automaticamente en app-module.ts</span></pre>
-      </div>
-    </div>
+<span class="cm">#   src/app/product-detail/product-detail.spec.ts</span>
+<span class="cm">#</span>
+<span class="cm"># Y agrega ProductDetail a declarations en app-module.ts</span></pre>
+        </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 6</span>
-        Agregar la ruta en app-routing-module.ts
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/app-routing-module.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+        <div class="callout callout-cyan">
+          <strong>Nombres en Angular 20:</strong> el CLI genera el componente como clase <code>ProductDetail</code> (no <code>ProductDetailComponent</code>) y los archivos sin el sufijo <code>.component</code>: <code>product-detail.ts</code>, <code>product-detail.html</code>, <code>product-detail.css</code>.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 6</span>
+          Configurar app-routing-module.ts
+        </h4>
+        <p style="font-size:.9rem">Descomenta la ruta de <code>products</code>, agrega la nueva ruta de detalle y el redirect inicial:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app-routing-module.ts — version Clase 6</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { RouterModule, Routes } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
-<span class="kw">import</span> { ProductsComponent } <span class="kw">from</span> <span class="str">'./products/products'</span>;
-<span class="kw">import</span> { ProductDetailComponent } <span class="kw">from</span> <span class="str">'./product-detail/product-detail'</span>;  <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { Products } <span class="kw">from</span> <span class="str">'./products/products'</span>;
+<span class="kw">import</span> { ProductDetail } <span class="kw">from</span> <span class="str">'./product-detail/product-detail'</span>;  <span class="cm">// NUEVO</span>
 
 <span class="kw">const</span> routes: <span class="typ">Routes</span> = [
   { <span class="prop">path</span>: <span class="str">''</span>,            <span class="prop">redirectTo</span>: <span class="str">'/products'</span>, <span class="prop">pathMatch</span>: <span class="str">'full'</span> },
-  { <span class="prop">path</span>: <span class="str">'products'</span>,    <span class="prop">component</span>: ProductsComponent,     <span class="prop">title</span>: <span class="str">'Gestion de Productos'</span> },
-  { <span class="prop">path</span>: <span class="str">'product/:id'</span>, <span class="prop">component</span>: ProductDetailComponent,   <span class="prop">title</span>: <span class="str">'Detalle Producto'</span> },  <span class="cm">// NUEVO</span>
-  <span class="cm">// { path: 'users', ... }  — Clase 7 (ruta protegida)</span>
+  { <span class="prop">path</span>: <span class="str">'products'</span>,    <span class="prop">component</span>: Products,     <span class="prop">title</span>: <span class="str">'Gestion de Productos'</span> },
+  { <span class="prop">path</span>: <span class="str">'product/:id'</span>, <span class="prop">component</span>: ProductDetail, <span class="prop">title</span>: <span class="str">'Detalle Producto'</span> },  <span class="cm">// NUEVO</span>
+  <span class="cm">// { path: 'users', ... }    — Clase 7 (ruta protegida)</span>
+  <span class="cm">// { path: 'login', ... }    — Clase 7</span>
+  <span class="cm">// { path: 'cart', ... }     — Clase 7</span>
 ];
 
 <span class="dec">@NgModule</span>({
@@ -623,40 +1022,93 @@ ng g c product-detail
   <span class="prop">exports</span>: [RouterModule]
 })
 <span class="kw">export class</span> <span class="typ">AppRoutingModule</span> { }</pre>
+        </div>
+        <div class="callout callout-orange">
+          <strong>Los dos puntos en <code>:id</code> indican un parametro de ruta.</strong> Cuando el usuario navega a <code>/product/5</code>, Angular captura <code>5</code> como el valor del parametro <code>id</code>. El componente lo lee con <code>ActivatedRoute</code>.
+        </div>
       </div>
-      <div class="callout callout-orange">
-        <strong>Los dos puntos en <code>:id</code> indican un parametro de ruta.</strong> Cuando el usuario navega a <code>/product/5</code>, Angular captura <code>5</code> como el valor del parametro <code>id</code>. El componente lo lee con <code>ActivatedRoute</code> para hacer la llamada a la API.
+
+      <div class="theory-block">
+        <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 7</span>
+          Actualizar app.html
+        </h4>
+        <p style="font-size:.9rem">Reemplaza la etiqueta directa <code>&lt;app-products&gt;</code> por <code>&lt;router-outlet&gt;</code>. El navbar se mantiene; Angular insertara aqui el componente de la ruta activa:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app.html — version Clase 6</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="cm">&lt;!-- Navbar principal — no cambia --&gt;</span>
+<span class="tag">&lt;nav</span> <span class="attr">class</span>=<span class="str">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container-fluid"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"navbar-brand"</span> <span class="attr">href</span>=<span class="str">"#"</span><span class="tag">&gt;</span>Mi Tienda<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"collapse navbar-collapse"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;ul</span> <span class="attr">class</span>=<span class="str">"navbar-nav me-auto"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;li</span> <span class="attr">class</span>=<span class="str">"nav-item"</span><span class="tag">&gt;</span>
+          <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"nav-link"</span> <span class="attr">routerLink</span>=<span class="str">"/products"</span><span class="tag">&gt;</span>Products<span class="tag">&lt;/a&gt;</span>
+        <span class="tag">&lt;/li&gt;</span>
+      <span class="tag">&lt;/ul&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/nav&gt;</span>
+
+<span class="cm">&lt;!-- Router outlet: Angular inserta aqui el componente de la ruta activa --&gt;</span>
+<span class="cm">&lt;!-- En Clase 5 aqui estaba &lt;app-products&gt;, ahora lo gestiona el router --&gt;</span>
+<span class="tag">&lt;router-outlet&gt;&lt;/router-outlet&gt;</span></pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong><code>&lt;router-outlet&gt;</code></strong> es el "hueco" donde Angular inserta el componente de la ruta activa. Cuando el usuario navega a <code>/products</code>, Angular monta ahi el componente <code>Products</code>. Cuando navega a <code>/product/5</code>, monta <code>ProductDetail</code>.
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ══════════════════════════════ DETALLE ══════════════════════════════ -->
-  <section id="detalle" class="content-section">
-    <h2 class="fw-bold mb-1">Vista de detalle</h2>
-    <p class="text-muted mb-4">El componente que lee el <code>:id</code> de la URL y carga el producto desde la API.</p>
+      <div class="theory-block">
+        <h4><i class="bi bi-signpost" style="color:var(--accent)"></i> Estructura de archivos al terminar el Paso 7</h4>
+        <div class="file-tree">
+          <div><span class="dir">src/app/</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> sin cambios</span></div>
+          <div>&nbsp;&nbsp;<span class="html">app.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ahora con &lt;router-outlet&gt;</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> HttpClientModule + ProductDetail agregados</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> rutas /products y /product/:id activas</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">products/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">products.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> usa ProductService en lugar de mock</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">products.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> sin cambios — routerLink en boton</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">product-card/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-card.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> sin cambios</span></div>
+          <div>&nbsp;&nbsp;<span class="dir">product-detail/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-detail.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lee :id con ActivatedRoute</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">product-detail.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+          <div>&nbsp;&nbsp;<span class="dir">services/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> getProducts(), getProductById(), getProductsByCategory()</span></div>
+        </div>
+      </div>
+    </section>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 7</span>
-        product-detail.ts
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/product-detail/product-detail.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+    <!-- ══════════════════════════════ DETALLE ══════════════════════════════ -->
+    <section id="detalle" class="content-section">
+      <h2 class="fw-bold mb-1">Vista de detalle</h2>
+      <p class="text-muted mb-4">El componente que lee el <code>:id</code> de la URL y carga el producto desde la API.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 8</span>
+          product-detail.ts
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-detail/product-detail.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { ActivatedRoute } <span class="kw">from</span> <span class="str">'@angular/router'</span>;          <span class="cm">// lee parametros de la URL</span>
 <span class="kw">import</span> { ProductService } <span class="kw">from</span> <span class="str">'../services/product.service'</span>;
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-product-detail'</span>,
+  <span class="prop">standalone</span>:  <span class="bool">false</span>,
   <span class="prop">templateUrl</span>: <span class="str">'./product-detail.html'</span>,
-  <span class="prop">styleUrls</span>:   [<span class="str">'./product-detail.css'</span>]
+  <span class="prop">styleUrl</span>:    <span class="str">'./product-detail.css'</span>
 })
-<span class="kw">export class</span> <span class="typ">ProductDetailComponent</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+<span class="kw">export class</span> <span class="typ">ProductDetail</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
 
   <span class="cm">// Propiedades</span>
-  detalle: <span class="typ">any</span>     = <span class="kw">null</span>;
+  detalle:  <span class="typ">any</span>     = <span class="kw">null</span>;
   cargando: <span class="typ">boolean</span> = <span class="bool">false</span>;
-  error: <span class="typ">string</span>     = <span class="str">''</span>;
+  error:    <span class="typ">string</span>  = <span class="str">''</span>;
 
   <span class="kw">constructor</span>(
     <span class="kw">private</span> route:          <span class="typ">ActivatedRoute</span>,   <span class="cm">// para leer el :id de la URL</span>
@@ -682,20 +1134,23 @@ ng g c product-detail
     );
   }
 }</pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong><code>route.snapshot.paramMap.get('id')</code></strong> lee el valor del parametro <code>:id</code> de la URL actual. Si el usuario esta en <code>/product/5</code>, devuelve el string <code>"5"</code>. El <code>Number()</code> lo convierte a numero para pasarlo al servicio.
+        </div>
+        <div class="callout callout-cyan mt-2">
+          <strong>Nota Angular 20:</strong> la clase se llama <code>ProductDetail</code> (sin sufijo <code>Component</code>), el archivo es <code>product-detail.ts</code> (sin <code>.component</code>), y el decorador incluye <code>standalone: false</code> para que pueda declararse en el <code>AppModule</code>.
+        </div>
       </div>
-      <div class="callout callout-blue">
-        <strong><code>route.snapshot.paramMap.get('id')</code></strong> lee el valor del parametro <code>:id</code> de la URL actual. Si el usuario esta en <code>/product/5</code>, devuelve el string <code>"5"</code>. El <code>Number()</code> lo convierte a numero para pasarlo al servicio.
-      </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 8</span>
-        product-detail.html
-      </h4>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/product-detail/product-detail.html</span><span class="lang-badge lang-html">HTML</span></div>
-        <pre><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container mt-4"</span><span class="tag">&gt;</span>
+      <div class="theory-block">
+        <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 9</span>
+          product-detail.html
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-detail/product-detail.html</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container mt-4"</span><span class="tag">&gt;</span>
 
   <span class="cm">&lt;!-- Estado de carga --&gt;</span>
   <span class="tag">&lt;div</span> <span class="kw">*ngIf</span>=<span class="str">"cargando"</span> <span class="attr">class</span>=<span class="str">"text-center py-5"</span><span class="tag">&gt;</span>
@@ -727,279 +1182,238 @@ ng g c product-detail
   <span class="tag">&lt;/div&gt;</span>
 
 <span class="tag">&lt;/div&gt;</span></pre>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════ ROUTERLINK ══════════════════════════════ -->
-  <section id="routerlink" class="content-section">
-    <h2 class="fw-bold mb-1">routerLink y navegacion</h2>
-    <p class="text-muted mb-4">Conectar la tabla de productos con la vista de detalle mediante <code>routerLink</code>.</p>
-
-    <div class="theory-block">
-      <h4><i class="bi bi-link-45deg" style="color:var(--accent)"></i>
-        <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 9</span>
-        Actualizar products.html
-      </h4>
-      <p style="font-size:.9rem">El boton de "Ver detalle" que abria un modal ahora navega a la ruta <code>/product/:id</code> usando <code>routerLink</code>. El resto del template no cambia:</p>
-      <div class="compare-cols">
-        <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
-          <h6 style="color:#991b1b;font-size:.83rem">Clase 5 — boton con modal</h6>
-          <pre style="font-size:.77rem;color:#78350f;margin:0;line-height:1.9"><span class="tag">&lt;button</span>
-  <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
-  <span class="bind">(click)</span>=<span class="str">"detallePro(product.id)"</span>
-  <span class="attr">data-bs-toggle</span>=<span class="str">"modal"</span>
-  <span class="attr">data-bs-target</span>=<span class="str">"#exampleModal"</span><span class="tag">&gt;</span>
-  Ver detalle
-<span class="tag">&lt;/button&gt;</span></pre>
-        </div>
-        <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
-          <h6 style="color:#065f46;font-size:.83rem">Clase 6 — routerLink a pagina propia</h6>
-          <pre style="font-size:.77rem;color:#14532d;margin:0;line-height:1.9"><span class="tag">&lt;a</span>
-  <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
-  <span class="bind">[routerLink]</span>=<span class="str">"['/product', product.id]"</span><span class="tag">&gt;</span>
-  Ver detalle
-<span class="tag">&lt;/a&gt;</span></pre>
         </div>
       </div>
-      <div class="callout callout-blue mt-2">
-        <strong><code>[routerLink]="['/product', product.id]"</code></strong> — los corchetes <code>[ ]</code> indican property binding: el valor es evaluado como expresion TypeScript. El array <code>['/product', product.id]</code> construye la URL dinamicamente: <code>/product/1</code>, <code>/product/2</code>, etc.
-      </div>
+    </section>
 
-      <p class="fw-semibold small mt-3 mb-1">El template completo actualizado:</p>
-      <div class="code-block">
-        <div class="code-header"><span>src/app/products/products.html — version Clase 6</span><span class="lang-badge lang-html">HTML</span></div>
-        <pre><span class="tag">&lt;h1</span> <span class="attr">class</span>=<span class="str">"text-center"</span><span class="tag">&gt;</span><span class="bind">{{titulo}}</span><span class="tag">&lt;/h1&gt;</span>
+    <!-- ══════════════════════════════ ROUTERLINK ══════════════════════════════ -->
+    <section id="routerlink" class="content-section">
+      <h2 class="fw-bold mb-1">routerLink y navegacion</h2>
+      <p class="text-muted mb-4">Conectar la tabla de productos con la vista de detalle. El boton del modal se reemplaza por un enlace con <code>[routerLink]</code>.</p>
 
-<span class="tag">&lt;section</span> <span class="attr">class</span>=<span class="str">"container"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"row"</span><span class="tag">&gt;</span>
-    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"col-md-6 p-2"</span><span class="tag">&gt;</span>
-      <span class="tag">&lt;select</span> <span class="bind">(change)</span>=<span class="str">"filtrarCat($event)"</span> <span class="attr">class</span>=<span class="str">"form-control"</span><span class="tag">&gt;</span>
-        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"all"</span><span class="tag">&gt;</span>Todos<span class="tag">&lt;/option&gt;</span>
-        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"electronics"</span><span class="tag">&gt;</span>Electronics<span class="tag">&lt;/option&gt;</span>
-        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"jewelery"</span><span class="tag">&gt;</span>Jewelery<span class="tag">&lt;/option&gt;</span>
-        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"men's clothing"</span><span class="tag">&gt;</span>Men's clothing<span class="tag">&lt;/option&gt;</span>
-        <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"women's clothing"</span><span class="tag">&gt;</span>Women's clothing<span class="tag">&lt;/option&gt;</span>
-      <span class="tag">&lt;/select&gt;</span>
-    <span class="tag">&lt;/div&gt;</span>
-    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"col-md-6 p-2"</span><span class="tag">&gt;</span>
-      <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="str">"text"</span> <span class="attr">id</span>=<span class="str">"txtTitle"</span> <span class="attr">class</span>=<span class="str">"form-control"</span>
-             <span class="bind">(keyup)</span>=<span class="str">"filtrarNombre($event)"</span><span class="tag">&gt;</span>
-    <span class="tag">&lt;/div&gt;</span>
-  <span class="tag">&lt;/div&gt;</span>
+      <div class="theory-block">
+        <h4><i class="bi bi-link-45deg" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 10</span>
+          Actualizar product-card.html
+        </h4>
+        <p style="font-size:.9rem">El boton "Ver detalle" que abria el modal ahora navega a la ruta <code>/product/:id</code>. El <code>@Output() detalle</code> del componente hijo ya no se usa para el modal — se usara en Clase 7 para agregar al carrito. Por ahora se simplifica:</p>
+        <div class="compare-cols">
+          <div class="compare-col" style="background:#fef2f2;border:1px solid #fecaca">
+            <h6 style="color:#991b1b;font-size:.83rem">Clase 5 — boton abre modal</h6>
+            <pre style="font-size:.77rem;color:#78350f;margin:0;line-height:1.9"><span class="tag">&lt;td&gt;</span>
+  <span class="tag">&lt;button</span>
+    <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
+    <span class="bind">(click)</span>=<span class="str">"verDetalle()"</span>
+    <span class="attr">data-bs-toggle</span>=<span class="str">"modal"</span>
+    <span class="attr">data-bs-target</span>=<span class="str">"#exampleModal"</span><span class="tag">&gt;</span>
+    Ver detalle
+  <span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/td&gt;</span></pre>
+          </div>
+          <div class="compare-col" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <h6 style="color:#065f46;font-size:.83rem">Clase 6 — routerLink a pagina propia</h6>
+            <pre style="font-size:.77rem;color:#14532d;margin:0;line-height:1.9"><span class="tag">&lt;td&gt;</span>
+  <span class="tag">&lt;a</span>
+    <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
+    <span class="bind">[routerLink]</span>=<span class="str">"['/product', product?.id]"</span><span class="tag">&gt;</span>
+    Ver detalle
+  <span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/td&gt;</span></pre>
+          </div>
+        </div>
 
-  <span class="tag">&lt;table</span> <span class="attr">class</span>=<span class="str">"table table-bordered table-hover"</span><span class="tag">&gt;</span>
-    <span class="tag">&lt;thead&gt;</span>
-      <span class="tag">&lt;tr&gt;</span>
-        <span class="tag">&lt;th&gt;</span>id<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>title<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>price<span class="tag">&lt;/th&gt;</span>
-        <span class="tag">&lt;th&gt;</span>description<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>category<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>image<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Accion<span class="tag">&lt;/th&gt;</span>
-      <span class="tag">&lt;/tr&gt;</span>
-    <span class="tag">&lt;/thead&gt;</span>
-    <span class="tag">&lt;tbody&gt;</span>
-      <span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let product of data"</span><span class="tag">&gt;</span>
-        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.id}}</span><span class="tag">&lt;/td&gt;</span>
-        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.title}}</span><span class="tag">&lt;/td&gt;</span>
-        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.price}}</span><span class="tag">&lt;/td&gt;</span>
-        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.description}}</span><span class="tag">&lt;/td&gt;</span>
-        <span class="tag">&lt;td&gt;</span><span class="bind">{{product.category}}</span><span class="tag">&lt;/td&gt;</span>
-        <span class="tag">&lt;td&gt;&lt;img</span> <span class="attr">height</span>=<span class="str">"100px"</span> <span class="bind">[src]</span>=<span class="str">"product.image"</span><span class="tag">/&gt;&lt;/td&gt;</span>
-        <span class="tag">&lt;td&gt;</span>
-          <span class="cm">&lt;!-- routerLink reemplaza el boton con modal --&gt;</span>
-          <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
-             <span class="bind">[routerLink]</span>=<span class="str">"['/product', product.id]"</span><span class="tag">&gt;</span>
-            Ver detalle
-          <span class="tag">&lt;/a&gt;</span>
-        <span class="tag">&lt;/td&gt;</span>
-      <span class="tag">&lt;/tr&gt;</span>
-    <span class="tag">&lt;/tbody&gt;</span>
-  <span class="tag">&lt;/table&gt;</span>
-<span class="tag">&lt;/section&gt;</span></pre>
-      </div>
-    </div>
+        <p class="fw-semibold small mt-3 mb-1">El archivo product-card.html completo en Clase 6:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-card/product-card.html — version Clase 6</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;td&gt;</span><span class="bind">{{product?.id}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.title}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span>$<span class="bind">{{product?.price}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span><span class="bind">{{product?.category}}</span><span class="tag">&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;&lt;img</span> <span class="attr">height</span>=<span class="str">"80px"</span> <span class="bind">[src]</span>=<span class="str">"product?.image"</span><span class="tag">/&gt;&lt;/td&gt;</span>
+<span class="tag">&lt;td&gt;</span>
+  <span class="cm">&lt;!-- routerLink construye la URL /product/5, /product/12, etc. --&gt;</span>
+  <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
+     <span class="bind">[routerLink]</span>=<span class="str">"['/product', product?.id]"</span><span class="tag">&gt;</span>
+    Ver detalle
+  <span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;/td&gt;</span></pre>
+        </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-signpost" style="color:var(--accent)"></i> Resumen de la estructura de archivos al terminar la Clase 6</h4>
-      <div class="file-tree">
-        <div><span class="dir">src/app/</span></div>
-        <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> HttpClientModule agregado</span></div>
-        <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ruta /product/:id agregada</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">products/</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">products.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> usa ProductService</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">products.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> routerLink en lugar de modal</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">product-card/</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-card.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> igual que Clase 5</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">product-detail/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-detail.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lee :id con ActivatedRoute</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">product-detail.html</span></div>
-        <div>&nbsp;&nbsp;<span class="dir">services/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> getProducts(), getProductById()</span></div>
-      </div>
-    </div>
+        <div class="callout callout-blue mt-2">
+          <strong><code>[routerLink]="['/product', product?.id]"</code></strong> — los corchetes <code>[ ]</code> indican property binding: el valor es evaluado como expresion TypeScript. El array <code>['/product', product?.id]</code> construye la URL dinamicamente: <code>/product/1</code>, <code>/product/2</code>, etc.
+        </div>
 
-    <div class="sandbox">
-      <div class="sandbox-header">
-        <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: navegacion con routerLink simulada</div>
-        <div class="d-flex gap-2 flex-wrap">
-          <button class="run-btn"       onclick="demoNavegar(1)"> ID 1</button>
-          <button class="run-btn blue"  onclick="demoNavegar(3)"> ID 3</button>
-          <button class="run-btn green" onclick="demoNavegar(7)"> ID 7</button>
-          <button class="run-btn gray"  onclick="demoNavReset()"> <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        <div class="callout callout-amber mt-2">
+          <strong>products.html no cambia.</strong> El selector de categoria, el input de busqueda y el <code>*ngFor</code> siguen exactamente igual que en Clase 5. Solo cambia el boton dentro de <code>product-card.html</code>.
         </div>
       </div>
-      <div class="sandbox-body">
-        <p class="small text-muted mb-3">Simula lo que haria <code>[routerLink]="['/product', product.id]"</code> al hacer clic en la tabla:</p>
-        <div id="out-nav" class="output-area">Haz clic en un ID para simular la navegacion a /product/:id...</div>
-        <div id="detalle-preview" style="display:none;margin-top:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1.25rem"></div>
+
+      <div class="sandbox">
+        <div class="sandbox-header">
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: navegacion con routerLink simulada</div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="run-btn"       onclick="demoNavegar(1)"> ID 1</button>
+            <button class="run-btn blue"  onclick="demoNavegar(3)"> ID 3</button>
+            <button class="run-btn green" onclick="demoNavegar(7)"> ID 7</button>
+            <button class="run-btn gray"  onclick="demoNavReset()"> <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+        </div>
+        <div class="sandbox-body">
+          <p class="small text-muted mb-3">Simula lo que haria <code>[routerLink]="['/product', product?.id]"</code> al hacer clic en la tabla:</p>
+          <div id="out-nav" class="output-area">Haz clic en un ID para simular la navegacion a /product/:id...</div>
+          <div id="detalle-preview" style="display:none;margin-top:1rem;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1.25rem"></div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ══════════════════════════════ EJERCICIO ══════════════════════════════ -->
-  <section id="ejercicio" class="content-section">
-    <h2 class="fw-bold mb-1">Ejercicio final</h2>
-    <p class="text-muted mb-4">Consolidar HttpClient, servicio, routing y vista de detalle funcionando juntos.</p>
+    <!-- ══════════════════════════════ EJERCICIO ══════════════════════════════ -->
+    <section id="ejercicio" class="content-section">
+      <h2 class="fw-bold mb-1">Ejercicio final</h2>
+      <p class="text-muted mb-4">Consolidar HttpClient, servicio, routing y vista de detalle funcionando juntos.</p>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-list-check" style="color:var(--accent)"></i> Que debes tener funcionando</h4>
-      <div class="row g-3">
+      <div class="theory-block">
+        <h4><i class="bi bi-list-check" style="color:var(--accent)"></i> Que debes tener funcionando</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#fff7ed;border:1px solid #fed7aa">
+              <p class="fw-semibold mb-2" style="color:#9a3412">Obligatorio</p>
+              <ul class="checklist">
+                <li><code>ng serve</code> sin errores de compilacion</li>
+                <li><code>/products</code> muestra datos reales de FakeStore API (20 productos)</li>
+                <li>El select filtra por categoria llamando a la API</li>
+                <li>El input filtra por nombre en los datos cargados</li>
+                <li>Clic en "Ver detalle" navega a <code>/product/:id</code></li>
+                <li>La vista de detalle muestra imagen, titulo, precio y descripcion del producto</li>
+                <li>El boton "Volver" regresa a <code>/products</code></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
+              <p class="fw-semibold mb-2" style="color:#4c1d95">Opcional</p>
+              <ul class="checklist">
+                <li>Spinner de carga en la vista de detalle mientras espera la API</li>
+                <li>Mensaje de error si el producto no existe</li>
+                <li>Mostrar el rating del producto en la vista de detalle</li>
+                <li>Agregar <code>Users</code> con su ruta <code>/users</code> (sin proteccion aun)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-bug" style="color:var(--accent)"></i> Errores comunes y sus soluciones</h4>
+
+        <p class="fw-semibold small mb-1">1 NullInjectorError: No provider for HttpClient</p>
+        <div class="error-box">
+          <div class="file">Consola del navegador al cargar /products</div>
+          NullInjectorError: R3InjectorError... No provider for HttpClient!
+          <div class="fix">Solucion: agregar <code>HttpClientModule</code> al array <code>imports</code> (no a <code>declarations</code>) en <code>app-module.ts</code>. Verificar el import arriba: <code>import { HttpClientModule } from '@angular/common/http';</code></div>
+        </div>
+
+        <p class="fw-semibold small mb-1 mt-3">2 La ruta /product/:id muestra pagina en blanco</p>
+        <div class="error-box">
+          <div class="file">Navegador — se navega a /product/5 pero no aparece nada</div>
+          La pagina de detalle esta en blanco
+          <div class="fix">Un error comun es olvidar importar <code>ProductDetail</code> en <code>app-routing-module.ts</code>. Verificar tambien que la ruta este declarada: <code>{ path: 'product/:id', component: ProductDetail }</code>. Y que <code>ProductDetail</code> este en <code>declarations</code> de <code>app-module.ts</code>.</div>
+        </div>
+
+        <p class="fw-semibold small mb-1 mt-3">3 Cannot read properties of null (reading 'image') en el detalle</p>
+        <div class="error-box">
+          <div class="file">Consola del navegador</div>
+          TypeError: Cannot read properties of null (reading 'image')
+          <div class="fix">Solucion: agregar <code>*ngIf="detalle && !cargando"</code> al contenedor del HTML del detalle. El template intenta renderizar antes de que llegue la respuesta de la API. El <code>*ngIf</code> espera a que <code>detalle</code> tenga valor.</div>
+        </div>
+
+        <p class="fw-semibold small mb-1 mt-3">4 Error: 'router-outlet' is not a known element</p>
+        <div class="error-box">
+          <div class="file">Consola del navegador / compilacion</div>
+          'router-outlet' is not a known element
+          <div class="fix">Solucion: <code>AppRoutingModule</code> no esta en el array <code>imports</code> de <code>app-module.ts</code>. Verificar que el modulo de routing sigue importado (venia desde Clase 5).</div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-check2-all text-success"></i> Checklist de verificacion final</h4>
+        <ul class="checklist">
+          <li class="done">La tabla carga automaticamente al entrar a <code>/products</code></li>
+          <li class="done">El select "electronics" muestra solo productos de esa categoria</li>
+          <li class="done">Escribir en el input filtra los productos visibles</li>
+          <li class="done">Clic en "Ver detalle" cambia la URL a <code>/product/N</code></li>
+          <li class="done">La vista de detalle muestra la imagen del producto</li>
+          <li class="done">El boton "Volver" regresa a la tabla sin recargar la pagina</li>
+          <li class="done"><code>ProductService</code> tiene los 3 metodos: <code>getProducts()</code>, <code>getProductById()</code>, <code>getProductsByCategory()</code></li>
+          <li><code>app-module.ts</code> tiene <code>HttpClientModule</code> en <code>imports</code></li>
+          <li><code>app-routing-module.ts</code> tiene las 2 rutas activas</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ Q&A ══════════════════════════════ -->
+    <section id="qa" class="content-section">
+      <h2 class="fw-bold mb-1">Q&A y Cierre</h2>
+      <p class="text-muted mb-4">Resumen de la clase y preguntas frecuentes.</p>
+
+      <div class="row g-4 mb-4">
         <div class="col-md-6">
-          <div class="p-3 rounded-3" style="background:#fff7ed;border:1px solid #fed7aa">
-            <p class="fw-semibold mb-2" style="color:#9a3412">Obligatorio</p>
-            <ul class="checklist">
-              <li><code>ng serve</code> sin errores de compilacion</li>
-              <li><code>/products</code> muestra datos reales de FakeStore API (20 productos)</li>
-              <li>El select filtra por categoria llamando a la API</li>
-              <li>El input filtra por nombre en el array cargado</li>
-              <li>Clic en "Ver detalle" navega a <code>/product/:id</code></li>
-              <li>La vista de detalle muestra imagen, titulo, precio y descripcion del producto</li>
-              <li>El boton "Volver" regresa a <code>/products</code></li>
+          <div class="theory-block h-100">
+            <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
+            <ul style="font-size:.9rem;line-height:2.2">
+              <li>Activar <code>HttpClientModule</code> en <code>app-module.ts</code></li>
+              <li>Observable vs Promise — <code>.subscribe()</code> en lugar de <code>.then()</code></li>
+              <li>Generar y usar un servicio con <code>ng g s</code></li>
+              <li>Centralizar llamadas HTTP en <code>ProductService</code></li>
+              <li>Inyectar el servicio en el constructor del componente</li>
+              <li>Rutas con parametros: <code>product/:id</code></li>
+              <li>Leer el parametro con <code>ActivatedRoute.snapshot.paramMap.get()</code></li>
+              <li><code>[routerLink]</code> con array dinamico para navegar con datos</li>
+              <li><code>&lt;router-outlet&gt;</code> reemplaza la etiqueta directa en <code>app.html</code></li>
+              <li><code>*ngIf</code> para manejar estados de carga y error</li>
             </ul>
           </div>
         </div>
         <div class="col-md-6">
-          <div class="p-3 rounded-3" style="background:#f5f3ff;border:1px solid #ddd6fe">
-            <p class="fw-semibold mb-2" style="color:#4c1d95">Opcional</p>
-            <ul class="checklist">
-              <li>Spinner de carga en la vista de detalle mientras se espera la API</li>
-              <li>Mensaje de error si el producto no existe</li>
-              <li>Mostrar el rating del producto en la vista de detalle</li>
-              <li>Agregar <code>UsersComponent</code> con su ruta <code>/users</code> (sin proteccion aun)</li>
-            </ul>
+          <div class="theory-block h-100">
+            <h4><i class="bi bi-patch-question" style="color:var(--accent)"></i> Preguntas frecuentes</h4>
+            <div class="p-3 rounded-3 mb-2" style="background:#fff7ed;border:1px solid #fed7aa">
+              <p class="fw-semibold mb-1" style="font-size:.85rem;color:#9a3412">Cual es la diferencia entre <code>HttpClient.get()</code> y <code>fetch()</code>?</p>
+              <p class="small mb-0" style="color:#374151">Funcionalmente hacen lo mismo: una peticion GET HTTP. La diferencia es que <code>HttpClient</code> devuelve un Observable (de RxJS), esta integrado con Angular, y permite cancelar peticiones. <code>fetch()</code> devuelve una Promise y es nativo del navegador.</p>
+            </div>
+            <div class="p-3 rounded-3 mb-2" style="background:#fff7ed;border:1px solid #fed7aa">
+              <p class="fw-semibold mb-1" style="font-size:.85rem;color:#9a3412">Por que <code>providedIn: 'root'</code> en el servicio?</p>
+              <p class="small mb-0" style="color:#374151">Le dice a Angular que cree una unica instancia del servicio para toda la aplicacion. Asi <code>Products</code> y <code>ProductDetail</code> comparten la misma instancia del servicio sin configuracion adicional.</p>
+            </div>
+            <div class="p-3 rounded-3" style="background:#fff7ed;border:1px solid #fed7aa">
+              <p class="fw-semibold mb-1" style="font-size:.85rem;color:#9a3412">Cuando uso <code>routerLink</code> y cuando <code>router.navigate()</code>?</p>
+              <p class="small mb-0" style="color:#374151"><code>routerLink</code> se usa en el template HTML, en etiquetas <code>&lt;a&gt;</code>. <code>router.navigate()</code> se usa desde el TypeScript, por ejemplo despues de que un formulario se envia correctamente. En Clase 7 usaremos <code>router.navigate()</code> despues del login.</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-bug" style="color:var(--accent)"></i> Errores comunes y sus soluciones</h4>
-
-      <p class="fw-semibold small mb-1">1 NullInjectorError: No provider for HttpClient</p>
-      <div class="error-box">
-        <div class="file">Consola del navegador</div>
-        NullInjectorError: R3InjectorError... No provider for HttpClient!
-        <div class="fix">Solucion: agregar <code>HttpClientModule</code> al array <code>imports</code> en <code>app-module.ts</code>, no a <code>declarations</code>. Verificar que el import este arriba: <code>import { HttpClientModule } from '@angular/common/http';</code></div>
-      </div>
-
-      <p class="fw-semibold small mb-1 mt-3">2 La ruta /product/:id muestra pagina en blanco</p>
-      <div class="error-box">
-        <div class="file">Navegador</div>
-        Se navega a /product/5 pero no aparece nada
-        <div class="fix">Un error comun es olvidar agregar el import de <code>ProductDetailComponent</code> en <code>app-routing-module.ts</code>. Verificar tambien que la ruta este declarada correctamente: <code>{ path: 'product/:id', component: ProductDetailComponent }</code>.</div>
-      </div>
-
-      <p class="fw-semibold small mb-1 mt-3">3 Cannot read properties of null (reading 'image') en el detalle</p>
-      <div class="error-box">
-        <div class="file">Consola del navegador</div>
-        TypeError: Cannot read properties of null (reading 'image')
-        <div class="fix">Solucion: agregar <code>*ngIf="detalle"</code> al contenedor del HTML del detalle. El template intenta renderizar antes de que llegue la respuesta de la API. El <code>*ngIf</code> espera a que <code>detalle</code> tenga valor.</div>
-      </div>
-
-      <p class="fw-semibold small mb-1 mt-3">4 ERROR TypeError: this.productService.getProducts is not a function</p>
-      <div class="error-box">
-        <div class="file">Consola del navegador</div>
-        TypeError: this.productService.getProducts is not a function
-        <div class="fix">Verificar que el nombre del parametro en el constructor coincide con el que usas en los metodos. Un error comun es escribir <code>private product: ProductService</code> (sin "Service") y luego llamar <code>this.productService.getProducts()</code>.</div>
-      </div>
-    </div>
-
-    <div class="theory-block">
-      <h4><i class="bi bi-check2-all text-success"></i> Checklist de verificacion final</h4>
-      <ul class="checklist">
-        <li>La tabla carga automaticamente al entrar a <code>/products</code></li>
-        <li>El select "electronics" muestra solo productos de esa categoria</li>
-        <li>Escribir en el input filtra los productos visibles</li>
-        <li>Clic en "Ver detalle" cambia la URL a <code>/product/N</code></li>
-        <li>La vista de detalle muestra la imagen del producto</li>
-        <li>El boton "Volver" regresa a la tabla sin recargar la pagina</li>
-        <li><code>ProductService</code> tiene los metodos <code>getProducts()</code>, <code>getProductById()</code> y <code>getProductsByCategory()</code></li>
-        <li>No hay llamadas directas a <code>HttpClient</code> en los componentes</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════ Q&A ══════════════════════════════ -->
-  <section id="qa" class="content-section">
-    <h2 class="fw-bold mb-1">Q&A y Cierre</h2>
-    <p class="text-muted mb-4">Resumen de la clase y preguntas frecuentes.</p>
-
-    <div class="row g-4 mb-4">
-      <div class="col-md-6">
-        <div class="theory-block h-100">
-          <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
-          <ul style="font-size:.9rem;line-height:2.2">
-            <li>Activar <code>HttpClientModule</code> en <code>app-module.ts</code></li>
-            <li>Observable vs Promise — <code>.subscribe()</code> en lugar de <code>.then()</code></li>
-            <li>Generar y usar un <strong>servicio</strong> con <code>ng g s</code></li>
-            <li>Centralizar llamadas HTTP en <code>ProductService</code></li>
-            <li>Inyectar el servicio en el constructor del componente</li>
-            <li>Rutas con parametros: <code>product/:id</code></li>
-            <li>Leer el parametro con <code>ActivatedRoute.snapshot.paramMap.get()</code></li>
-            <li><code>[routerLink]</code> con array dinamico para navegar con datos</li>
-            <li><code>*ngIf</code> para manejar estados de carga y error</li>
-          </ul>
+      <div class="theory-block">
+        <h4><i class="bi bi-journal-check text-success"></i> Tarea para la Clase 7</h4>
+        <div class="callout callout-orange">
+          <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2.3">
+            <li>Tener la Clase 6 funcionando: tabla con datos reales, filtros y vista de detalle en <code>/product/:id</code></li>
+            <li>Crear el componente <code>Users</code> con su ruta <code>/users</code> (sin proteccion aun). El CLI lo registrara en <code>app-module.ts</code> automaticamente</li>
+            <li><strong>Opcional:</strong> que <code>Users</code> consuma <code>GET /users</code> de FakeStore API</li>
+          </ol>
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="theory-block h-100">
-          <h4><i class="bi bi-patch-question" style="color:var(--accent)"></i> Preguntas frecuentes</h4>
-          <div class="p-3 rounded-3 mb-2" style="background:#fff7ed;border:1px solid #fed7aa">
-            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#9a3412">Cual es la diferencia entre <code>HttpClient.get()</code> y <code>fetch()</code>?</p>
-            <p class="small mb-0" style="color:#374151">Funcionalmente hacen lo mismo: una peticion GET HTTP. La diferencia es que <code>HttpClient</code> devuelve un Observable (de RxJS), esta integrado con el sistema de Angular, y permite cancelar peticiones. <code>fetch()</code> devuelve una Promise y es nativo del navegador.</p>
-          </div>
-          <div class="p-3 rounded-3 mb-2" style="background:#fff7ed;border:1px solid #fed7aa">
-            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#9a3412">Por que <code>providedIn: 'root'</code> en el servicio?</p>
-            <p class="small mb-0" style="color:#374151">Le dice a Angular que cree una unica instancia del servicio para toda la aplicacion (singleton). Asi <code>ProductsComponent</code> y <code>ProductDetailComponent</code> comparten la misma instancia del servicio.</p>
-          </div>
-          <div class="p-3 rounded-3" style="background:#fff7ed;border:1px solid #fed7aa">
-            <p class="fw-semibold mb-1" style="font-size:.85rem;color:#9a3412">Cuando uso <code>routerLink</code> y cuando <code>router.navigate()</code>?</p>
-            <p class="small mb-0" style="color:#374151"><code>routerLink</code> se usa en el template HTML, en etiquetas <code>&lt;a&gt;</code> o botones. <code>router.navigate()</code> se usa desde el TypeScript, por ejemplo despues de que un formulario se envia correctamente. Los dos logran la misma navegacion.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
 
-    <div class="theory-block">
-      <h4><i class="bi bi-journal-check text-success"></i> Tarea para la Clase 7</h4>
-      <div class="callout callout-orange">
-        <ol style="margin:0;padding-left:1.2rem;font-size:.9rem;line-height:2.3">
-          <li>Tener la Clase 6 funcionando: tabla con datos reales, filtros y vista de detalle en <code>/product/:id</code></li>
-          <li>Crear el componente <code>UsersComponent</code> con su ruta <code>/users</code> (sin proteccion aun)</li>
-          <li><strong>Opcional:</strong> Agregar <code>UsersComponent</code> que consuma <code>GET /users</code> de FakeStore API</li>
-        </ol>
-      </div>
-    </div>
-  </section>
+    <!-- ══════════════════════════════ CONEXION ══════════════════════════════ -->
+    <section id="conexion" class="content-section">
+      <h2 class="fw-bold mb-1">Conexion con la Clase 7</h2>
+      <p class="text-muted mb-4">La aplicacion ya muestra datos reales y navega entre paginas. En la Clase 7 se agrega la capa de seguridad y el carrito de compras.</p>
 
-  <!-- ══════════════════════════════ CONEXION ══════════════════════════════ -->
-  <section id="conexion" class="content-section">
-    <h2 class="fw-bold mb-1">Conexion con la Clase 7</h2>
-    <p class="text-muted mb-4">La aplicacion ya muestra datos reales y navega entre paginas. En la Clase 7 se agrega seguridad: solo usuarios autenticados podran ver la lista de usuarios.</p>
-
-    <div style="background:linear-gradient(135deg,#0f172a 0%,#1a0f0a 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;color:#fff">
-      <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem">El codigo nuevo de Clase 7 — <code>AuthService</code>, interceptor y guard se agregan encima de lo que ya tienes:</p>
-      <div class="code-block">
-        <div class="code-header"><span>Clase 7 — lo que se agrega al proyecto</span><span class="lang-badge lang-ts">TypeScript</span></div>
-        <pre><span class="cm">// auth.service.ts — maneja el JWT</span>
+      <div style="background:linear-gradient(135deg,#0f172a 0%,#1a0f0a 100%);border-radius:16px;padding:2rem 2.5rem;margin-bottom:2rem;color:#fff">
+        <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1rem">El codigo nuevo de Clase 7 se agrega encima de lo que ya tienes — sin romper nada de lo que funciona hoy:</p>
+        <div class="code-block">
+          <div class="code-header"><span>Clase 7 — nuevos archivos que se agregan al proyecto</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// auth.service.ts — maneja el JWT</span>
 <span class="fn">login</span>(username: <span class="typ">string</span>, password: <span class="typ">string</span>): <span class="typ">Observable</span>&lt;<span class="typ">any</span>&gt; {
   <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">post</span>(<span class="str">'https://fakestoreapi.com/auth/login'</span>, { username, password });
 }
@@ -1015,207 +1429,258 @@ ng g c product-detail
 }
 
 <span class="cm">// app-routing-module.ts — la ruta /users queda protegida</span>
-{ <span class="prop">path</span>: <span class="str">'users'</span>, <span class="prop">component</span>: UsersComponent, <span class="prop">canActivate</span>: [<span class="typ">AuthGuard</span>] }</pre>
-      </div>
-    </div>
+{ <span class="prop">path</span>: <span class="str">'users'</span>, <span class="prop">component</span>: Users, <span class="prop">canActivate</span>: [AuthGuard] }
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <div class="theory-block h-100" style="border-left:4px solid #f97316">
-          <h5 class="fw-bold" style="color:#f97316"><i class="bi bi-6-circle me-2"></i>Lo de hoy que se usa en Clase 7</h5>
-          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
-            <li>El patron de inyeccion de servicios en el constructor</li>
-            <li><code>.subscribe()</code> para manejar la respuesta</li>
-            <li>El <code>app-routing-module.ts</code> con las rutas existentes</li>
-            <li><code>HttpClientModule</code> ya activado</li>
-          </ul>
+<span class="cm">// cart.service.ts — estado compartido con BehaviorSubject</span>
+<span class="kw">private</span> cartItems = <span class="kw">new</span> <span class="typ">BehaviorSubject</span>&lt;<span class="typ">any</span>[]&gt;([]);
+cartItems$ = <span class="kw">this</span>.cartItems.asObservable();</pre>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="theory-block h-100" style="border-left:4px solid #8b5cf6">
-          <h5 class="fw-bold" style="color:#8b5cf6"><i class="bi bi-7-circle me-2"></i>Lo nuevo en Clase 7</h5>
-          <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
-            <li><code>AuthService</code> con login y token en <code>localStorage</code></li>
-            <li><code>AuthInterceptor</code> — agrega el JWT a cada request</li>
-            <li><code>AuthGuard</code> — protege la ruta <code>/users</code></li>
-            <li><code>CartService</code> con <code>BehaviorSubject</code></li>
-            <li>Navbar dinamico con contador del carrito</li>
-          </ul>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="theory-block h-100" style="border-left:4px solid #f97316">
+            <h5 class="fw-bold" style="color:#f97316"><i class="bi bi-6-circle me-2"></i>Lo de hoy que se usa en Clase 7</h5>
+            <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+              <li>El patron de inyeccion de servicios en el constructor</li>
+              <li><code>.subscribe()</code> para manejar la respuesta</li>
+              <li><code>app-routing-module.ts</code> con las rutas existentes</li>
+              <li><code>HttpClientModule</code> ya activado en <code>app-module.ts</code></li>
+              <li>El <code>router.navigate()</code> despues del login</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="theory-block h-100" style="border-left:4px solid #8b5cf6">
+            <h5 class="fw-bold" style="color:#8b5cf6"><i class="bi bi-7-circle me-2"></i>Lo nuevo en Clase 7</h5>
+            <ul style="font-size:.88rem;line-height:2.1;padding-left:1.2rem;color:#374151">
+              <li><code>auth.service.ts</code> con login y token en <code>localStorage</code></li>
+              <li><code>auth.interceptor.ts</code> — agrega el JWT a cada request</li>
+              <li><code>auth.guard.ts</code> — protege la ruta <code>/users</code></li>
+              <li><code>cart.service.ts</code> con <code>BehaviorSubject</code></li>
+              <li>Navbar dinamico con contador del carrito</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="theory-block h-100" style="border-left:4px solid #f59e0b">
+            <h5 class="fw-bold" style="color:#d97706"><i class="bi bi-lock me-2"></i>El concepto clave</h5>
+            <p style="font-size:.88rem;line-height:1.75;color:#374151">Un interceptor es como un filtro que actua en todas las peticiones HTTP antes de que salgan. Se configura una vez en <code>app-module.ts</code> y funciona en toda la app sin tocar cada componente.</p>
+          </div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="theory-block h-100" style="border-left:4px solid #f59e0b">
-          <h5 class="fw-bold" style="color:#d97706"><i class="bi bi-lock me-2"></i>El concepto clave</h5>
-          <p style="font-size:.88rem;line-height:1.75;color:#374151">Un interceptor es como un filtro: intercepta <em>todas</em> las peticiones HTTP antes de que salgan y les agrega el token. No tienes que tocarlo en cada componente — se configura una vez y funciona en toda la app.</p>
-        </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <a href="clase5.html" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-2"></i>Clase 5
+        </a>
+        <a href="clase7.html" class="btn text-white" style="background:#8b5cf6;border-color:#8b5cf6">
+          Clase 7 - Autenticacion y Carrito <i class="bi bi-arrow-right ms-2"></i>
+        </a>
       </div>
-    </div>
+    </section>
 
-    <div class="d-flex justify-content-between mt-4">
-      <a href="clase5.html" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Clase 5
-      </a>
-      <a href="clase7.html" class="btn text-white" style="background:#8b5cf6;border-color:#8b5cf6">
-        Clase 7 - Autenticacion y Carrito <i class="bi bi-arrow-right ms-2"></i>
-      </a>
-    </div>
-  </section>
+  </div>
 
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    /* ══ NAVEGACION + PROGRESO ══ */
+    const sections6 = ['agenda','httpclient','servicio','refactor','routing','detalle','routerlink','ejercicio','qa','conexion'];
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-/* ══ NAVEGACION + PROGRESO ══ */
-const sections6 = ['agenda','httpclient','servicio','refactor','routing','detalle','routerlink','ejercicio','qa','conexion'];
+    function _upd(id) {
+      const pct = Math.round(((sections6.indexOf(id) + 1) / sections6.length) * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-pct').textContent = pct + '%';
+    }
+    window.showSection = function(id, el) {
+      event.preventDefault();
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      el.classList.add('active');
+      _upd(id);
+      window.scrollTo(0, 0);
+    };
+    _upd('agenda');
 
-function _upd(id) {
-  const pct = Math.round(((sections6.indexOf(id)+1)/sections6.length)*100);
-  document.getElementById('progress-bar').style.width = pct+'%';
-  document.getElementById('progress-pct').textContent = pct+'%';
-}
-window.showSection = function(id, el) {
-  event.preventDefault();
-  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  el.classList.add('active');
-  _upd(id);
-  window.scrollTo(0,0);
-};
-_upd('agenda');
+    /* ══ HELPERS ══ */
+    function ok(t)  { return `<div><span class="ok">  </span> ${t}</div>`; }
+    function er(t)  { return `<div><span class="er">  </span> ${t}</div>`; }
+    function inf(t) { return `<div><span class="info">→</span> ${t}</div>`; }
+    function dim(t) { return `<div><span class="dim">//</span> ${t}</div>`; }
 
-/* ══ HELPERS OUTPUT ══ */
-function ok(t)   { return `<div><span class="ok">  </span> ${t}</div>`; }
-function er(t)   { return `<div><span class="er">  </span> ${t}</div>`; }
-function inf(t)  { return `<div><span class="info">→</span> ${t}</div>`; }
-function dim(t)  { return `<div><span class="dim">//</span> ${t}</div>`; }
-function warn(t) { return `<div><span class="warn">!</span> ${t}</div>`; }
+    /* ══ DEMO HTTPCLIENT ══ */
+    async function demoGet() {
+      const out = document.getElementById('out-http');
+      out.innerHTML = inf('this.http.get("https://fakestoreapi.com/products?limit=3").subscribe(...)');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products?limit=3');
+        const data = await res.json();
+        out.innerHTML =
+          ok('subscribe() ejecutado — response llego como array:') +
+          data.map(p => inf(`[${p.id}] "${p.title.substring(0, 38)}..." — $${p.price}`)).join('') +
+          dim('this.data = response  — la tabla se actualiza automaticamente');
+      } catch(e) { out.innerHTML = er('Error de red: ' + e.message); }
+    }
 
-/* ══ DEMO HTTPCLIENT ══ */
-async function demoGet() {
-  const out = document.getElementById('out-http');
-  out.innerHTML = inf('this.http.get("https://fakestoreapi.com/products?limit=3").subscribe(...)');
-  try {
-    const res  = await fetch('https://fakestoreapi.com/products?limit=3');
-    const data = await res.json();
-    out.innerHTML =
-      ok('subscribe() ejecutado — response llego como array:') +
-      data.map(p => inf(`[${p.id}] "${p.title.substring(0,38)}..." — $${p.price}`)).join('') +
-      dim('this.data = response  — la tabla se actualiza automaticamente');
-  } catch(e) { out.innerHTML = er('Error de red: ' + e.message); }
-}
+    async function demoGetById() {
+      const out = document.getElementById('out-http');
+      out.innerHTML = inf('this.http.get("https://fakestoreapi.com/products/5").subscribe(...)');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products/5');
+        const data = await res.json();
+        out.innerHTML =
+          ok('subscribe() ejecutado — response llego como objeto:') +
+          inf(`id:          <strong>${data.id}</strong>`) +
+          inf(`title:       <strong>"${data.title.substring(0, 40)}..."</strong>`) +
+          inf(`price:       <strong>$${data.price}</strong>`) +
+          inf(`category:    <strong>"${data.category}"</strong>`) +
+          dim('this.detalle = response  — la vista de detalle se actualiza');
+      } catch(e) { out.innerHTML = er('Error de red: ' + e.message); }
+    }
 
-async function demoGetById() {
-  const out = document.getElementById('out-http');
-  out.innerHTML = inf('this.http.get("https://fakestoreapi.com/products/5").subscribe(...)');
-  try {
-    const res  = await fetch('https://fakestoreapi.com/products/5');
-    const data = await res.json();
-    out.innerHTML =
-      ok('subscribe() ejecutado — response llego como objeto:') +
-      inf(`id:          <strong>${data.id}</strong>`) +
-      inf(`title:       <strong>"${data.title.substring(0,40)}..."</strong>`) +
-      inf(`price:       <strong>$${data.price}</strong>`) +
-      inf(`category:    <strong>"${data.category}"</strong>`) +
-      dim('this.detalle = response  — la vista de detalle se actualiza');
-  } catch(e) { out.innerHTML = er('Error de red: ' + e.message); }
-}
+    function demoReset() {
+      document.getElementById('out-http').innerHTML = 'Haz clic en un boton para ver como responde HttpClient...';
+    }
 
-function demoReset() {
-  document.getElementById('out-http').innerHTML = 'Haz clic en un boton para ver como responde HttpClient...';
-}
+    /* ══ DEMO SERVICIO ══ */
+    async function demoServicioAll() {
+      const out = document.getElementById('out-servicio');
+      out.innerHTML = inf('productService.getProducts().subscribe(...)');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products?limit=5');
+        const data = await res.json();
+        out.innerHTML =
+          ok(`getProducts() — ${data.length} productos recibidos:`) +
+          data.map(p => inf(`[${p.id}] $${p.price.toFixed(2)} — ${p.category}`)).join('') +
+          dim('this.data = response  — *ngFor renderiza la tabla');
+      } catch(e) { out.innerHTML = er(e.message); }
+    }
 
-/* ══ DEMO SERVICIO ══ */
-async function demoServicioAll() {
-  const out = document.getElementById('out-servicio');
-  out.innerHTML = inf('productService.getProducts().subscribe(...)');
-  try {
-    const res  = await fetch('https://fakestoreapi.com/products?limit=5');
-    const data = await res.json();
-    out.innerHTML =
-      ok(`getProducts() — ${data.length} productos recibidos:`) +
-      data.map(p => inf(`[${p.id}] $${p.price.toFixed(2)} — ${p.category}`)).join('') +
-      dim('this.data = response  — *ngFor renderiza la tabla');
-  } catch(e) { out.innerHTML = er(e.message); }
-}
+    async function demoServicioCat() {
+      const out = document.getElementById('out-servicio');
+      out.innerHTML = inf('productService.getProductsByCategory("electronics").subscribe(...)');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products/category/electronics');
+        const data = await res.json();
+        out.innerHTML =
+          ok(`getProductsByCategory("electronics") — ${data.length} productos:`) +
+          data.map(p => inf(`[${p.id}] "${p.title.substring(0, 38)}..." — $${p.price}`)).join('') +
+          dim('URL usada: fakestoreapi.com/products/category/electronics');
+      } catch(e) { out.innerHTML = er(e.message); }
+    }
 
-async function demoServicioCat() {
-  const out = document.getElementById('out-servicio');
-  out.innerHTML = inf('productService.getProductsByCategory("electronics").subscribe(...)');
-  try {
-    const res  = await fetch('https://fakestoreapi.com/products/category/electronics');
-    const data = await res.json();
-    out.innerHTML =
-      ok(`getProductsByCategory("electronics") — ${data.length} productos:`) +
-      data.map(p => inf(`[${p.id}] "${p.title.substring(0,38)}..." — $${p.price}`)).join('') +
-      dim('URL usada: fakestoreapi.com/products/category/electronics');
-  } catch(e) { out.innerHTML = er(e.message); }
-}
+    async function demoServicioId() {
+      const out = document.getElementById('out-servicio');
+      out.innerHTML = inf('productService.getProductById(3).subscribe(...)');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products/3');
+        const data = await res.json();
+        out.innerHTML =
+          ok('getProductById(3) — objeto producto recibido:') +
+          inf(`id:          <strong>${data.id}</strong>`) +
+          inf(`title:       <strong>"${data.title.substring(0, 45)}..."</strong>`) +
+          inf(`price:       <strong>$${data.price}</strong>`) +
+          inf(`category:    <strong>"${data.category}"</strong>`) +
+          inf(`rating:      <strong>${data.rating.rate} (${data.rating.count} resenas)</strong>`) +
+          dim('this.detalle = response  — *ngIf="detalle" muestra la vista');
+      } catch(e) { out.innerHTML = er(e.message); }
+    }
 
-async function demoServicioId() {
-  const out = document.getElementById('out-servicio');
-  out.innerHTML = inf('productService.getProductById(3).subscribe(...)');
-  try {
-    const res  = await fetch('https://fakestoreapi.com/products/3');
-    const data = await res.json();
-    out.innerHTML =
-      ok('getProductById(3) — objeto producto recibido:') +
-      inf(`id:          <strong>${data.id}</strong>`) +
-      inf(`title:       <strong>"${data.title.substring(0,45)}..."</strong>`) +
-      inf(`price:       <strong>$${data.price}</strong>`) +
-      inf(`category:    <strong>"${data.category}"</strong>`) +
-      inf(`rating:      <strong>${data.rating.rate} (${data.rating.count} resenas)</strong>`) +
-      dim('this.detalle = response  — *ngIf="detalle" muestra la vista');
-  } catch(e) { out.innerHTML = er(e.message); }
-}
+    function demoServicioReset() {
+      document.getElementById('out-servicio').innerHTML = 'Haz clic en un metodo del servicio para ver su respuesta...';
+    }
 
-function demoServicioReset() {
-  document.getElementById('out-servicio').innerHTML = 'Haz clic en un metodo del servicio para ver su respuesta...';
-}
+    /* ══ DEMO REFACTOR ══ */
+    async function demoRefAll() {
+      const out = document.getElementById('out-refactor');
+      out.innerHTML = inf('ngOnInit() — productService.getProducts().subscribe(...)');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products?limit=4');
+        const data = await res.json();
+        out.innerHTML =
+          ok(`subscribe() ejecutado — ${data.length} productos de FakeStore API:`) +
+          data.map(p => inf(`[${p.id}] ${p.category} — "${ p.title.substring(0, 30)}..."`)).join('') +
+          dim('this.data = response — la tabla del Clase 5 renderiza sin cambios');
+      } catch(e) { out.innerHTML = er(e.message); }
+    }
 
-/* ══ DEMO ROUTERLINK ══ */
-async function demoNavegar(id) {
-  const out     = document.getElementById('out-nav');
-  const preview = document.getElementById('detalle-preview');
-  out.innerHTML = inf(`[routerLink]="['/product', ${id}]" — navegando a /product/${id}...`);
-  preview.style.display = 'none';
+    async function demoRefCat() {
+      const out = document.getElementById('out-refactor');
+      out.innerHTML = inf('filtrarCat(event) — this.valor = "electronics"');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products/category/electronics');
+        const data = await res.json();
+        out.innerHTML =
+          ok(`productService.getProductsByCategory("electronics") — ${data.length} items:`) +
+          data.map(p => inf(`[${p.id}] "${ p.title.substring(0, 35)}..."`)).join('') +
+          dim('this.data = response — *ngFor en products.html actualiza la tabla');
+      } catch(e) { out.innerHTML = er(e.message); }
+    }
 
-  try {
-    const res  = await fetch(`https://fakestoreapi.com/products/${id}`);
-    const data = await res.json();
+    async function demoRefNombre() {
+      const out = document.getElementById('out-refactor');
+      out.innerHTML = inf('filtrarNombre(event) — this.valor = "gold"');
+      try {
+        const res  = await fetch('https://fakestoreapi.com/products');
+        const data = await res.json();
+        const filtrado = data.filter(p => p.title.toLowerCase().includes('gold'));
+        out.innerHTML =
+          ok(`getProducts() cargados (${data.length}), filtro "gold" aplicado en memoria — ${filtrado.length} coincidencias:`) +
+          filtrado.map(p => inf(`[${p.id}] "${p.title.substring(0, 45)}..."`)).join('') +
+          dim('this.data = array filtrado — misma tabla, diferentes filas');
+      } catch(e) { out.innerHTML = er(e.message); }
+    }
 
-    out.innerHTML =
-      ok(`URL cambia a: /product/${id}`) +
-      inf('ActivatedRoute.snapshot.paramMap.get("id") → "' + id + '"') +
-      inf('productService.getProductById(' + id + ').subscribe(...)') +
-      ok('detalle cargado — *ngIf="detalle" renderiza el template');
+    function demoRefReset() {
+      document.getElementById('out-refactor').innerHTML = 'Haz clic en un metodo para ver la respuesta de la API real...';
+    }
 
-    preview.style.display = 'block';
-    preview.innerHTML = `
-      <div style="font-size:.72rem;color:#94a3b8;margin-bottom:.75rem">Vista simulada de /product/${id}:</div>
-      <div class="row g-3">
-        <div class="col-3 text-center">
-          <img src="${data.image}" style="max-height:80px;object-fit:contain;width:100%">
-        </div>
-        <div class="col-9">
-          <div style="font-weight:600;font-size:.85rem;color:#1e293b">${data.title.substring(0,50)}...</div>
-          <div style="color:#10b981;font-weight:700;margin:.25rem 0">$${data.price}</div>
-          <div style="font-size:.78rem;color:#64748b">${data.category}</div>
-          <div style="font-size:.75rem;color:#94a3b8;margin-top:.25rem">${data.rating.rate} estrellas (${data.rating.count} resenas)</div>
-          <a href="#" onclick="return false;" class="btn btn-secondary btn-sm mt-2" style="font-size:.75rem">
-            <i class="bi bi-arrow-left me-1"></i>Volver — routerLink="/products"
-          </a>
-        </div>
-      </div>`;
-  } catch(e) {
-    out.innerHTML = er('Error: ' + e.message);
-  }
-}
+    /* ══ DEMO ROUTERLINK ══ */
+    async function demoNavegar(id) {
+      const out     = document.getElementById('out-nav');
+      const preview = document.getElementById('detalle-preview');
+      out.innerHTML = inf(`[routerLink]="['/product', ${id}]" — navegando a /product/${id}...`);
+      preview.style.display = 'none';
 
-function demoNavReset() {
-  document.getElementById('out-nav').innerHTML = 'Haz clic en un ID para simular la navegacion a /product/:id...';
-  document.getElementById('detalle-preview').style.display = 'none';
-}
-</script>
+      try {
+        const res  = await fetch(`https://fakestoreapi.com/products/${id}`);
+        const data = await res.json();
+
+        out.innerHTML =
+          ok(`URL cambia a: /product/${id}`) +
+          inf('ActivatedRoute.snapshot.paramMap.get("id") → "' + id + '"') +
+          inf(`Number("${id}") → ${id}`) +
+          inf('productService.getProductById(' + id + ').subscribe(...)') +
+          ok('detalle cargado — *ngIf="detalle && !cargando" renderiza el template');
+
+        preview.style.display = 'block';
+        preview.innerHTML = `
+          <div style="font-size:.72rem;color:#94a3b8;margin-bottom:.75rem">Vista simulada de /product/${id}:</div>
+          <div class="row g-3">
+            <div class="col-3 text-center">
+              <img src="${data.image}" style="max-height:80px;object-fit:contain;width:100%">
+            </div>
+            <div class="col-9">
+              <div style="font-weight:600;font-size:.85rem;color:#1e293b">${data.title.substring(0, 50)}...</div>
+              <div style="color:#10b981;font-weight:700;margin:.25rem 0">$${data.price}</div>
+              <div style="font-size:.78rem;color:#64748b">${data.category}</div>
+              <div style="font-size:.75rem;color:#94a3b8;margin-top:.25rem">${data.rating.rate} estrellas (${data.rating.count} resenas)</div>
+              <a href="#" onclick="return false;" class="btn btn-secondary btn-sm mt-2" style="font-size:.75rem">
+                <i class="bi bi-arrow-left me-1"></i>Volver — routerLink="/products"
+              </a>
+            </div>
+          </div>`;
+      } catch(e) {
+        out.innerHTML = er('Error: ' + e.message);
+      }
+    }
+
+    function demoNavReset() {
+      document.getElementById('out-nav').innerHTML = 'Haz clic en un ID para simular la navegacion a /product/:id...';
+      document.getElementById('detalle-preview').style.display = 'none';
+    }
+  </script>
 </body>
+
 </html>
