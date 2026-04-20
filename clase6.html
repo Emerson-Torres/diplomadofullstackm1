@@ -652,18 +652,18 @@
         </div>
       </div>
 
-      <div class="theory-block">
+         <div class="theory-block">
         <h4><i class="bi bi-puzzle" style="color:var(--accent)"></i>
           <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 1</span>
-          Activar HttpClientModule en app-module.ts
+          Configurar HttpClient en app-module.ts (sin HttpClientModule)
         </h4>
-        <p style="font-size:.9rem">HttpClient no esta disponible por defecto. Hay que importar <code>HttpClientModule</code> en <code>app-module.ts</code>. Se hace una sola vez y queda disponible en toda la aplicacion:</p>
+        <p style="font-size:.9rem">Desde Angular 19/20, la forma recomendada es configurar HttpClient con <code>provideHttpClient(...)</code> en <code>providers</code>. En proyectos con NgModules no hace falta usar <code>HttpClientModule</code> en <code>imports</code>:</p>
         <div class="code-block">
-          <div class="code-header"><span>src/app/app-module.ts — agregar HttpClientModule</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <div class="code-header"><span>src/app/app-module.ts — forma recomendada en Angular actual</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { NgModule, provideBrowserGlobalErrorListeners } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="str">'@angular/platform-browser'</span>;
 <span class="kw">import</span> { FormsModule } <span class="kw">from</span> <span class="str">'@angular/forms'</span>;
-<span class="kw">import</span> { HttpClientModule } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;  <span class="cm">// AGREGAR</span>
+<span class="kw">import</span> { provideHttpClient, withInterceptorsFromDi } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
 
 <span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing-module'</span>;
 <span class="kw">import</span> { App } <span class="kw">from</span> <span class="str">'./app'</span>;
@@ -680,17 +680,30 @@
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    HttpClientModule,  <span class="cm">// AGREGAR AQUI</span>
+    <span class="cm">// No usar HttpClientModule aqui</span>
   ],
   <span class="prop">providers</span>: [
-    provideBrowserGlobalErrorListeners()
+    provideBrowserGlobalErrorListeners(),
+    provideHttpClient(withInterceptorsFromDi())
   ],
   <span class="prop">bootstrap</span>: [App]
 })
 <span class="kw">export class</span> <span class="typ">AppModule</span> { }</pre>
         </div>
         <div class="callout callout-amber">
-          <strong>Un error comun es</strong> intentar usar <code>HttpClient</code> sin agregar <code>HttpClientModule</code> a <code>imports</code>. El error que aparece es <code>NullInjectorError: No provider for HttpClient</code>. La solucion es revisar que <code>HttpClientModule</code> este en el array <code>imports</code> de <code>app-module.ts</code>.
+          <strong>Error comun:</strong> <code>NullInjectorError: No provider for HttpClient</code>. En esta version,
+          la solucion es revisar que exista <code>provideHttpClient(withInterceptorsFromDi())</code> dentro del array
+          <code>providers</code> de <code>app-module.ts</code>.
+        </div>
+        <div class="callout callout-blue mt-2">
+          <strong>Dato oficial importante:</strong> <code>HttpClientModule</code> aparece como <em>deprecated</em> en
+          la API de Angular y recomiendan migrar a <code>provideHttpClient(...)</code>. Si usas interceptores
+          funcionales, Angular recomienda <code>withInterceptors(...)</code>; si ya tienes interceptores por DI, usa
+          <code>withInterceptorsFromDi()</code>.
+        </div>
+        <div class="callout callout-cyan mt-2">
+          <strong>Extra para Angular moderno:</strong> para apps con SSR, la guia oficial recomienda habilitar
+          <code>fetch</code> con <code>provideHttpClient(withFetch())</code> por rendimiento y compatibilidad.
         </div>
       </div>
 
@@ -762,9 +775,9 @@
         <p style="font-size:.9rem">El CLI crea el archivo en la subcarpeta <code>services/</code>. El servicio se genera con <code>providedIn: 'root'</code> — Angular lo registra automaticamente de forma global, sin tocarlo en <code>app-module.ts</code>:</p>
         <div class="code-block">
           <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
-          <pre>ng generate service services/product
+          <pre>ng generate service services/product.service
 <span class="cm"># Atajo equivalente:</span>
-ng g s services/product
+ng g s services/product.service
 
 <span class="cm"># El CLI crea (en Angular 20):</span>
 <span class="cm">#   src/app/services/product.service.ts</span>
@@ -774,7 +787,7 @@ ng g s services/product
 <span class="cm"># Angular los registra automaticamente de forma global</span></pre>
         </div>
         <div class="callout callout-blue">
-          <strong>Por que <code>services/product</code> y no solo <code>product</code>?</strong> La barra <code>/</code> le dice al CLI que cree el archivo dentro de la carpeta <code>services/</code>. Si la carpeta no existe, la crea. Es una convencion para mantener los servicios organizados separados de los componentes.
+          <strong>Por que <code>services/product.service</code> y no solo <code>product.service</code>?</strong> La barra <code>/</code> le dice al CLI que cree el archivo dentro de la carpeta <code>services/</code>. Si la carpeta no existe, la crea. Es una convencion para mantener los servicios organizados separados de los componentes.
         </div>
       </div>
 
@@ -783,7 +796,7 @@ ng g s services/product
           <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 3</span>
           Escribir product.service.ts
         </h4>
-        <p style="font-size:.9rem">El CLI genera el archivo con la estructura base. Agrega los tres metodos que usara la aplicacion:</p>
+        <p style="font-size:.9rem">El CLI genera el archivo con la estructura base. Agrega los cuatro metodos que usara la aplicacion:</p>
         <div class="code-block">
           <div class="code-header"><span>src/app/services/product.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
@@ -860,6 +873,7 @@ ng g s services/product
   <span class="cm">// Propiedades — igual que en Clase 5</span>
   titulo   = <span class="str">'Proyecto API'</span>;
   valor    = <span class="str">''</span>;
+  busqueda    = <span class="str">''</span>;
   data:    <span class="typ">any</span> = [];
   detalle: <span class="typ">any</span> = <span class="kw">null</span>;
 
@@ -908,6 +922,25 @@ ng g s services/product
     }
   }
 
+  <span class="cm">// filtrarNombreNgModel — filtra usando la propiedad enlazada con ngModel</span>
+  <span class="fn">filtrarNombreNgModel</span>(): <span class="typ">void</span> {
+    <span class="kw">this</span>.valor = <span class="kw">this</span>.busqueda;
+    <span class="kw">if</span> (<span class="kw">this</span>.valor === <span class="str">''</span>) {
+      <span class="kw">this</span>.productService.<span class="fn">getProducts</span>().<span class="fn">subscribe</span>(
+        (response) => { <span class="kw">this</span>.data = response; },
+        (error)    => { <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">'Error:'</span>, error); }
+      );
+    } <span class="kw">else</span> {
+      <span class="kw">this</span>.productService.<span class="fn">getProducts</span>().<span class="fn">subscribe</span>(
+        (response) => {
+          <span class="kw">const</span> v = <span class="kw">this</span>.valor.toLowerCase();
+          <span class="kw">this</span>.data = (response <span class="kw">as</span> <span class="typ">any</span>[]).<span class="fn">filter</span>(p => p.title.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(v));
+        },
+        (error) => { <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">'Error:'</span>, error); }
+      );
+    }
+  }
+
   <span class="cm">// detallePro — ahora llama a la API por id</span>
   <span class="fn">detallePro</span>(productId: <span class="typ">number</span>): <span class="typ">void</span> {
     <span class="kw">this</span>.productService.<span class="fn">getProductById</span>(productId).<span class="fn">subscribe</span>(
@@ -926,6 +959,55 @@ ng g s services/product
           <strong>Nota sobre busqueda:</strong> <code>filtrarNombre()</code> hace dos llamadas a la API: una para obtener todos los productos y luego filtra en memoria. En produccion esto seria ineficiente para listas grandes, pero para este curso y FakeStoreAPI es suficiente.
         </div>
       </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-mortarboard" style="color:var(--accent)"></i> Ejercicio guiado: categorias dinamicas desde la API</h4>
+        <p style="font-size:.9rem">Objetivo: dejar de hardcodear las categorias en <code>products.html</code> y cargarlas dinamicamente desde <code>https://fakestoreapi.com/products/categories</code>.</p>
+
+        <div class="step-pills">
+          <div class="step-pill"><span class="num">1</span>Crear <code>getCategories()</code> en <code>product.service.ts</code></div>
+          <div class="step-pill"><span class="num">2</span>Llamarlo en <code>ngOnInit()</code> de <code>products.ts</code></div>
+          <div class="step-pill"><span class="num">3</span>Pintar opciones del <code>&lt;select&gt;</code> con <code>*ngFor</code></div>
+        </div>
+
+        <p class="fw-semibold small mt-3 mb-1">1) Servicio: agregar getCategories()</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/services/product.service.ts — agregar metodo</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="fn">getCategories</span>(): <span class="typ">Observable</span>&lt;<span class="typ">string</span>[]&gt; {
+  <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">get</span>&lt;<span class="typ">string</span>[]&gt;(<span class="str">`</span>${<span class="kw">this</span>.apiUrl}/categories<span class="str">`</span>);
+}</pre>
+        </div>
+         <p class="fw-semibold small mt-3 mb-1">2) Agregar: categories como arreglo vacio que se llenara dinamicamente por el servicio</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/products/products.ts — agregar arreglo vacio</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre>categories: <span class="typ">any</span> = [];</pre>
+        </div>
+
+        <p class="fw-semibold small mt-3 mb-1">3) products.ts: llamar en ngOnInit()</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/products/products.ts — dentro de ngOnInit</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">this</span>.productService.<span class="fn">getCategories</span>().<span class="fn">subscribe</span>(
+  (response) => { <span class="kw">this</span>.categories = response; },
+  (error)    => { <span class="fn">console</span>.<span class="fn">error</span>(<span class="str">'Error categories:'</span>, error); }
+);</pre>
+        </div>
+
+        <p class="fw-semibold small mt-3 mb-1">4) products.html: renderizar categorias dinamicamente</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/products/products.html — select dinamico</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;select</span> <span class="attr">class</span>=<span class="str">"form-select"</span> <span class="bind">(change)</span>=<span class="str">"filtrarCat($event)"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;option</span> <span class="attr">value</span>=<span class="str">"all"</span><span class="tag">&gt;</span>Todas<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;option</span> <span class="kw">*ngFor</span>=<span class="str">"let category of categories"</span> <span class="bind">[value]</span>=<span class="str">"category"</span><span class="tag">&gt;</span>
+    <span class="bind">{{ category }}</span>
+  <span class="tag">&lt;/option&gt;</span>
+<span class="tag">&lt;/select&gt;</span></pre>
+        </div>
+
+        <div class="callout callout-green mt-2">
+          <strong>Resultado esperado:</strong> el selector se llena solo con las categorias reales de FakeStoreAPI. Si la API agrega o quita categorias, tu UI se actualiza sin tocar el HTML.
+        </div>
+      </div>
+      
 
       <div class="sandbox">
         <div class="sandbox-header">
@@ -1065,7 +1147,7 @@ ng g s services/product
           <div><span class="dir">src/app/</span></div>
           <div>&nbsp;&nbsp;<span class="ts">app.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> sin cambios</span></div>
           <div>&nbsp;&nbsp;<span class="html">app.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ahora con &lt;router-outlet&gt;</span></div>
-          <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> HttpClientModule + ProductDetail agregados</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> provideHttpClient + ProductDetail agregados</span></div>
           <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> rutas /products y /product/:id activas</span></div>
           <div>&nbsp;&nbsp;<span class="dir">products/</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">products.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> usa ProductService en lugar de mock</span></div>
@@ -1076,7 +1158,7 @@ ng g s services/product
           <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product-detail.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lee :id con ActivatedRoute</span></div>
           <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html">product-detail.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
           <div>&nbsp;&nbsp;<span class="dir">services/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new"> NUEVO</span></div>
-          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> getProducts(), getProductById(), getProductsByCategory()</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> getProducts(), getProductById(), getProductsByCategory(), getCategories()</span></div>
         </div>
       </div>
     </section>
@@ -1343,7 +1425,7 @@ ng g s services/product
           <li class="done">Clic en "Ver detalle" cambia la URL a <code>/product/N</code></li>
           <li class="done">La vista de detalle muestra la imagen del producto</li>
           <li class="done">El boton "Volver" regresa a la tabla sin recargar la pagina</li>
-          <li class="done"><code>ProductService</code> tiene los 3 metodos: <code>getProducts()</code>, <code>getProductById()</code>, <code>getProductsByCategory()</code></li>
+          <li class="done"><code>ProductService</code> tiene los 4 metodos: <code>getProducts()</code>, <code>getProductById()</code>, <code>getProductsByCategory()</code> y <code>getCategories()</code></li>
           <li><code>app-module.ts</code> tiene <code>HttpClientModule</code> en <code>imports</code></li>
           <li><code>app-routing-module.ts</code> tiene las 2 rutas activas</li>
         </ul>
@@ -1360,7 +1442,7 @@ ng g s services/product
           <div class="theory-block h-100">
             <h4><i class="bi bi-check2-all text-success"></i> Lo que aprendiste hoy</h4>
             <ul style="font-size:.9rem;line-height:2.2">
-              <li>Activar <code>HttpClientModule</code> en <code>app-module.ts</code></li>
+              <li>Activar <code>provideHttpClient</code> en <code>app-module.ts</code></li>
               <li>Observable vs Promise — <code>.subscribe()</code> en lugar de <code>.then()</code></li>
               <li>Generar y usar un servicio con <code>ng g s</code></li>
               <li>Centralizar llamadas HTTP en <code>ProductService</code></li>
