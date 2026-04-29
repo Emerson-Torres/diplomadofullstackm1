@@ -239,7 +239,7 @@
           <div class="info-card">
             <div class="ic-icon" style="background:#f5f3ff"><i class="bi bi-shield-lock" style="color:#8b5cf6;font-size:1.3rem"></i></div>
             <h5>Autenticacion JWT</h5>
-            <p><code>auth.service.ts</code> con login real usando <code>fakestoreapi.com/auth/login</code>. Token guardado en <code>localStorage</code>. Ruta <code>/users</code> protegida con <code>AuthGuard</code>.</p>
+            <p><code>auth.service.ts</code> valida usuario contra <code>fakestoreapi.com/users</code>, guarda <code>currentUser</code> y token en <code>localStorage</code>, y protege <code>/users</code> con <code>AuthGuard</code>.</p>
           </div>
         </div>
         <div class="col-md-4">
@@ -269,7 +269,7 @@
           <div class="timeline-item">
             <div class="t-time">40 min</div>
             <div class="t-title">AuthService, Login, Interceptor y AuthGuard</div>
-            <div class="t-desc">Login con credenciales reales de FakeStoreAPI. Token en localStorage. Interceptor que firma cada peticion. Guard que redirige al login si no hay sesion.</div>
+            <div class="t-desc">Login validando usuario en FakeStoreAPI/users. Sesion en localStorage. Interceptor que firma peticiones. Guard que redirige al login si no hay sesion.</div>
           </div>
           <div class="timeline-item">
             <div class="t-time">40 min</div>
@@ -293,20 +293,89 @@
     <!-- ══════════════════════════════ AUTH SERVICE ══════════════════════════════ -->
     <section id="auth-service" class="content-section">
       <h2 class="fw-bold mb-1">AuthService y JWT</h2>
-      <p class="text-muted mb-4">El servicio que maneja el ciclo completo de autenticacion: login, guardar el token, verificar sesion y logout.</p>
+      <p class="text-muted mb-4">El servicio que valida al usuario contra FakeStoreAPI, guarda la sesion local y permite controlar acceso a rutas protegidas.</p>
 
       <div class="theory-block">
-        <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Como funciona el flujo JWT</h4>
+        <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Que es AuthService y como funciona el flujo</h4>
+        <p><strong>AuthService</strong> es la capa que concentra toda la logica de autenticacion. Asi evitamos repetir codigo de login en varios componentes y tenemos una unica fuente para: iniciar sesion, guardar datos del usuario, saber si hay sesion y cerrar sesion.</p>
         <div class="step-pills">
           <div class="step-pill"><div class="num">1</div>Usuario ingresa usuario y contrasena</div>
-          <div class="step-pill"><div class="num">2</div>POST a <code>/auth/login</code></div>
-          <div class="step-pill"><div class="num">3</div>La API devuelve un <code>token</code> JWT</div>
-          <div class="step-pill"><div class="num">4</div>Se guarda en <code>localStorage</code></div>
-          <div class="step-pill"><div class="num">5</div>El interceptor lo agrega a cada peticion</div>
-          <div class="step-pill"><div class="num">6</div>El guard lo verifica antes de rutas protegidas</div>
+          <div class="step-pill"><div class="num">2</div>GET a <code>/users</code> para validar que existe</div>
+          <div class="step-pill"><div class="num">3</div>Guardar <code>currentUser</code> y <code>token</code> en <code>localStorage</code></div>
+          <div class="step-pill"><div class="num">4</div>El interceptor firma peticiones salientes</div>
+          <div class="step-pill"><div class="num">5</div>El guard bloquea rutas si no hay sesion</div>
         </div>
         <div class="callout callout-blue mt-2">
-          <strong>Credenciales reales de FakeStoreAPI:</strong> username <code>mor_2314</code> / password <code>83r5^_</code>. El endpoint <code>POST /auth/login</code> devuelve un JWT real que puedes usar en las peticiones de la aplicacion.
+          <strong>Logica del proyecto final:</strong> el login valida que el usuario exista en <code>https://fakestoreapi.com/users</code>. Si existe, se habilita la sesion y el alumno puede navegar a productos y carrito con persistencia por usuario.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-box" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 0</span>
+          Configurar index.html con CDNs de Bootstrap e Iconos
+        </h4>
+        <p style="font-size:.9rem">Antes de empezar, el archivo <code>src/index.html</code> del proyecto Angular debe tener las CDNs de Bootstrap CSS, Bootstrap Icons, y Bootstrap JS. Esto es lo que ya está en el proyecto desde las Clases 5 y 6, pero verificamos que Bootstrap Icons esté presente:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/index.html — Estructura completa</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;!doctype html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="str">"en"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="str">"utf-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>MiTienda<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;base</span> <span class="attr">href</span>=<span class="str">"/"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="str">"viewport"</span> <span class="attr">content</span>=<span class="str">"width=device-width, initial-scale=1"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="str">"icon"</span> <span class="attr">type</span>=<span class="str">"image/x-icon"</span> <span class="attr">href</span>=<span class="str">"favicon.ico"</span><span class="tag">&gt;</span>
+  
+  <span class="cm">&lt;!-- Bootstrap 5.3 CSS --&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"</span>
+        <span class="attr">rel</span>=<span class="str">"stylesheet"</span> <span class="tag">/&gt;</span>
+  
+  <span class="cm">&lt;!-- Bootstrap Icons 1.11 CSS — NUEVO para iconos --&gt;</span>
+  <span class="tag">&lt;link</span> <span class="attr">href</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"</span>
+        <span class="attr">rel</span>=<span class="str">"stylesheet"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;app-root&gt;&lt;/app-root&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+
+<span class="cm">&lt;!-- Bootstrap 5.3 JS (Popper + Bundle) --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;/html&gt;</span></pre>
+        </div>
+        <div class="callout callout-green">
+          <strong>Nota:</strong> Bootstrap Icons está habilitado con la CDN. Si tu proyecto no tiene esa línea, agrégala en el <code>&lt;head&gt;</code>. Los iconos se usan con <code>&lt;i class="bi bi-nombre-icono"&gt;&lt;/i&gt;</code>.
+        </div>
+
+        <h4 class="mt-4"><i class="bi bi-bell" style="color:var(--accent)"></i> SweetAlert2 — alertas y confirmaciones profesionales</h4>
+        <p style="font-size:.9rem">SweetAlert2 reemplaza los <code>window.confirm()</code> del navegador por modales elegantes. Se instala como paquete npm y se importa directamente en el componente — sin configuracion global ni CDN adicional.</p>
+        <div class="code-block">
+          <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>npm install sweetalert2</pre>
+        </div>
+        <p style="font-size:.9rem">Luego se importa directamente en el <code>.ts</code> del componente donde se necesite:</p>
+        <div class="code-block">
+          <div class="code-header"><span>ejemplo de uso en cualquier componente</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> Swal <span class="kw">from</span> <span class="str">'sweetalert2'</span>;
+
+<span class="cm">// Confirmacion con boton de cancelar:</span>
+Swal.<span class="fn">fire</span>({
+  <span class="prop">title</span>:              <span class="str">'¿Eliminar producto?'</span>,
+  <span class="prop">text</span>:               <span class="str">'Esta accion no se puede deshacer'</span>,
+  <span class="prop">icon</span>:               <span class="str">'warning'</span>,
+  <span class="prop">showCancelButton</span>:   <span class="bool">true</span>,
+  <span class="prop">confirmButtonColor</span>: <span class="str">'#dc3545'</span>,
+  <span class="prop">cancelButtonColor</span>:  <span class="str">'#6c757d'</span>,
+  <span class="prop">confirmButtonText</span>:  <span class="str">'Sí, eliminar'</span>,
+  <span class="prop">cancelButtonText</span>:   <span class="str">'Cancelar'</span>
+}).<span class="fn">then</span>((result) => {
+  <span class="kw">if</span> (result.isConfirmed) {
+    <span class="cm">// accion si el usuario confirma</span>
+  }
+});</pre>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>Por que npm y no CDN?</strong> Con <code>npm install</code> el import queda dentro del <code>.ts</code> del componente — es lo que los alumnos verán en proyectos reales. La CDN inyecta una variable global <code>Swal</code> que TypeScript no conoce sin tipado adicional.
         </div>
       </div>
 
@@ -317,8 +386,8 @@
         </h4>
         <div class="code-block">
           <div class="code-header"><span>terminal — dentro de mi-tienda/</span><span class="lang-badge lang-bash">bash</span></div>
-          <pre>ng generate service services/auth
-<span class="cm"># Atajo: ng g s services/auth</span>
+          <pre>ng generate service services/auth.service
+<span class="cm"># Atajo: ng g s services/auth.service</span>
 <span class="cm"># Crea: src/app/services/auth.service.ts</span>
 <span class="cm"># Los servicios con providedIn: 'root' no necesitan registrarse en app-module.ts</span></pre>
         </div>
@@ -334,16 +403,36 @@
           <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { HttpClient } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
 <span class="kw">import</span> { Observable } <span class="kw">from</span> <span class="str">'rxjs'</span>;
+<span class="kw">import</span> { map, switchMap } <span class="kw">from</span> <span class="str">'rxjs/operators'</span>;
 
 <span class="dec">@Injectable</span>({ <span class="prop">providedIn</span>: <span class="str">'root'</span> })
 <span class="kw">export class</span> <span class="typ">AuthService</span> {
 
-  <span class="kw">private</span> loginUrl = <span class="str">'https://fakestoreapi.com/auth/login'</span>;
+  <span class="kw">private</span> usersUrl = <span class="str">'https://fakestoreapi.com/users'</span>;
+  <span class="kw">private</span> loginUrl  = <span class="str">'https://fakestoreapi.com/auth/login'</span>;  <span class="cm">// endpoint del token real</span>
 
   <span class="kw">constructor</span>(<span class="kw">private</span> http: <span class="typ">HttpClient</span>) { }
 
   <span class="fn">login</span>(username: <span class="typ">string</span>, password: <span class="typ">string</span>): <span class="typ">Observable</span>&lt;<span class="typ">any</span>&gt; {
-    <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">post</span>&lt;<span class="typ">any</span>&gt;(<span class="kw">this</span>.loginUrl, { username, password });
+    <span class="cm">// Paso 1: verificar que el usuario existe en /users</span>
+    <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">get</span>&lt;<span class="typ">any</span>[]&gt;(<span class="kw">this</span>.usersUrl).<span class="fn">pipe</span>(
+      <span class="fn">switchMap</span>((users) => {
+        <span class="kw">const</span> user = users.<span class="fn">find</span>(u => u.username === username &amp;&amp; u.password === password);
+        <span class="kw">if</span> (!user) {
+          <span class="kw">throw</span> <span class="kw">new</span> <span class="typ">Error</span>(<span class="str">'Credenciales invalidas'</span>);
+        }
+        <span class="cm">// Paso 2: si existe, obtener el token real desde /auth/login</span>
+        <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">post</span>&lt;<span class="typ">any</span>&gt;(<span class="kw">this</span>.loginUrl, { username, password }).<span class="fn">pipe</span>(
+          <span class="fn">map</span>((res) => {
+            <span class="kw">const</span> session = { <span class="prop">id</span>: user.id, <span class="prop">username</span>: user.username };
+            <span class="cm">// Paso 3: guardar token real y datos del usuario en localStorage</span>
+            localStorage.<span class="fn">setItem</span>(<span class="str">'currentUser'</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(session));
+            localStorage.<span class="fn">setItem</span>(<span class="str">'token'</span>, res.token);
+            <span class="kw">return</span> { <span class="prop">token</span>: res.token, <span class="prop">user</span>: session };
+          })
+        );
+      })
+    );
   }
 
   <span class="fn">saveToken</span>(token: <span class="typ">string</span>): <span class="typ">void</span> {
@@ -360,6 +449,7 @@
 
   <span class="fn">logout</span>(): <span class="typ">void</span> {
     localStorage.<span class="fn">removeItem</span>(<span class="str">'token'</span>);
+    localStorage.<span class="fn">removeItem</span>(<span class="str">'currentUser'</span>);
   }
 }</pre>
         </div>
@@ -370,7 +460,7 @@
 
       <div class="sandbox">
         <div class="sandbox-header">
-          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: login real con FakeStoreAPI</div>
+          <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: login validando en /users</div>
           <div class="d-flex gap-2 flex-wrap">
             <button class="run-btn green" onclick="demoLogin()">    <i class="bi bi-play-fill"></i> authService.login()</button>
             <button class="run-btn red"   onclick="demoLogout()">   <i class="bi bi-box-arrow-right"></i> authService.logout()</button>
@@ -387,7 +477,7 @@
     <!-- ══════════════════════════════ LOGIN ══════════════════════════════ -->
     <section id="login" class="content-section">
       <h2 class="fw-bold mb-1">Login</h2>
-      <p class="text-muted mb-4">El componente que consume <code>AuthService</code>, guarda el token y redirige al usuario.</p>
+      <p class="text-muted mb-4">El componente que consume <code>AuthService</code>, valida usuario en la API y crea la sesion local.</p>
 
       <div class="theory-block">
         <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
@@ -418,8 +508,9 @@ ng generate component users
       <div class="theory-block">
         <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i>
           <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 4</span>
-          Actualizar app-routing-module.ts
+          Actualizar app-routing-module.ts (sin guard todavia)
         </h4>
+        <p style="font-size:.9rem">En este punto aun no existe <code>auth.guard.ts</code>. Primero registramos rutas base para que el proyecto compile y luego, en la seccion AuthGuard, agregamos <code>canActivate</code>.</p>
         <div class="code-block">
           <div class="code-header"><span>src/app/app-routing-module.ts — version Clase 7</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
@@ -429,7 +520,6 @@ ng generate component users
 <span class="kw">import</span> { Login } <span class="kw">from</span> <span class="str">'./login/login'</span>;           <span class="cm">// NUEVO</span>
 <span class="kw">import</span> { Users } <span class="kw">from</span> <span class="str">'./users/users'</span>;           <span class="cm">// NUEVO</span>
 <span class="kw">import</span> { Cart }  <span class="kw">from</span> <span class="str">'./cart/cart'</span>;             <span class="cm">// NUEVO</span>
-<span class="kw">import</span> { AuthGuard } <span class="kw">from</span> <span class="str">'./guards/auth.guard'</span>; <span class="cm">// NUEVO</span>
 
 <span class="kw">const</span> routes: <span class="typ">Routes</span> = [
   { <span class="prop">path</span>: <span class="str">''</span>,            <span class="prop">redirectTo</span>: <span class="str">'/products'</span>, <span class="prop">pathMatch</span>: <span class="str">'full'</span> },
@@ -437,8 +527,7 @@ ng generate component users
   { <span class="prop">path</span>: <span class="str">'product/:id'</span>, <span class="prop">component</span>: ProductDetail, <span class="prop">title</span>: <span class="str">'Detalle Producto'</span> },
   { <span class="prop">path</span>: <span class="str">'login'</span>,       <span class="prop">component</span>: Login,         <span class="prop">title</span>: <span class="str">'Login'</span> },           <span class="cm">// NUEVO</span>
   { <span class="prop">path</span>: <span class="str">'cart'</span>,        <span class="prop">component</span>: Cart,          <span class="prop">title</span>: <span class="str">'Carrito'</span> },         <span class="cm">// NUEVO</span>
-  { <span class="prop">path</span>: <span class="str">'users'</span>,       <span class="prop">component</span>: Users,         <span class="prop">title</span>: <span class="str">'Gestion de Usuarios'</span>,
-    <span class="prop">canActivate</span>: [AuthGuard] },                                                    <span class="cm">// NUEVO — ruta protegida</span>
+  { <span class="prop">path</span>: <span class="str">'users'</span>,       <span class="prop">component</span>: Users,         <span class="prop">title</span>: <span class="str">'Gestion de Usuarios'</span> },  <span class="cm">// temporal: se protege en Paso 8</span>
 ];
 
 <span class="dec">@NgModule</span>({
@@ -459,6 +548,7 @@ ng generate component users
           <pre><span class="kw">import</span> { Component } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
 <span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'../services/auth.service'</span>;
+<span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>;  <span class="cm">// NUEVO — para cargar carrito del usuario</span>
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-login'</span>,
@@ -476,6 +566,7 @@ ng generate component users
 
   <span class="kw">constructor</span>(
     <span class="kw">private</span> authService: <span class="typ">AuthService</span>,
+    <span class="kw">private</span> cartService: <span class="typ">CartService</span>,  <span class="cm">// NUEVO</span>
     <span class="kw">private</span> router:      <span class="typ">Router</span>
   ) { }
 
@@ -485,8 +576,10 @@ ng generate component users
 
     <span class="kw">this</span>.authService.<span class="fn">login</span>(<span class="kw">this</span>.username, <span class="kw">this</span>.password).<span class="fn">subscribe</span>(
       (response) => {
-        <span class="kw">this</span>.authService.<span class="fn">saveToken</span>(response.token);
-        <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/users'</span>]);
+        <span class="cm">// El token y currentUser ya estan en localStorage (los guarda AuthService)</span>
+        <span class="cm">// Cargar el carrito del usuario que acaba de entrar</span>
+        <span class="kw">this</span>.cartService.<span class="fn">loadCartForCurrentUser</span>();  <span class="cm">// NUEVO</span>
+        <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/products'</span>]);  <span class="cm">// redirige al catalogo</span>
       },
       (error) => {
         <span class="kw">this</span>.error   = <span class="str">'Usuario o contrasena incorrectos.'</span>;
@@ -533,10 +626,11 @@ ng generate component users
     <!-- ══════════════════════════════ INTERCEPTOR ══════════════════════════════ -->
     <section id="interceptor" class="content-section">
       <h2 class="fw-bold mb-1">Interceptor HTTP</h2>
-      <p class="text-muted mb-4">Se configura una sola vez y agrega el token JWT a todas las peticiones salientes automaticamente.</p>
+      <p class="text-muted mb-4">Es un middleware de HttpClient: intercepta cada request antes de salir, ideal para headers de autenticacion, logging y manejo transversal.</p>
 
       <div class="theory-block">
-        <h4><i class="bi bi-filter" style="color:var(--accent)"></i> Como funciona un interceptor</h4>
+        <h4><i class="bi bi-filter" style="color:var(--accent)"></i> Que es un Interceptor HTTP</h4>
+        <p>Un <strong>interceptor</strong> es codigo que Angular ejecuta automaticamente antes o despues de cada peticion HTTP. En esta clase lo usamos para adjuntar <code>Authorization</code> sin repetir ese header en cada componente.</p>
         <div class="code-block">
           <div class="code-header"><span>sin vs con interceptor</span></div>
           <pre><span class="cm">// Sin interceptor — hay que agregar el token en cada llamada manualmente:</span>
@@ -577,13 +671,13 @@ ng generate component users
 }</pre>
         </div>
 
-        <p class="fw-semibold small mt-3 mb-1">Registrar el interceptor en <code>app-module.ts</code>:</p>
+        <p class="fw-semibold small mt-3 mb-1">Registrar el interceptor en <code>app-module.ts</code> (coherente con Clase 6):</p>
         <div class="code-block">
           <div class="code-header"><span>src/app/app-module.ts — version Clase 7 completa</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { NgModule, provideBrowserGlobalErrorListeners } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { BrowserModule } <span class="kw">from</span> <span class="str">'@angular/platform-browser'</span>;
 <span class="kw">import</span> { FormsModule } <span class="kw">from</span> <span class="str">'@angular/forms'</span>;
-<span class="kw">import</span> { HttpClientModule, HTTP_INTERCEPTORS } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
+      <span class="kw">import</span> { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } <span class="kw">from</span> <span class="str">'@angular/common/http'</span>;
 
 <span class="kw">import</span> { AppRoutingModule } <span class="kw">from</span> <span class="str">'./app-routing-module'</span>;
 <span class="kw">import</span> { App }           <span class="kw">from</span> <span class="str">'./app'</span>;
@@ -609,10 +703,11 @@ ng generate component users
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    HttpClientModule,
+    <span class="cm">// HttpClientModule ya no se usa (deprecated)</span>
   ],
   <span class="prop">providers</span>: [
     provideBrowserGlobalErrorListeners(),
+    provideHttpClient(withInterceptorsFromDi()),
     {
       <span class="prop">provide</span>:  HTTP_INTERCEPTORS,
       <span class="prop">useClass</span>: AuthInterceptor,
@@ -624,7 +719,7 @@ ng generate component users
 <span class="kw">export class</span> <span class="typ">AppModule</span> { }</pre>
         </div>
         <div class="callout callout-amber">
-          <strong>Un error comun es</strong> agregar el interceptor en <code>imports</code> en lugar de <code>providers</code>. Los interceptores no son modulos; son servicios que se registran con el token <code>HTTP_INTERCEPTORS</code> dentro del array <code>providers</code>.
+          <strong>Coherencia con Clase 6:</strong> <code>HttpClientModule</code> aparece como deprecated en Angular actual. Usa <code>provideHttpClient(withInterceptorsFromDi())</code> y registra el interceptor en <code>providers</code> con <code>HTTP_INTERCEPTORS</code>.
         </div>
         <div class="callout callout-blue mt-2">
           <strong>Por que <code>multi: true</code>?</strong> Angular permite tener varios interceptores al mismo tiempo en cadena. El <code>multi: true</code> agrega este interceptor a la lista existente en lugar de reemplazarla.
@@ -635,13 +730,14 @@ ng generate component users
     <!-- ══════════════════════════════ GUARD ══════════════════════════════ -->
     <section id="guard" class="content-section">
       <h2 class="fw-bold mb-1">AuthGuard — Proteger rutas</h2>
-      <p class="text-muted mb-4">Un guard verifica una condicion antes de que Angular active una ruta. Si la condicion falla, redirige al usuario al login.</p>
+      <p class="text-muted mb-4">Un guard es un portero de rutas: decide si Angular deja entrar al usuario a una pantalla antes de crear el componente.</p>
 
       <div class="theory-block">
         <h4><i class="bi bi-file-earmark-plus" style="color:var(--accent)"></i>
           <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 7</span>
           Crear el guard manualmente
         </h4>
+        <p><strong>Que resuelve AuthGuard:</strong> evita que usuarios sin sesion accedan por URL directa a rutas privadas como <code>/users</code>.</p>
         <p style="font-size:.9rem">Se crea manualmente en una nueva carpeta <code>guards/</code> dentro de <code>src/app/</code>. El guard usa <code>providedIn: 'root'</code>, por lo que no necesita registrarse en <code>app-module.ts</code>:</p>
         <div class="code-block">
           <div class="code-header"><span>src/app/guards/auth.guard.ts — archivo nuevo creado manualmente</span><span class="lang-badge lang-ts">TypeScript</span></div>
@@ -673,8 +769,30 @@ ng generate component users
       </div>
 
       <div class="theory-block">
-        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+        <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i>
           <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 8</span>
+          Ahora si: proteger la ruta <code>/users</code>
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app-routing-module.ts — agregar AuthGuard despues de crearlo</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { AuthGuard } <span class="kw">from</span> <span class="str">'./guards/auth.guard'</span>; <span class="cm">// NUEVO</span>
+
+<span class="kw">const</span> routes: <span class="typ">Routes</span> = [
+  { <span class="prop">path</span>: <span class="str">'products'</span>, <span class="prop">component</span>: Products },
+  { <span class="prop">path</span>: <span class="str">'product/:id'</span>, <span class="prop">component</span>: ProductDetail },
+  { <span class="prop">path</span>: <span class="str">'login'</span>, <span class="prop">component</span>: Login },
+  { <span class="prop">path</span>: <span class="str">'cart'</span>, <span class="prop">component</span>: Cart },
+  { <span class="prop">path</span>: <span class="str">'users'</span>, <span class="prop">component</span>: Users, <span class="prop">canActivate</span>: [AuthGuard] },
+];</pre>
+        </div>
+        <div class="callout callout-green">
+          <strong>Importante para evitar errores en clase:</strong> este cambio se hace despues de crear <code>auth.guard.ts</code>. Asi la secuencia queda lineal y no rompe compilacion en el Paso 4.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 9</span>
           users.ts — la ruta protegida
         </h4>
         <div class="code-block">
@@ -709,7 +827,7 @@ ng generate component users
         <div class="sandbox-header">
           <div class="title"><i class="bi bi-play-circle-fill" style="color:var(--accent)"></i> Demo: flujo Login — Guard — Ruta protegida</div>
           <div class="d-flex gap-2 flex-wrap">
-            <button class="run-btn green" onclick="demoFlujoLogin()">    <i class="bi bi-play-fill"></i> Login con credenciales reales</button>
+            <button class="run-btn green" onclick="demoFlujoLogin()">    <i class="bi bi-play-fill"></i> Validar usuario en /users</button>
             <button class="run-btn"       onclick="demoFlujoGuard()">    <i class="bi bi-shield"></i> canActivate() con token</button>
             <button class="run-btn red"   onclick="demoFlujoSinToken()"> <i class="bi bi-x-circle"></i> canActivate() sin token</button>
             <button class="run-btn gray"  onclick="demoFlujoReset()">    <i class="bi bi-arrow-counterclockwise"></i> Reset</button>
@@ -724,7 +842,7 @@ ng generate component users
     <!-- ══════════════════════════════ CARRITO ══════════════════════════════ -->
     <section id="carrito" class="content-section">
       <h2 class="fw-bold mb-1">CartService y BehaviorSubject</h2>
-      <p class="text-muted mb-4">Estado compartido del carrito entre todos los componentes. Cualquier cambio se propaga automaticamente al navbar y a la pagina del carrito.</p>
+      <p class="text-muted mb-4">Estado compartido del carrito con persistencia por usuario: cada item guarda producto, cantidad y subtotal en <code>localStorage["cart"]</code>.</p>
 
       <div class="theory-block">
         <h4><i class="bi bi-info-circle" style="color:var(--accent)"></i> Que es BehaviorSubject</h4>
@@ -760,7 +878,7 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
       <div class="theory-block">
         <h4><i class="bi bi-terminal" style="color:var(--accent)"></i>
-          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 9</span>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 10</span>
           Generar CartService
         </h4>
         <div class="code-block">
@@ -773,7 +891,7 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
       <div class="theory-block">
         <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 10</span>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 11</span>
           cart.service.ts
         </h4>
         <div class="code-block">
@@ -781,48 +899,216 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
           <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { BehaviorSubject } <span class="kw">from</span> <span class="str">'rxjs'</span>;
 
+<span class="kw">interface</span> <span class="typ">CartItem</span> {
+  <span class="prop">userId</span>: <span class="typ">number</span>;
+  <span class="prop">productId</span>: <span class="typ">number</span>;
+  <span class="prop">title</span>: <span class="typ">string</span>;
+  <span class="prop">price</span>: <span class="typ">number</span>;
+  <span class="prop">image</span>: <span class="typ">string</span>;
+  <span class="prop">quantity</span>: <span class="typ">number</span>;
+  <span class="prop">subtotal</span>: <span class="typ">number</span>;
+}
+
 <span class="dec">@Injectable</span>({ <span class="prop">providedIn</span>: <span class="str">'root'</span> })
 <span class="kw">export class</span> <span class="typ">CartService</span> {
 
-  <span class="cm">// BehaviorSubject — la fuente de verdad del carrito</span>
-  <span class="kw">private</span> cartItems = <span class="kw">new</span> <span class="typ">BehaviorSubject</span>&lt;<span class="typ">any</span>[]&gt;([]);
-  cartItems$ = <span class="kw">this</span>.cartItems.asObservable();  <span class="cm">// expuesto como Observable (solo lectura)</span>
+  <span class="kw">private</span> cartItems = <span class="kw">new</span> <span class="typ">BehaviorSubject</span>&lt;<span class="typ">CartItem</span>[]&gt;([]);
+  cartItems$ = <span class="kw">this</span>.cartItems.asObservable();
 
   <span class="kw">constructor</span>() {
-    <span class="cm">// Cargar el carrito guardado en localStorage al iniciar la app</span>
-    <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">'cart'</span>);
-    <span class="kw">if</span> (saved) {
-      <span class="kw">this</span>.cartItems.<span class="fn">next</span>(<span class="fn">JSON</span>.<span class="fn">parse</span>(saved));
-    }
+    <span class="kw">this</span>.<span class="fn">loadCartForCurrentUser</span>();
   }
 
-  <span class="kw">private</span> <span class="fn">saveToLocalStorage</span>(items: <span class="typ">any</span>[]): <span class="typ">void</span> {
-    localStorage.<span class="fn">setItem</span>(<span class="str">'cart'</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(items));
+  <span class="kw">private</span> <span class="fn">getCurrentUserId</span>(): <span class="typ">number</span> | <span class="typ">null</span> {
+    <span class="kw">const</span> raw = localStorage.<span class="fn">getItem</span>(<span class="str">'currentUser'</span>);
+    <span class="kw">if</span> (!raw) <span class="kw">return</span> <span class="kw">null</span>;
+    <span class="kw">const</span> user = <span class="fn">JSON</span>.<span class="fn">parse</span>(raw);
+    <span class="kw">return</span> user.id;
+  }
+
+  <span class="kw">private</span> <span class="fn">getCartMap</span>(): <span class="typ">Record</span>&lt;<span class="typ">string</span>, <span class="typ">CartItem</span>[]&gt; {
+    <span class="kw">const</span> raw = localStorage.<span class="fn">getItem</span>(<span class="str">'cart'</span>);
+    <span class="kw">return</span> raw ? <span class="fn">JSON</span>.<span class="fn">parse</span>(raw) : {};
+  }
+
+  <span class="kw">private</span> <span class="fn">saveCartMap</span>(map: <span class="typ">Record</span>&lt;<span class="typ">string</span>, <span class="typ">CartItem</span>[]&gt;): <span class="typ">void</span> {
+    localStorage.<span class="fn">setItem</span>(<span class="str">'cart'</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(map));
+  }
+
+  <span class="fn">loadCartForCurrentUser</span>(): <span class="typ">void</span> {
+    <span class="kw">const</span> userId = <span class="kw">this</span>.<span class="fn">getCurrentUserId</span>();
+    <span class="kw">if</span> (!userId) {
+      <span class="kw">this</span>.cartItems.<span class="fn">next</span>([]);
+      <span class="kw">return</span>;
+    }
+    <span class="kw">const</span> map = <span class="kw">this</span>.<span class="fn">getCartMap</span>();
+    <span class="kw">this</span>.cartItems.<span class="fn">next</span>(map[userId] || []);
   }
 
   <span class="fn">addToCart</span>(product: <span class="typ">any</span>): <span class="typ">void</span> {
-    <span class="kw">const</span> current = <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>();
-    <span class="kw">const</span> updated = [...current, product];   <span class="cm">// spread — no mutar el array original</span>
-    <span class="kw">this</span>.cartItems.<span class="fn">next</span>(updated);
-    <span class="kw">this</span>.<span class="fn">saveToLocalStorage</span>(updated);
+    <span class="kw">const</span> userId = <span class="kw">this</span>.<span class="fn">getCurrentUserId</span>();
+    <span class="kw">if</span> (!userId) <span class="kw">return</span>;
+
+    <span class="kw">const</span> current = [...<span class="kw">this</span>.cartItems.<span class="fn">getValue</span>()];
+    <span class="kw">const</span> idx = current.<span class="fn">findIndex</span>(i => i.productId === product.id);
+
+    <span class="kw">if</span> (idx &gt;= <span class="num">0</span>) {
+      current[idx].quantity += <span class="num">1</span>;
+      current[idx].subtotal = current[idx].price * current[idx].quantity;
+    } <span class="kw">else</span> {
+      current.<span class="fn">push</span>({
+        <span class="prop">userId</span>: userId,
+        <span class="prop">productId</span>: product.id,
+        <span class="prop">title</span>: product.title,
+        <span class="prop">price</span>: product.price,
+        <span class="prop">image</span>: product.image,
+        <span class="prop">quantity</span>: <span class="num">1</span>,
+        <span class="prop">subtotal</span>: product.price
+      });
+    }
+
+    <span class="kw">this</span>.<span class="fn">persistCurrentUserCart</span>(current, userId);
   }
 
-  <span class="fn">removeFromCart</span>(index: <span class="typ">number</span>): <span class="typ">void</span> {
-    <span class="kw">const</span> current = <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>();
-    current.<span class="fn">splice</span>(index, <span class="num">1</span>);
-    <span class="kw">this</span>.cartItems.<span class="fn">next</span>([...current]);
-    <span class="kw">this</span>.<span class="fn">saveToLocalStorage</span>([...current]);
+  <span class="fn">updateQuantity</span>(productId: <span class="typ">number</span>, quantity: <span class="typ">number</span>): <span class="typ">void</span> {
+    <span class="kw">const</span> userId = <span class="kw">this</span>.<span class="fn">getCurrentUserId</span>();
+    <span class="kw">if</span> (!userId) <span class="kw">return</span>;
+
+    <span class="kw">const</span> updated = <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>().<span class="fn">map</span>(item => {
+      <span class="kw">if</span> (item.productId !== productId) <span class="kw">return</span> item;
+      <span class="kw">const</span> qty = <span class="typ">Math</span>.<span class="fn">max</span>(<span class="num">1</span>, quantity);
+      <span class="kw">return</span> { ...item, <span class="prop">quantity</span>: qty, <span class="prop">subtotal</span>: item.price * qty };
+    });
+
+    <span class="kw">this</span>.<span class="fn">persistCurrentUserCart</span>(updated, userId);
+  }
+
+  <span class="fn">removeFromCart</span>(productId: <span class="typ">number</span>): <span class="typ">void</span> {
+    <span class="kw">const</span> userId = <span class="kw">this</span>.<span class="fn">getCurrentUserId</span>();
+    <span class="kw">if</span> (!userId) <span class="kw">return</span>;
+
+    <span class="kw">const</span> updated = <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>().<span class="fn">filter</span>(item => item.productId !== productId);
+    <span class="kw">this</span>.<span class="fn">persistCurrentUserCart</span>(updated, userId);
   }
 
   <span class="fn">clearCart</span>(): <span class="typ">void</span> {
-    <span class="kw">this</span>.cartItems.<span class="fn">next</span>([]);
-    <span class="kw">this</span>.<span class="fn">saveToLocalStorage</span>([]);
+    <span class="kw">const</span> userId = <span class="kw">this</span>.<span class="fn">getCurrentUserId</span>();
+    <span class="kw">if</span> (!userId) <span class="kw">return</span>;
+    <span class="kw">this</span>.<span class="fn">persistCurrentUserCart</span>([], userId);
   }
 
   <span class="fn">getTotal</span>(): <span class="typ">number</span> {
-    <span class="kw">return</span> <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>().<span class="fn">reduce</span>((sum, item) => sum + item.price, <span class="num">0</span>);
+    <span class="kw">return</span> <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>().<span class="fn">reduce</span>((acc, item) => acc + item.subtotal, <span class="num">0</span>);
+  }
+
+  <span class="fn">getCount</span>(): <span class="typ">number</span> {
+    <span class="kw">return</span> <span class="kw">this</span>.cartItems.<span class="fn">getValue</span>().<span class="fn">reduce</span>((acc, item) => acc + item.quantity, <span class="num">0</span>);
+  }
+
+  <span class="kw">private</span> <span class="fn">persistCurrentUserCart</span>(items: <span class="typ">CartItem</span>[], userId: <span class="typ">number</span>): <span class="typ">void</span> {
+    <span class="kw">const</span> map = <span class="kw">this</span>.<span class="fn">getCartMap</span>();
+    map[userId] = items;
+    <span class="kw">this</span>.<span class="fn">saveCartMap</span>(map);
+    <span class="kw">this</span>.cartItems.<span class="fn">next</span>(items);
   }
 }</pre>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>Formato de <code>localStorage["cart"]</code>:</strong> se guarda un objeto por usuario. Ejemplo: <code>{ "1": [{ productId: 5, quantity: 2, subtotal: 1390 }], "2": [...] }</code>. Asi, cada alumno puede cerrar sesion e iniciar con otro usuario sin mezclar carritos.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-basket" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 12</span>
+          cart.ts y cart.html — vista completa del carrito
+        </h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/cart/cart.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component, OnInit } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>;
+<span class="kw">import</span> Swal <span class="kw">from</span> <span class="str">'sweetalert2'</span>;  <span class="cm">// NUEVO</span>
+
+<span class="dec">@Component</span>({
+  <span class="prop">selector</span>: <span class="str">'app-cart'</span>,
+  <span class="prop">standalone</span>: <span class="bool">false</span>,
+  <span class="prop">templateUrl</span>: <span class="str">'./cart.html'</span>,
+  <span class="prop">styleUrl</span>: <span class="str">'./cart.css'</span>
+})
+<span class="kw">export class</span> <span class="typ">Cart</span> <span class="kw">implements</span> <span class="typ">OnInit</span> {
+  items: <span class="typ">any</span>[] = [];
+
+  <span class="kw">constructor</span>(<span class="kw">private</span> cartService: <span class="typ">CartService</span>) {}
+
+  <span class="fn">ngOnInit</span>(): <span class="typ">void</span> {
+    <span class="kw">this</span>.cartService.<span class="fn">loadCartForCurrentUser</span>();
+    <span class="kw">this</span>.cartService.cartItems$.<span class="fn">subscribe</span>(r => <span class="kw">this</span>.items = r);
+  }
+
+  <span class="fn">sumar</span>(item: <span class="typ">any</span>): <span class="typ">void</span> {
+    <span class="kw">this</span>.cartService.<span class="fn">updateQuantity</span>(item.productId, item.quantity + <span class="num">1</span>);
+  }
+
+  <span class="fn">restar</span>(item: <span class="typ">any</span>): <span class="typ">void</span> {
+    <span class="kw">this</span>.cartService.<span class="fn">updateQuantity</span>(item.productId, item.quantity - <span class="num">1</span>);
+  }
+
+  <span class="fn">eliminar</span>(item: <span class="typ">any</span>): <span class="typ">void</span> {                              <span class="cm">// NUEVO — modal de confirmacion</span>
+    Swal.<span class="fn">fire</span>({
+      <span class="prop">title</span>:              <span class="str">'¿Eliminar producto?'</span>,
+      <span class="prop">text</span>:               <span class="str">`</span>${item.title}<span class="str"> será removido del carrito`</span>,
+      <span class="prop">icon</span>:               <span class="str">'warning'</span>,
+      <span class="prop">showCancelButton</span>:   <span class="bool">true</span>,
+      <span class="prop">confirmButtonColor</span>: <span class="str">'#dc3545'</span>,
+      <span class="prop">cancelButtonColor</span>:  <span class="str">'#6c757d'</span>,
+      <span class="prop">confirmButtonText</span>:  <span class="str">'Sí, eliminar'</span>,
+      <span class="prop">cancelButtonText</span>:   <span class="str">'Cancelar'</span>
+    }).<span class="fn">then</span>((result) => {
+      <span class="kw">if</span> (result.isConfirmed) {                            <span class="cm">// solo elimina si el usuario confirma</span>
+        <span class="kw">this</span>.cartService.<span class="fn">removeFromCart</span>(item.productId);
+        Swal.<span class="fn">fire</span>(<span class="str">'Eliminado'</span>, <span class="str">`</span>${item.title}<span class="str"> fue removido del carrito`</span>, <span class="str">'success'</span>);
+      }
+    });
+  }
+
+  <span class="fn">total</span>(): <span class="typ">number</span> {
+    <span class="kw">return</span> <span class="kw">this</span>.cartService.<span class="fn">getTotal</span>();
+  }
+}</pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/cart/cart.html</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container mt-4"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;h3&gt;</span>Carrito de compras<span class="tag">&lt;/h3&gt;</span>
+
+  <span class="tag">&lt;table</span> <span class="attr">class</span>=<span class="str">"table table-striped"</span> <span class="kw">*ngIf</span>=<span class="str">"items.length &gt; 0"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;thead&gt;&lt;tr&gt;</span>
+      <span class="tag">&lt;th&gt;</span>Producto<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Precio<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Cantidad<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Subtotal<span class="tag">&lt;/th&gt;</span><span class="tag">&lt;th&gt;</span>Acciones<span class="tag">&lt;/th&gt;</span>
+    <span class="tag">&lt;/tr&gt;&lt;/thead&gt;</span>
+    <span class="tag">&lt;tbody&gt;</span>
+      <span class="tag">&lt;tr</span> <span class="kw">*ngFor</span>=<span class="str">"let item of items"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;td&gt;</span><span class="bind">{{item.title}}</span><span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;td&gt;</span>$<span class="bind">{{item.price}}</span><span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;td&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-sm btn-outline-secondary"</span> <span class="bind">(click)</span>=<span class="str">"restar(item)"</span><span class="tag">&gt;</span>-<span class="tag">&lt;/button&gt;</span>
+          <span class="tag">&lt;span</span> <span class="attr">class</span>=<span class="str">"mx-2"</span><span class="tag">&gt;</span><span class="bind">{{item.quantity}}</span><span class="tag">&lt;/span&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-sm btn-outline-secondary"</span> <span class="bind">(click)</span>=<span class="str">"sumar(item)"</span><span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;td&gt;</span>$<span class="bind">{{item.subtotal | number:'1.2-2'}}</span><span class="tag">&lt;/td&gt;</span>
+        <span class="tag">&lt;td&gt;</span>
+          <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-sm btn-danger"</span>
+                  <span class="bind">(click)</span>=<span class="str">"eliminar(item)"</span>
+                  <span class="attr">title</span>=<span class="str">"Eliminar del carrito"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-trash"</span><span class="tag">&gt;&lt;/i&gt;</span>
+          <span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;/td&gt;</span>
+      <span class="tag">&lt;/tr&gt;</span>
+    <span class="tag">&lt;/tbody&gt;</span>
+  <span class="tag">&lt;/table&gt;</span>
+
+  <span class="tag">&lt;div</span> <span class="kw">*ngIf</span>=<span class="str">"items.length === 0"</span> <span class="attr">class</span>=<span class="str">"alert alert-info"</span><span class="tag">&gt;</span>Tu carrito esta vacio.<span class="tag">&lt;/div&gt;</span>
+  <span class="tag">&lt;h4</span> <span class="kw">*ngIf</span>=<span class="str">"items.length &gt; 0"</span><span class="tag">&gt;</span>Total: $<span class="bind">{{ total() | number:'1.2-2' }}</span><span class="tag">&lt;/h4&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
         </div>
       </div>
 
@@ -861,7 +1147,7 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
       <div class="theory-block">
         <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
-          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 11</span>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 13</span>
           app.ts actualizado
         </h4>
         <p style="font-size:.9rem">El componente raiz (<code>App</code>) se suscribe al carrito en <code>ngOnInit()</code>. El navbar muestra el contador actualizado y los botones Login/Logout segun el estado de sesion:</p>
@@ -897,6 +1183,8 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
   <span class="fn">logout</span>(): <span class="typ">void</span> {
     <span class="kw">this</span>.authService.<span class="fn">logout</span>();
+    <span class="cm">// currentUser ya fue eliminado del localStorage — loadCartForCurrentUser emite [] y el contador vuelve a 0</span>
+    <span class="kw">this</span>.cartService.<span class="fn">loadCartForCurrentUser</span>();  <span class="cm">// NUEVO — resetea contador a 0</span>
     <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/login'</span>]);
   }
 }</pre>
@@ -908,7 +1196,7 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
       <div class="theory-block">
         <h4><i class="bi bi-filetype-html" style="color:var(--accent)"></i>
-          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 12</span>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 14</span>
           app.html — navbar completo con carrito y autenticacion
         </h4>
         <div class="code-block">
@@ -959,14 +1247,15 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
       <div class="theory-block">
         <h4><i class="bi bi-cart-plus" style="color:var(--accent)"></i>
-          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 13</span>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 15</span>
           Agregar boton de carrito en product-card
         </h4>
         <p style="font-size:.9rem">Se actualiza <code>product-card.ts</code> para inyectar <code>CartService</code> y agregar el metodo <code>agregarAlCarrito()</code>. Tambien se agrega el boton en <code>product-card.html</code>:</p>
         <div class="code-block">
           <div class="code-header"><span>src/app/product-card/product-card.ts — version Clase 7</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { Component, Input, Output, EventEmitter } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
-<span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>;  <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>;   <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'../services/auth.service'</span>;   <span class="cm">// NUEVO — para verificar si hay sesion</span>
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'tr[app-product-card]'</span>,
@@ -978,7 +1267,10 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
   <span class="dec">@Input</span>() product: <span class="typ">any</span> = <span class="kw">null</span>;
   <span class="dec">@Output</span>() detalle = <span class="kw">new</span> <span class="typ">EventEmitter</span>&lt;<span class="typ">number</span>&gt;();
 
-  <span class="kw">constructor</span>(<span class="kw">private</span> cartService: <span class="typ">CartService</span>) { }  <span class="cm">// NUEVO</span>
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> cartService: <span class="typ">CartService</span>,   <span class="cm">// NUEVO</span>
+    <span class="kw">public</span>  authService: <span class="typ">AuthService</span>    <span class="cm">// NUEVO — public para usarlo en el template</span>
+  ) { }
 
   <span class="fn">verDetalle</span>(): <span class="typ">void</span> {
     <span class="kw">if</span> (<span class="kw">this</span>.product) {
@@ -1001,20 +1293,56 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 <span class="tag">&lt;td&gt;</span><span class="bind">{{product?.category}}</span><span class="tag">&lt;/td&gt;</span>
 <span class="tag">&lt;td&gt;&lt;img</span> <span class="attr">height</span>=<span class="str">"80px"</span> <span class="bind">[src]</span>=<span class="str">"product?.image"</span><span class="tag">/&gt;&lt;/td&gt;</span>
 <span class="tag">&lt;td&gt;</span>
-  <span class="cm">&lt;!-- Ver detalle: navega a /product/:id --&gt;</span>
-  <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm me-1"</span>
-     <span class="bind">[routerLink]</span>=<span class="str">"['/product', product?.id]"</span><span class="tag">&gt;</span>
-    Ver detalle
-  <span class="tag">&lt;/a&gt;</span>
-  <span class="cm">&lt;!-- Agregar al carrito: llama al metodo del componente hijo --&gt;</span>
-  <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary btn-sm"</span>
-          <span class="bind">(click)</span>=<span class="str">"agregarAlCarrito()"</span><span class="tag">&gt;</span>
-    <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-cart-plus"</span><span class="tag">&gt;&lt;/i&gt;</span>
-  <span class="tag">&lt;/button&gt;</span>
+  <span class="cm">&lt;!-- Botones con iconos y espaciado --&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"d-flex gap-2"</span><span class="tag">&gt;</span>
+    <span class="cm">&lt;!-- Ver detalle: navega a /product/:id --&gt;</span>
+    <span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"btn btn-success btn-sm"</span>
+       <span class="attr">title</span>=<span class="str">"Ver detalle"</span>
+       <span class="bind">[routerLink]</span>=<span class="str">"['/product', product?.id]"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-eye"</span><span class="tag">&gt;&lt;/i&gt;</span>
+    <span class="tag">&lt;/a&gt;</span>
+    <span class="cm">&lt;!-- Agregar al carrito: solo si hay sesion --&gt;</span>
+    <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary btn-sm"</span>
+            <span class="bind">(click)</span>=<span class="str">"agregarAlCarrito()"</span>
+            <span class="attr">title</span>=<span class="str">"Agregar al carrito"</span>
+            <span class="kw">*ngIf</span>=<span class="str">"authService.isLoggedIn()"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-cart-plus"</span><span class="tag">&gt;&lt;/i&gt;</span>
+    <span class="tag">&lt;/button&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
 <span class="tag">&lt;/td&gt;</span></pre>
         </div>
         <div class="callout callout-blue">
           <strong>Por que inyectar <code>CartService</code> en <code>ProductCard</code>?</strong> El hijo es quien tiene el boton y sabe que producto mostrar. Al inyectar el servicio directamente en el hijo, evita tener que emitir un evento al padre solo para agregar al carrito. El servicio es la capa compartida.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-bag-plus" style="color:var(--accent)"></i>
+          <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 16</span>
+          Agregar boton de carrito tambien en <code>/product/:id</code>
+        </h4>
+        <p style="font-size:.9rem">Para cumplir la logica final del proyecto, el usuario debe poder agregar al carrito tanto desde <code>/products</code> como desde <code>/product/:id</code>.</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-detail/product-detail.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>; <span class="cm">// NUEVO</span>
+
+<span class="kw">constructor</span>(
+  <span class="kw">private</span> route: <span class="typ">ActivatedRoute</span>,
+  <span class="kw">private</span> productService: <span class="typ">ProductService</span>,
+  <span class="kw">private</span> cartService: <span class="typ">CartService</span> <span class="cm">// NUEVO</span>
+) {}
+
+<span class="fn">agregarAlCarrito</span>(): <span class="typ">void</span> {
+  <span class="kw">if</span> (<span class="kw">this</span>.detalle) {
+    <span class="kw">this</span>.cartService.<span class="fn">addToCart</span>(<span class="kw">this</span>.detalle);
+  }
+}</pre>
+        </div>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/product-detail/product-detail.html</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary"</span> <span class="bind">(click)</span>=<span class="str">"agregarAlCarrito()"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-cart-plus"</span><span class="tag">&gt;&lt;/i&gt;</span> Agregar al carrito
+<span class="tag">&lt;/button&gt;</span></pre>
         </div>
       </div>
     </section>
@@ -1055,8 +1383,8 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
           <div class="col-md-6">
             <ul class="checklist">
               <li class="done"><code>ng serve</code> corre sin errores de compilacion</li>
-              <li class="done">Login con <code>mor_2314</code> / <code>83r5^_</code> devuelve token real</li>
-              <li class="done">Token guardado en <code>localStorage["token"]</code></li>
+              <li class="done">Login valida usuario en <code>https://fakestoreapi.com/users</code></li>
+              <li class="done">Sesion guardada en <code>localStorage["currentUser"]</code> y <code>localStorage["token"]</code></li>
               <li class="done">Interceptor agrega <code>Authorization: Bearer ...</code> automaticamente</li>
               <li class="done">Ruta <code>/users</code> redirige a <code>/login</code> sin token</li>
               <li class="done">Ruta <code>/users</code> carga con token valido</li>
@@ -1066,10 +1394,11 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
             <ul class="checklist">
               <li class="done">Ruta <code>/products</code> muestra los productos de FakeStore</li>
               <li class="done">Ruta <code>/product/:id</code> muestra el detalle individual</li>
-              <li class="done">Boton carrito actualiza el contador del navbar</li>
-              <li class="done">Carrito persiste al recargar la pagina</li>
+              <li class="done">Boton de carrito funciona en <code>/products</code> y <code>/product/:id</code></li>
+              <li class="done">Carrito permite subir/bajar cantidad y eliminar items</li>
+              <li class="done">Carrito persiste por usuario en <code>localStorage["cart"]</code></li>
               <li class="done">Navbar muestra Login o Logout segun el estado de sesion</li>
-              <li class="done">Logout elimina el token y redirige a <code>/login</code></li>
+              <li class="done">Logout cierra sesion; al volver a entrar el usuario recupera su carrito previo</li>
             </ul>
           </div>
         </div>
@@ -1352,23 +1681,27 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
     /* ══ DEMO AUTH SERVICE ══ */
     let _demoToken = null;
+    let _demoUser = null;
 
     async function demoLogin() {
       const out = document.getElementById('out-auth');
-      out.innerHTML = inf('authService.login("mor_2314", "83r5^_").subscribe(...)');
+      out.innerHTML = inf('authService.login("mor_2314", "83r5^_") validando en /users...');
       try {
-        const res  = await fetch('https://fakestoreapi.com/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: 'mor_2314', password: '83r5^_' })
-        });
-        const data = await res.json();
-        _demoToken = data.token;
+        const res  = await fetch('https://fakestoreapi.com/users');
+        const users = await res.json();
+        const user = users.find(u => u.username === 'mor_2314' && u.password === '83r5^_');
+        if (!user) {
+          out.innerHTML = er('No se encontro el usuario en /users con esas credenciales.');
+          return;
+        }
+        _demoUser = { id: user.id, username: user.username };
+        _demoToken = `mock-token-user-${user.id}`;
         out.innerHTML =
-          ok('subscribe() ejecutado — respuesta de la API:') +
-          inf(`response.token: <strong>"${data.token.substring(0, 40)}..."</strong>`) +
-          ok('authService.saveToken(response.token)') +
-          inf(`localStorage["token"] = "${data.token.substring(0, 25)}..."`) +
+          ok('Usuario validado en GET /users:') +
+          inf(`user.id: <strong>${user.id}</strong> | username: <strong>${user.username}</strong>`) +
+          ok('Se guarda sesion local: currentUser + token') +
+          inf(`localStorage["currentUser"] = ${JSON.stringify(_demoUser)}`) +
+          inf(`localStorage["token"] = "${_demoToken}"`) +
           ok('router.navigate(["/users"])') +
           dim('authService.isLoggedIn() → true');
       } catch(e) {
@@ -1378,8 +1711,10 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
     function demoLogout() {
       _demoToken = null;
+      _demoUser = null;
       document.getElementById('out-auth').innerHTML =
         ok('authService.logout() ejecutado:') +
+        inf('localStorage.removeItem("currentUser")') +
         inf('localStorage.removeItem("token")') +
         ok('router.navigate(["/login"])') +
         dim('authService.isLoggedIn() → false');
@@ -1389,7 +1724,8 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
       const tiene = !!_demoToken;
       document.getElementById('out-auth').innerHTML =
         inf('authService.isLoggedIn()') +
-        inf(`localStorage.getItem("token") → ${tiene ? '"' + (_demoToken?.substring(0, 20)) + '..."' : 'null'}`) +
+        inf(`localStorage.getItem("token") → ${tiene ? '"' + _demoToken + '"' : 'null'}`) +
+        inf(`localStorage.getItem("currentUser") → ${_demoUser ? JSON.stringify(_demoUser) : 'null'}`) +
         (tiene
           ? ok('isLoggedIn() → <strong>true</strong> — usuario autenticado')
           : w('isLoggedIn() → <strong>false</strong> — sin sesion activa'));
@@ -1397,24 +1733,29 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
 
     function demoAuthReset() {
       _demoToken = null;
+      _demoUser = null;
       document.getElementById('out-auth').innerHTML = 'Haz clic en un metodo para ver como funciona AuthService...';
     }
 
     /* ══ DEMO GUARD ══ */
     async function demoFlujoLogin() {
       const out = document.getElementById('out-guard');
-      out.innerHTML = inf('POST https://fakestoreapi.com/auth/login...');
+      out.innerHTML = inf('GET https://fakestoreapi.com/users y validacion de credenciales...');
       try {
-        const res  = await fetch('https://fakestoreapi.com/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: 'mor_2314', password: '83r5^_' })
-        });
-        const data = await res.json();
+        const res  = await fetch('https://fakestoreapi.com/users');
+        const users = await res.json();
+        const user = users.find(u => u.username === 'mor_2314' && u.password === '83r5^_');
+        if (!user) {
+          out.innerHTML = er('Credenciales invalidas para /users');
+          return;
+        }
+        const token = `mock-token-user-${user.id}`;
         out.innerHTML =
-          ok('Login exitoso — token recibido:') +
-          inf(`"${data.token.substring(0, 45)}..."`) +
+          ok('Login exitoso — usuario validado en /users:') +
+          inf(`id: ${user.id}, username: ${user.username}`) +
+          inf(`token de sesion local: "${token}"`) +
           ok('saveToken() → localStorage["token"] guardado') +
+          ok('saveCurrentUser() → localStorage["currentUser"] guardado') +
           ok('router.navigate(["/users"]) — redirigiendo a la ruta protegida') +
           dim('En /users: AuthGuard.canActivate() es llamado por Angular');
       } catch(e) { out.innerHTML = er(e.message); }
@@ -1455,20 +1796,28 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
       const el = document.getElementById('cart-state');
       if (!_cart.length) { el.textContent = '[ ] — vacio'; el.style.color = '#94a3b8'; return; }
       el.style.color = '#1e293b';
-      el.innerHTML = `[${_cart.map(p => `<span style="color:#c4b5fd">"${p.title.substring(0, 12)}..."</span>`).join(', ')}]<br><span style="color:#86efac">length: ${_cart.length}</span>`;
+      el.innerHTML = _cart
+        .map(p => `<div><span style="color:#c4b5fd">${p.title.substring(0, 14)}...</span> x${p.quantity} = $${p.subtotal.toFixed(2)}</div>`)
+        .join('') + `<span style="color:#86efac">items totales: ${_cart.reduce((a, i) => a + i.quantity, 0)}</span>`;
     }
 
     function demoAddCart() {
       const p = mockCartProducts[_cart.length % mockCartProducts.length];
-      _cart.push(p);
+      const idx = _cart.findIndex(i => i.id === p.id);
+      if (idx >= 0) {
+        _cart[idx].quantity += 1;
+        _cart[idx].subtotal = _cart[idx].quantity * _cart[idx].price;
+      } else {
+        _cart.push({ ...p, quantity: 1, subtotal: p.price });
+      }
       _renderCartState();
+      const count = _cart.reduce((a, i) => a + i.quantity, 0);
       document.getElementById('out-cart').innerHTML =
         ok(`cartService.addToCart({ id:${p.id}, title:"${p.title.substring(0, 20)}...", price:${p.price} })`) +
-        inf('getValue() → array anterior') +
-        inf(`[...current, product] → nuevo array con ${_cart.length} item(s)`) +
-        ok('cartItems.next(updated) — todos los suscriptores reciben el nuevo array') +
-        ok('saveToLocalStorage() — persiste en localStorage["cart"]') +
-        dim(`cartItems$ → App.contadorCarrito = ${_cart.length}`);
+        inf('si el producto ya existe: quantity++ ; si no existe: crear item nuevo') +
+        ok('cartItems.next(updated) — todos los suscriptores reciben el nuevo estado') +
+        ok('saveCartMap() — persiste por usuario en localStorage["cart"]') +
+        dim(`cartItems$ → App.contadorCarrito = ${count}`);
     }
 
     function demoRemoveCart() {
@@ -1476,14 +1825,16 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
         document.getElementById('out-cart').innerHTML = w('El carrito esta vacio — agrega productos primero con addToCart()');
         return;
       }
-      const removed = _cart.splice(0, 1)[0];
+      const removed = _cart[0];
+      _cart = _cart.filter(i => i.id !== removed.id);
       _renderCartState();
+      const count = _cart.reduce((a, i) => a + i.quantity, 0);
       document.getElementById('out-cart').innerHTML =
-        ok(`cartService.removeFromCart(0) — elimina el primer item`) +
+        ok(`cartService.removeFromCart(${removed.id}) — elimina producto completo`) +
         inf(`Elemento eliminado: "${removed.title.substring(0, 25)}..."`) +
-        ok('cartItems.next([...current]) — suscriptores actualizados') +
-        ok('saveToLocalStorage() — localStorage["cart"] actualizado') +
-        dim(`cartItems$ → App.contadorCarrito = ${_cart.length}`);
+        ok('cartItems.next(updated) — suscriptores actualizados') +
+        ok('saveCartMap() — localStorage["cart"] actualizado por usuario') +
+        dim(`cartItems$ → App.contadorCarrito = ${count}`);
     }
 
     function demoClearCart() {
@@ -1492,16 +1843,16 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
       document.getElementById('out-cart').innerHTML =
         ok('cartService.clearCart() ejecutado') +
         inf('cartItems.next([]) — BehaviorSubject emite array vacio') +
-        ok('saveToLocalStorage([]) — localStorage["cart"] = "[]"') +
+        ok('saveCartMap() — localStorage["cart"] mantiene otros usuarios y vacia el actual') +
         dim('cartItems$ → App.contadorCarrito = 0');
     }
 
     function demoGetTotal() {
-      const total = _cart.reduce((s, p) => s + p.price, 0);
+      const total = _cart.reduce((s, p) => s + p.subtotal, 0);
       document.getElementById('out-cart').innerHTML =
         inf('cartService.getTotal()') +
-        inf(`getValue() → [${_cart.map(p => '$' + p.price).join(', ') || 'vacio'}]`) +
-        inf('reduce((sum, item) => sum + item.price, 0)') +
+        inf(`getValue() → [${_cart.map(p => p.quantity + 'x$' + p.price).join(', ') || 'vacio'}]`) +
+        inf('reduce((sum, item) => sum + item.subtotal, 0)') +
         ok(`getTotal() → <strong>$${total.toFixed(2)}</strong>`);
     }
 
