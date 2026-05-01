@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluacion Final — Modulo 1 Angular</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #10b981;
+      --accent-dark: #059669;
+      --accent-faint: #f0fdf4;
+      --accent-border: #bbf7d0;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #1e293b; }
+
+    /* ── SIDEBAR ── */
+    #sidebar { position: fixed; top: 0; left: 0; width: 270px; height: 100vh; background: #0f172a; color: #e2e8f0; overflow-y: auto; z-index: 1000; padding-bottom: 2rem; border-right: 1px solid #1e293b; }
+    #sidebar .brand { padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid #1e293b; }
+    #sidebar .brand .badge-mod { background: var(--accent); color: #fff; font-size: .7rem; padding: .25rem .6rem; border-radius: 20px; letter-spacing: .05em; font-weight: 700; }
+    #sidebar .brand h6 { color: #f8fafc; font-weight: 700; margin-top: .5rem; font-size: 1rem; }
+    #sidebar nav a { display: flex; align-items: center; gap: .65rem; padding: .55rem 1.25rem; color: #94a3b8; text-decoration: none; font-size: .83rem; border-left: 3px solid transparent; transition: all .15s; }
+    #sidebar nav a:hover, #sidebar nav a.active { color: #f8fafc; background: #1e293b; border-left-color: var(--accent); }
+    #sidebar .section-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: #475569; padding: 1.1rem 1.25rem .35rem; font-weight: 700; }
+    #sidebar .progress-wrap { padding: .5rem 1.25rem 0; }
+    #sidebar .progress { height: 4px; background: #1e293b; }
+    #sidebar .progress-bar { background: var(--accent); transition: width .4s ease; }
+
+    /* ── MAIN ── */
+    #main { margin-left: 270px; min-height: 100vh; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 2rem; position: sticky; top: 0; z-index: 900; display: flex; align-items: center; gap: 1rem; }
+    .topbar .breadcrumb { margin: 0; font-size: .8rem; }
+    .content-section { display: none; padding: 2rem; animation: fadeIn .25s ease; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── HERO ── */
+    .hero-card { background: linear-gradient(135deg, #0f172a 0%, #0a2e1e 100%); color: #fff; border-radius: 16px; padding: 2.5rem 3rem; margin-bottom: 2rem; }
+    .hero-card .clase-badge { background: rgba(16,185,129,.25); border: 1px solid rgba(16,185,129,.5); color: #6ee7b7; font-size: .75rem; padding: .3rem .8rem; border-radius: 20px; display: inline-block; margin-bottom: 1rem; letter-spacing: .06em; text-transform: uppercase; }
+    .hero-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .hero-card p { color: #94a3b8; font-size: 1rem; }
+    .hero-meta span { background: rgba(255,255,255,.1); border-radius: 8px; padding: .4rem .9rem; font-size: .82rem; margin-right: .5rem; color: #e2e8f0; }
+
+    /* ── BLOCKS ── */
+    .theory-block { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.75rem; margin-bottom: 1.5rem; }
+    .theory-block h4 { font-weight: 700; font-size: 1.05rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
+    .theory-block p, .theory-block li { font-size: .9rem; color: #374151; line-height: 1.75; }
+    .theory-block ul, .theory-block ol { padding-left: 1.4rem; }
+    .info-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.5rem; height: 100%; }
+    .info-card .ic-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1rem; }
+    .info-card h5 { font-weight: 700; font-size: .95rem; margin-bottom: .5rem; }
+    .info-card p { font-size: .85rem; color: #64748b; margin: 0; }
+
+    /* ── CALLOUTS ── */
+    .callout { border-left: 4px solid; border-radius: 0 8px 8px 0; padding: .9rem 1.2rem; margin: 1rem 0; font-size: .88rem; }
+    .callout-blue   { border-color: #3b82f6; background: #eff6ff; color: #1e40af; }
+    .callout-green  { border-color: #10b981; background: #f0fdf4; color: #065f46; }
+    .callout-amber  { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .callout-red    { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+    .callout-purple { border-color: #8b5cf6; background: #f5f3ff; color: #4c1d95; }
+    .callout-cyan   { border-color: #06b6d4; background: #ecfeff; color: #164e63; }
+    .callout-orange { border-color: #f97316; background: #fff7ed; color: #9a3412; }
+
+    /* ── CODE ── */
+    .code-block { background: #0f172a; border-radius: 10px; overflow: hidden; margin: 1rem 0; font-family: 'JetBrains Mono', monospace; }
+    .code-block .code-header { background: #1e293b; padding: .5rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+    .code-block .code-header span { font-size: .75rem; color: #64748b; font-family: 'Inter', sans-serif; }
+    .code-block .code-header .lang-badge { font-size: .68rem; padding: .15rem .55rem; border-radius: 20px; font-weight: 700; }
+    .lang-ts   { background: rgba(6,182,212,.2); color: #67e8f9; }
+    .lang-html { background: rgba(239,68,68,.2); color: #fca5a5; }
+    .lang-bash { background: rgba(16,185,129,.2); color: #6ee7b7; }
+    .lang-json { background: rgba(245,158,11,.2); color: #fcd34d; }
+    .code-block pre { margin: 0; padding: 1.25rem; color: #e2e8f0; font-size: .82rem; line-height: 1.75; overflow-x: auto; }
+    .kw { color: #93c5fd; } .fn { color: #86efac; } .str { color: #fca5a5; } .cm { color: #475569; font-style: italic; }
+    .num { color: #fdba74; } .prop { color: #c4b5fd; } .bool { color: #f9a8d4; }
+    .typ { color: #67e8f9; font-weight: 600; } .dec { color: #fbbf24; font-weight: 600; }
+    .tag { color: #86efac; } .attr { color: #c4b5fd; } .bind { color: #fcd34d; font-weight: 600; }
+
+    /* ── STEP PILLS ── */
+    .step-pills { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+    .step-pill  { background: var(--accent-faint); border: 1px solid var(--accent-border); color: #065f46; border-radius: 30px; padding: .4rem 1rem; font-size: .82rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+    .step-pill .num { background: var(--accent); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; }
+
+    /* ── FILE TREE ── */
+    .file-tree { background: #0f172a; border-radius: 10px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 2.1; color: #94a3b8; }
+    .file-tree .dir  { color: #67e8f9; }
+    .file-tree .ts   { color: #c4b5fd; }
+    .file-tree .html { color: #fca5a5; }
+    .file-tree .note { color: #475569; font-style: italic; }
+    .file-tree .new  { color: #fbbf24; font-weight: 700; }
+
+    /* ── CRITERIOS / RUBRICA ── */
+    .req-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.25rem; margin-bottom: 1rem; }
+    .req-card .req-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .75rem; }
+    .req-card .req-title { font-weight: 700; font-size: .95rem; display: flex; align-items: center; gap: .5rem; }
+    .req-card .req-pts { font-size: .78rem; font-weight: 700; padding: .25rem .7rem; border-radius: 20px; }
+    .pts-green  { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; }
+    .pts-blue   { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .pts-amber  { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .pts-purple { background: #f5f3ff; color: #4c1d95; border: 1px solid #ddd6fe; }
+    .pts-red    { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .pts-total  { background: #0f172a; color: #f8fafc; border: 1px solid #1e293b; }
+
+    .sub-req { list-style: none; padding: 0; margin: 0; }
+    .sub-req li { display: flex; align-items: flex-start; gap: .5rem; padding: .3rem 0; font-size: .85rem; color: #374151; border-bottom: 1px solid #f1f5f9; }
+    .sub-req li:last-child { border-bottom: none; }
+    .sub-req li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: .5rem; }
+
+    /* ── ENDPOINT TABLE ── */
+    .ep-table { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 1rem 0; }
+    .ep-table th { background: #0f172a; color: #e2e8f0; padding: .6rem 1rem; text-align: left; font-weight: 600; }
+    .ep-table td { padding: .6rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    .ep-table tr:last-child td { border-bottom: none; }
+    .ep-table tr:nth-child(even) td { background: #f8fafc; }
+    .ep-table code { background: #f1f5f9; border-radius: 4px; padding: .1rem .4rem; font-size: .78rem; color: #0f172a; }
+    .method-get  { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; font-size: .7rem; font-weight: 700; padding: .15rem .5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+    .method-post { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; font-size: .7rem; font-weight: 700; padding: .15rem .5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    /* ── NIVEL BADGES ── */
+    .nivel { display: inline-flex; align-items: center; gap: .35rem; font-size: .75rem; font-weight: 700; padding: .25rem .7rem; border-radius: 20px; }
+    .nivel-base    { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; }
+    .nivel-medio   { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .nivel-avanzado{ background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .nivel-extra   { background: #f5f3ff; color: #4c1d95; border: 1px solid #ddd6fe; }
+
+    /* ── CHECKLIST ALUMNO ── */
+    .check-list { list-style: none; padding: 0; margin: 0; }
+    .check-list li { display: flex; align-items: flex-start; gap: .6rem; padding: .4rem 0; font-size: .88rem; color: #374151; border-bottom: 1px solid #f1f5f9; }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list li .cb { width: 18px; height: 18px; border: 2px solid #d1d5db; border-radius: 4px; flex-shrink: 0; margin-top: .1rem; }
+
+    /* ── ENTREGA ── */
+    .entrega-card { background: linear-gradient(135deg, #0f172a 0%, #0a2e1e 100%); border-radius: 16px; padding: 2rem; color: #fff; }
+    .entrega-card h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
+    .entrega-card p { color: #94a3b8; font-size: .9rem; line-height: 1.75; }
+    .entrega-item { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: .75rem; }
+    .entrega-item .ei-label { font-size: .7rem; font-weight: 700; color: #6ee7b7; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .25rem; }
+    .entrega-item .ei-val { font-size: .9rem; color: #f1f5f9; }
+
+    @media(max-width:768px) { #sidebar { transform: translateX(-100%); } #main { margin-left: 0; } }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <nav id="sidebar">
+    <div class="brand">
+      <div class="badge-mod">MODULO 1 · EVALUACION</div>
+      <h6>Frontend con Angular</h6>
+      <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
+    </div>
+    <div class="progress-wrap">
+      <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+        <span>Seccion actual</span><span id="progress-pct">1/7</span>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progress-bar" style="width:14%"></div></div>
+      <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Evaluacion final · 100 puntos</div>
+    </div>
+    <div class="section-label">Secciones</div>
+    <nav id="sidenav">
+      <a href="#" class="active" onclick="window.showSection('intro',this)">         <i class="bi bi-flag"></i> Introduccion</a>
+      <a href="#" onclick="window.showSection('api',this)">                          <i class="bi bi-arrow-left-right"></i> La API: DummyJSON</a>
+      <a href="#" onclick="window.showSection('estructura',this)">                   <i class="bi bi-folder2"></i> Estructura del proyecto</a>
+      <a href="#" onclick="window.showSection('requerimientos',this)">               <i class="bi bi-list-check"></i> Requerimientos</a>
+      <a href="#" onclick="window.showSection('logica',this)">                       <i class="bi bi-cpu"></i> Logica clave a implementar</a>
+      <a href="#" onclick="window.showSection('rubrica',this)">                      <i class="bi bi-award"></i> Rubrica de evaluacion</a>
+      <a href="#" onclick="window.showSection('entrega',this)">                      <i class="bi bi-send"></i> Entrega</a>
+    </nav>
+    <div class="section-label">Recursos</div>
+    <nav>
+      <a href="https://dummyjson.com/docs" target="_blank"><i class="bi bi-box-arrow-up-right"></i> DummyJSON Docs</a>
+      <a href="clase5.html"><i class="bi bi-file-earmark-code"></i> Clase 5</a>
+      <a href="clase6.html"><i class="bi bi-file-earmark-code"></i> Clase 6</a>
+      <a href="clase7.html"><i class="bi bi-file-earmark-code"></i> Clase 7</a>
+    </nav>
+  </nav>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <div id="main">
+    <div class="topbar">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item text-muted">Modulo 1</li>
+          <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+          <li class="breadcrumb-item active fw-semibold">Evaluacion Final</li>
+        </ol>
+      </nav>
+      <span class="ms-auto badge" style="background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0">
+        <i class="bi bi-patch-check me-1"></i>100 puntos · Entrega individual
+      </span>
+    </div>
+
+    <!-- ══════════════════════════════ INTRO ══════════════════════════════ -->
+    <section id="intro" class="content-section active">
+      <div class="hero-card">
+        <div class="clase-badge"><i class="bi bi-patch-check me-1"></i>Evaluacion Final — Modulo 1</div>
+        <h1>Tienda de Recetas con Angular</h1>
+        <p>Aplicaras todo lo visto en el modulo construyendo una aplicacion Angular completa conectada a una API diferente. El objetivo no es repetir la tienda de ropa — es demostrar que entiendes los conceptos y sabes aplicarlos en un contexto nuevo.</p>
+        <div class="hero-meta mt-3">
+          <span><i class="bi bi-clock me-1"></i>5 dias</span>
+          <span><i class="bi bi-person me-1"></i>Individual</span>
+          <span><i class="bi bi-star me-1"></i>100 puntos</span>
+          <span><i class="bi bi-arrow-left-right me-1"></i>DummyJSON API</span>
+        </div>
+      </div>
+
+      <div class="callout callout-amber mb-4">
+        <strong>Antes de comenzar:</strong> crea un proyecto Angular 20 nuevo. No copies el proyecto de las clases. La evaluacion mide si puedes aplicar los mismos conceptos en una base limpia.
+        <div class="code-block mt-3" style="margin:0">
+          <div class="code-header"><span>crear el proyecto nuevo</span><span class="lang-badge lang-bash">bash</span></div>
+          <pre>ng new mi-recetario --routing --style=css
+cd mi-recetario
+ng serve</pre>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f0fdf4"><i class="bi bi-shield-lock" style="color:#10b981;font-size:1.3rem"></i></div>
+            <h5>Autenticacion real</h5>
+            <p>Login con credenciales de DummyJSON. Token JWT real almacenado en <code>localStorage</code>. Rutas protegidas con <code>AuthGuard</code>.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f0fdf4"><i class="bi bi-heart" style="color:#10b981;font-size:1.3rem"></i></div>
+            <h5>Lista de favoritos</h5>
+            <p>En lugar de un carrito de compras, el usuario guardara recetas favoritas. La logica de persistencia y <code>BehaviorSubject</code> es equivalente.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f0fdf4"><i class="bi bi-funnel" style="color:#10b981;font-size:1.3rem"></i></div>
+            <h5>Busqueda y filtros</h5>
+            <p>Filtrar recetas por cocina (cuisine) y buscar por nombre. La logica de filtrado viene de la Clase 5 y 6 — se aplica aqui con datos distintos.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-lightbulb" style="color:var(--accent)"></i> Contexto de la aplicacion</h4>
+        <p>Construiras <strong>RecetApp</strong>: una aplicacion donde los usuarios pueden explorar recetas de cocina. Cualquier visitante puede ver el listado, pero para guardar favoritos y ver su perfil, debe iniciar sesion. Los favoritos de cada usuario se guardan en <code>localStorage</code> y persisten entre sesiones.</p>
+
+        <p>La logica de negocio que aplicas es:</p>
+        <ul>
+          <li>Un usuario no logueado puede ver recetas y su detalle, pero no puede agregar favoritos.</li>
+          <li>Un usuario logueado ve el boton "Agregar a favoritos" y tiene acceso a <code>/favoritos</code> y a <code>/perfil</code>.</li>
+          <li>Al cerrar sesion, los favoritos se conservan en <code>localStorage</code>. Al volver a ingresar con el mismo usuario, los encuentra tal como los dejo.</li>
+          <li>Si dos usuarios usan el mismo navegador, cada uno tiene su propia lista de favoritos separada.</li>
+        </ul>
+
+        <div class="callout callout-green mt-2">
+          <strong>Por que es diferente al proyecto de clase:</strong> las recetas tienen campos distintos (<code>cuisine</code>, <code>mealType</code>, <code>ingredients</code>, <code>instructions</code>, <code>rating</code>). La vista de detalle mostrara ingredientes en lista y los pasos de preparacion. No es copiar y pegar — hay que adaptar.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ API ══════════════════════════════ -->
+    <section id="api" class="content-section">
+      <h2 class="fw-bold mb-1">La API: DummyJSON</h2>
+      <p class="text-muted mb-4"><a href="https://dummyjson.com" target="_blank">dummyjson.com</a> es una API REST publica de datos mock. Tiene autenticacion JWT real, usuarios, productos y recetas. No necesita registro ni API key.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-arrow-left-right" style="color:var(--accent)"></i> Endpoints que usaras</h4>
+        <table class="ep-table">
+          <thead>
+            <tr>
+              <th>Metodo</th>
+              <th>Endpoint</th>
+              <th>Descripcion</th>
+              <th>Uso en el proyecto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="method-post">POST</span></td>
+              <td><code>/auth/login</code></td>
+              <td>Login con username y password. Devuelve token JWT real y datos del usuario.</td>
+              <td><code>auth.service.ts</code></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/auth/me</code></td>
+              <td>Devuelve datos del usuario autenticado. Requiere el token en el header.</td>
+              <td><code>perfil/perfil.ts</code></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/recipes?limit=20&skip=0</code></td>
+              <td>Lista de recetas con paginacion. Cada receta tiene: <code>id</code>, <code>name</code>, <code>cuisine</code>, <code>mealType</code>, <code>rating</code>, <code>image</code>.</td>
+              <td><code>recipes/recipes.ts</code></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/recipes/{id}</code></td>
+              <td>Detalle completo: ingredientes, instrucciones, tiempo de preparacion, calorias.</td>
+              <td><code>recipe-detail/recipe-detail.ts</code></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/recipes/search?q=pasta</code></td>
+              <td>Busca recetas por nombre. Devuelve el mismo formato que <code>/recipes</code>.</td>
+              <td><code>recipes/recipes.ts</code></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/recipes/meal-type/{type}</code></td>
+              <td>Filtra por tipo de comida: <code>breakfast</code>, <code>lunch</code>, <code>dinner</code>, <code>snack</code>, <code>dessert</code>.</td>
+              <td><code>recipes/recipes.ts</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-blue mt-2">
+          <strong>Credenciales de prueba:</strong> username <code>emilys</code> / password <code>emilyspass</code>. El endpoint <code>POST /auth/login</code> devuelve un token JWT real que el interceptor agregara a las peticiones siguientes.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-braces" style="color:var(--accent)"></i> Estructura de una receta</h4>
+        <p style="font-size:.9rem">Respuesta real de <code>GET /recipes/1</code>. Conoce los campos antes de escribir los templates:</p>
+        <div class="code-block">
+          <div class="code-header"><span>GET https://dummyjson.com/recipes/1 — respuesta resumida</span><span class="lang-badge lang-json">JSON</span></div>
+          <pre>{
+  "id": 1,
+  "name": "Classic Margherita Pizza",
+  "ingredients": [
+    "Pizza dough",
+    "Tomato sauce",
+    "Fresh mozzarella cheese",
+    "Fresh basil leaves",
+    "Olive oil",
+    "Salt and pepper to taste"
+  ],
+  "instructions": [
+    "Preheat the oven to 475°F (245°C).",
+    "Roll out the pizza dough and spread tomato sauce evenly.",
+    "Top with mozzarella and bake for 12-15 minutes."
+  ],
+  "prepTimeMinutes": 20,
+  "cookTimeMinutes": 15,
+  "servings": 4,
+  "difficulty": "Easy",
+  "cuisine": "Italian",
+  "caloriesPerServing": 300,
+  "tags": ["Pizza", "Italian"],
+  "userId": 166,
+  "image": "https://cdn.dummyjson.com/recipe-images/1.webp",
+  "rating": 4.6,
+  "reviewCount": 98,
+  "mealType": ["Dinner"]
+}</pre>
+        </div>
+        <div class="callout callout-amber mt-2">
+          <strong>Diferencia con FakeStoreAPI:</strong> los ingredientes y las instrucciones son arrays de strings, no un solo campo de texto. En el template usaras <code>*ngFor</code> para listarlos. El campo <code>mealType</code> tambien es un array: <code>["Dinner"]</code>.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-person-badge" style="color:var(--accent)"></i> Estructura del token y del usuario</h4>
+        <p style="font-size:.9rem">La respuesta de <code>POST /auth/login</code> incluye directamente los datos del usuario, ademas del token:</p>
+        <div class="code-block">
+          <div class="code-header"><span>POST /auth/login — respuesta</span><span class="lang-badge lang-json">JSON</span></div>
+          <pre>{
+  "id": 1,
+  "username": "emilys",
+  "email": "emily.johnson@x.dummyjson.com",
+  "firstName": "Emily",
+  "lastName": "Johnson",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</pre>
+        </div>
+        <p style="font-size:.9rem">A diferencia de la Clase 7, la respuesta del login ya incluye los datos del usuario. <strong>No es necesario hacer el GET a <code>/users</code> primero</strong>. Guarda directamente <code>currentUser</code> (con <code>id</code>, <code>username</code>, <code>firstName</code>) y el <code>token</code> en <code>localStorage</code>.</p>
+        <div class="callout callout-green">
+          <strong>Logica simplificada:</strong> <code>POST /auth/login</code> → si responde sin error → guardar <code>currentUser</code> y <code>token</code> en <code>localStorage</code> → navegar a <code>/recipes</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ ESTRUCTURA ══════════════════════════════ -->
+    <section id="estructura" class="content-section">
+      <h2 class="fw-bold mb-1">Estructura del proyecto</h2>
+      <p class="text-muted mb-4">La misma arquitectura de las clases, adaptada al dominio de recetas. Cada archivo tiene su rol definido.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-folder2-open" style="color:var(--accent)"></i> Archivos que debes crear</h4>
+        <div class="file-tree">
+          <div><span class="dir">src/app/</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> raiz: navbar con contador de favoritos, Login/Logout</span></div>
+          <div>&nbsp;&nbsp;<span class="html">app.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> navbar + &lt;router-outlet&gt;</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> declaraciones, provideHttpClient, interceptor</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> rutas y canActivate</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">recipes/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g c recipes</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">recipes.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lista con filtro por mealType y busqueda</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html new">recipes.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> tarjetas con *ngFor</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">recipe-card/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g c recipe-card</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">recipe-card.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> @Input() recipe, @Output() favorito — boton condicional</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">recipe-detail/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g c recipe-detail</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">recipe-detail.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lee :id con ActivatedRoute, muestra ingredientes e instrucciones</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">login/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g c login</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">favoritos/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g c favoritos</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">favoritos.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lista los favoritos del usuario logueado con boton eliminar</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">perfil/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g c perfil</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">perfil.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> ruta protegida — consume GET /auth/me con el interceptor</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">services/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">recipe.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g s services/recipe</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">auth.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g s services/auth</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">favoritos.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR — ng g s services/favoritos</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">guards/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">auth.guard.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR manualmente</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">interceptors/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">auth.interceptor.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">CREAR manualmente</span></div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i> Rutas del proyecto</h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app-routing-module.ts — rutas esperadas</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">const</span> routes: <span class="typ">Routes</span> = [
+  { <span class="prop">path</span>: <span class="str">''</span>,               <span class="prop">redirectTo</span>: <span class="str">'/recipes'</span>,  <span class="prop">pathMatch</span>: <span class="str">'full'</span> },
+  { <span class="prop">path</span>: <span class="str">'login'</span>,          <span class="prop">component</span>: Login                                  },
+  { <span class="prop">path</span>: <span class="str">'recipes'</span>,        <span class="prop">component</span>: Recipes                                },
+  { <span class="prop">path</span>: <span class="str">'recipe/:id'</span>,    <span class="prop">component</span>: RecipeDetail                           },
+  { <span class="prop">path</span>: <span class="str">'favoritos'</span>,     <span class="prop">component</span>: Favoritos,     <span class="prop">canActivate</span>: [AuthGuard] },
+  { <span class="prop">path</span>: <span class="str">'perfil'</span>,        <span class="prop">component</span>: Perfil,         <span class="prop">canActivate</span>: [AuthGuard] },
+];</pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>Que rutas son publicas y cuales son privadas:</strong> <code>/recipes</code> y <code>/recipe/:id</code> son publicas — cualquier visitante puede ver recetas y su detalle. <code>/favoritos</code> y <code>/perfil</code> son privadas — el guard redirige a <code>/login</code> si no hay sesion.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ REQUERIMIENTOS ══════════════════════════════ -->
+    <section id="requerimientos" class="content-section">
+      <h2 class="fw-bold mb-1">Requerimientos</h2>
+      <p class="text-muted mb-4">Lo que debe funcionar en la entrega. Organizados por nivel de dificultad.</p>
+
+      <!-- BASE -->
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-title">
+            <span class="nivel nivel-base"><i class="bi bi-1-circle-fill"></i> Nivel base</span>
+            Proyecto, HttpClient y listado de recetas
+          </div>
+          <span class="req-pts pts-green">25 pts</span>
+        </div>
+        <ul class="sub-req">
+          <li>Proyecto Angular 20 nuevo generado con el CLI (<code>ng new</code>), corre con <code>ng serve</code> sin errores.</li>
+          <li><code>app-module.ts</code> configurado con <code>provideHttpClient(withInterceptorsFromDi())</code> — sin <code>HttpClientModule</code>.</li>
+          <li><code>recipe.service.ts</code> con los metodos: <code>getRecipes()</code>, <code>getRecipeById(id)</code>, <code>searchRecipes(q)</code>, <code>getByMealType(type)</code>.</li>
+          <li>La ruta <code>/recipes</code> muestra un listado de recetas consumido desde la API con imagen, nombre, cocina y rating.</li>
+          <li>El select de tipo de comida (<code>mealType</code>) filtra las recetas llamando al endpoint correcto.</li>
+          <li>El input de busqueda llama a <code>searchRecipes()</code> cuando el usuario escribe.</li>
+          <li><code>RecipeCard</code> es un componente hijo que recibe la receta con <code>@Input()</code>.</li>
+        </ul>
+      </div>
+
+      <!-- MEDIO -->
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-title">
+            <span class="nivel nivel-medio"><i class="bi bi-2-circle-fill"></i> Nivel medio</span>
+            Routing, detalle y autenticacion
+          </div>
+          <span class="req-pts pts-blue">35 pts</span>
+        </div>
+        <ul class="sub-req">
+          <li>La ruta <code>/recipe/:id</code> carga el detalle de la receta usando <code>ActivatedRoute</code> y <code>recipe.service.ts</code>.</li>
+          <li>El detalle muestra: imagen, nombre, cocina, calorias, tiempo de preparacion, lista de ingredientes y lista de instrucciones paso a paso (ambas con <code>*ngFor</code>).</li>
+          <li>Boton "Volver" en el detalle que navega a <code>/recipes</code> con <code>routerLink</code>.</li>
+          <li><code>auth.service.ts</code> con <code>login()</code> que hace <code>POST /auth/login</code>, guarda el token y el <code>currentUser</code> en <code>localStorage</code>, y expone <code>isLoggedIn()</code>, <code>getToken()</code>, <code>getCurrentUser()</code> y <code>logout()</code>.</li>
+          <li>El formulario de login en <code>/login</code> usa <code>[(ngModel)]</code>, muestra el error si las credenciales son incorrectas y redirige a <code>/recipes</code> al ingresar.</li>
+          <li><code>auth.interceptor.ts</code> registrado en <code>app-module.ts</code> — agrega el token a todas las peticiones salientes.</li>
+          <li><code>auth.guard.ts</code> protege <code>/favoritos</code> y <code>/perfil</code>. Redirige a <code>/login</code> si no hay sesion.</li>
+        </ul>
+      </div>
+
+      <!-- AVANZADO -->
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-title">
+            <span class="nivel nivel-avanzado"><i class="bi bi-3-circle-fill"></i> Nivel avanzado</span>
+            Favoritos con BehaviorSubject y persistencia por usuario
+          </div>
+          <span class="req-pts pts-amber">30 pts</span>
+        </div>
+        <ul class="sub-req">
+          <li><code>favoritos.service.ts</code> usa <code>BehaviorSubject&lt;any[]&gt;</code> y expone <code>favoritos$</code> como Observable.</li>
+          <li>El servicio persiste los favoritos en <code>localStorage</code> con una clave separada por usuario: <code>favoritos_[userId]</code>.</li>
+          <li><code>loadFavoritosForCurrentUser()</code> se llama desde <code>login.ts</code> tras el login exitoso, para cargar los favoritos del usuario que acaba de entrar.</li>
+          <li>El boton "Agregar a favoritos" solo es visible si el usuario esta logueado (<code>*ngIf="authService.isLoggedIn()"</code>). Si no hay sesion, el boton no aparece — ni en la lista ni en el detalle.</li>
+          <li>Si la receta ya esta en favoritos, el boton cambia a "Quitar de favoritos" (el componente verifica con un metodo <code>esFavorito(id)</code>).</li>
+          <li>La pagina <code>/favoritos</code> lista las recetas guardadas del usuario logueado con boton "Eliminar".</li>
+          <li>El navbar muestra el contador de favoritos en tiempo real suscrito a <code>favoritos$</code>.</li>
+          <li>Al hacer logout, la vista del contador se resetea a 0 pero los datos persisten en <code>localStorage</code>. Al volver a ingresar con el mismo usuario, el contador y la lista se recuperan correctamente.</li>
+        </ul>
+      </div>
+
+      <!-- EXTRA -->
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-title">
+            <span class="nivel nivel-extra"><i class="bi bi-star-fill"></i> Puntos extra</span>
+            Perfil del usuario autenticado
+          </div>
+          <span class="req-pts pts-purple">10 pts</span>
+        </div>
+        <ul class="sub-req">
+          <li>La ruta <code>/perfil</code> consume <code>GET /auth/me</code> — este endpoint requiere el token en el header. El interceptor lo agrega automaticamente.</li>
+          <li>La pagina muestra: nombre completo, email, imagen de perfil y nombre de usuario del usuario logueado.</li>
+          <li>Si el interceptor esta bien configurado, la peticion funciona sin agregar nada extra en el componente.</li>
+          <li>Si el usuario no esta logueado e intenta entrar a <code>/perfil</code> directamente por URL, el guard lo redirige a <code>/login</code>.</li>
+        </ul>
+      </div>
+
+      <div class="callout callout-red mt-2">
+        <strong>No se evalua la apariencia visual.</strong> Bootstrap basico es suficiente. Lo que se evalua es que la logica funcione: routing, guards, interceptor, BehaviorSubject, persistencia por usuario. Una pagina bien estructurada con clases Bootstrap por defecto pasa la evaluacion sin problema.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ LOGICA ══════════════════════════════ -->
+    <section id="logica" class="content-section">
+      <h2 class="fw-bold mb-1">Logica clave a implementar</h2>
+      <p class="text-muted mb-4">Las partes que requieren razonamiento propio. No se pueden copiar directamente de la clase — hay que adaptarlas.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-1-circle" style="color:var(--accent)"></i> auth.service.ts — login simplificado</h4>
+        <p style="font-size:.9rem">En la Clase 7 el login hacia primero un GET a <code>/users</code> para validar y luego un POST a <code>/auth/login</code> para obtener el token. En DummyJSON el <code>POST /auth/login</code> ya devuelve los datos del usuario junto con el token, asi que el flujo es mas directo:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — flujo de login en auth.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// El login en DummyJSON es mas directo que en FakeStoreAPI:</span>
+<span class="cm">// No necesitas GET /users primero</span>
+
+<span class="fn">login</span>(username: <span class="typ">string</span>, password: <span class="typ">string</span>): <span class="typ">Observable</span>&lt;<span class="typ">any</span>&gt; {
+  <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">post</span>&lt;<span class="typ">any</span>&gt;(<span class="str">'https://dummyjson.com/auth/login'</span>, {
+    username,
+    password,
+    <span class="prop">expiresInMins</span>: <span class="num">60</span>   <span class="cm">// DummyJSON acepta este parametro opcional</span>
+  });
+}
+
+<span class="cm">// En login.ts — dentro del subscribe:</span>
+(response) => {
+  <span class="kw">const</span> session = {
+    <span class="prop">id</span>:        response.id,
+    <span class="prop">username</span>:  response.username,
+    <span class="prop">firstName</span>: response.firstName
+  };
+  localStorage.<span class="fn">setItem</span>(<span class="str">'currentUser'</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(session));
+  localStorage.<span class="fn">setItem</span>(<span class="str">'token'</span>, response.token);
+  <span class="cm">// Luego: loadFavoritosForCurrentUser() y navegar a /recipes</span>
+}</pre>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-2-circle" style="color:var(--accent)"></i> favoritos.service.ts — persistencia por usuario</h4>
+        <p style="font-size:.9rem">Es equivalente al <code>CartService</code> de la Clase 7 pero con recetas. La clave en localStorage debe incluir el userId para separar por usuario:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — estructura de favoritos.service.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">export class</span> <span class="typ">FavoritosService</span> {
+
+  <span class="kw">private</span> favSubject = <span class="kw">new</span> <span class="typ">BehaviorSubject</span>&lt;<span class="typ">any</span>[]&gt;([]);
+  favoritos$ = <span class="kw">this</span>.favSubject.asObservable();
+
+  <span class="kw">private</span> <span class="fn">getUserId</span>(): <span class="typ">number</span> | <span class="typ">null</span> {
+    <span class="kw">const</span> raw = localStorage.<span class="fn">getItem</span>(<span class="str">'currentUser'</span>);
+    <span class="kw">return</span> raw ? <span class="fn">JSON</span>.<span class="fn">parse</span>(raw).id : <span class="kw">null</span>;
+  }
+
+  <span class="fn">loadFavoritosForCurrentUser</span>(): <span class="typ">void</span> {
+    <span class="kw">const</span> userId = <span class="kw">this</span>.<span class="fn">getUserId</span>();
+    <span class="kw">if</span> (!userId) { <span class="kw">this</span>.favSubject.<span class="fn">next</span>([]); <span class="kw">return</span>; }
+    <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">`favoritos_</span>${userId}<span class="str">`</span>);
+    <span class="kw">this</span>.favSubject.<span class="fn">next</span>(saved ? <span class="fn">JSON</span>.<span class="fn">parse</span>(saved) : []);
+  }
+
+  <span class="fn">esFavorito</span>(recipeId: <span class="typ">number</span>): <span class="typ">boolean</span> {
+    <span class="cm">// Verifica si la receta ya esta en la lista del usuario actual</span>
+    <span class="kw">return</span> <span class="kw">this</span>.favSubject.<span class="fn">getValue</span>().<span class="fn">some</span>(r => r.id === recipeId);
+  }
+
+  <span class="fn">toggleFavorito</span>(recipe: <span class="typ">any</span>): <span class="typ">void</span> {
+    <span class="cm">// Si ya esta, lo quita. Si no, lo agrega.</span>
+    <span class="cm">// Completa esta logica: usa esFavorito(), filter() o push()</span>
+    <span class="cm">// y guarda en localStorage["favoritos_userId"]</span>
+  }
+
+  <span class="fn">clearInMemory</span>(): <span class="typ">void</span> {
+    <span class="cm">// Limpia la vista pero NO el localStorage</span>
+    <span class="kw">this</span>.favSubject.<span class="fn">next</span>([]);
+  }
+}</pre>
+        </div>
+        <div class="callout callout-amber">
+          <strong>Diferencia con el CartService de clase:</strong> en lugar de <code>addToCart()</code> y <code>removeFromCart()</code>, aqui tienes un solo <code>toggleFavorito()</code> que decide si agrega o quita. La logica del toggle es parte de lo que debes implementar.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-3-circle" style="color:var(--accent)"></i> recipe-card.ts — boton condicional</h4>
+        <p style="font-size:.9rem">El componente hijo necesita saber si el usuario esta logueado y si esa receta ya es favorita. Tiene que inyectar ambos servicios:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — recipe-card.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">export class</span> <span class="typ">RecipeCard</span> {
+  <span class="dec">@Input</span>() recipe: <span class="typ">any</span> = <span class="kw">null</span>;
+
+  <span class="kw">constructor</span>(
+    <span class="kw">public</span>  authService:      <span class="typ">AuthService</span>,
+    <span class="kw">public</span>  favoritosService: <span class="typ">FavoritosService</span>
+  ) { }
+
+  <span class="fn">toggle</span>(): <span class="typ">void</span> {
+    <span class="kw">if</span> (<span class="kw">this</span>.recipe) {
+      <span class="kw">this</span>.favoritosService.<span class="fn">toggleFavorito</span>(<span class="kw">this</span>.recipe);
+    }
+  }
+}</pre>
+        </div>
+
+        <p class="fw-semibold small mt-3 mb-1">Y en el template <code>recipe-card.html</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — recipe-card.html — boton condicional</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="cm">&lt;!-- Solo visible si el usuario tiene sesion --&gt;</span>
+<span class="tag">&lt;button</span> <span class="kw">*ngIf</span>=<span class="str">"authService.isLoggedIn()"</span>
+        <span class="attr">class</span>=<span class="str">"btn btn-sm"</span>
+        <span class="bind">[class.btn-danger]</span>=<span class="str">"favoritosService.esFavorito(recipe?.id)"</span>
+        <span class="bind">[class.btn-outline-danger]</span>=<span class="str">"!favoritosService.esFavorito(recipe?.id)"</span>
+        <span class="bind">(click)</span>=<span class="str">"toggle()"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-heart-fill me-1"</span><span class="tag">&gt;&lt;/i&gt;</span>
+  <span class="bind">{{favoritosService.esFavorito(recipe?.id) ? 'Quitar' : 'Favorito'}}</span>
+<span class="tag">&lt;/button&gt;</span></pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>[class.btn-danger]:</strong> esta es una forma de aplicar clases CSS de forma condicional en Angular. Si la expresion es <code>true</code>, agrega la clase. Si es <code>false</code>, la quita. El boton cambia de apariencia automaticamente cuando el estado de favoritos cambia.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-4-circle" style="color:var(--accent)"></i> app.ts — logout correcto</h4>
+        <p style="font-size:.9rem">El logout debe limpiar la vista del contador pero sin borrar el localStorage. La misma logica de la Clase 7:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — app.ts — metodo logout</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="fn">logout</span>(): <span class="typ">void</span> {
+  <span class="kw">this</span>.authService.<span class="fn">logout</span>();             <span class="cm">// elimina token y currentUser del localStorage</span>
+  <span class="kw">this</span>.favoritosService.<span class="fn">clearInMemory</span>(); <span class="cm">// resetea el BehaviorSubject a [] (sin tocar localStorage)</span>
+  <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/login'</span>]);
+}</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ RUBRICA ══════════════════════════════ -->
+    <section id="rubrica" class="content-section">
+      <h2 class="fw-bold mb-1">Rubrica de evaluacion</h2>
+      <p class="text-muted mb-4">Como se asignan los 100 puntos. Cada criterio se evalua de forma independiente.</p>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fw-bold">Estructura y HttpClient</span>
+              <span class="req-pts pts-green">25 pts</span>
+            </div>
+            <table style="width:100%;font-size:.82rem;border-collapse:collapse">
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Proyecto nuevo sin errores de compilacion</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#065f46">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151"><code>app-module.ts</code> con <code>provideHttpClient</code> sin HttpClientModule</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#065f46">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151"><code>recipe.service.ts</code> con los 4 metodos funcionando</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#065f46">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Listado de recetas con imagen, nombre, cuisine y rating</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#065f46">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;color:#374151">Filtro por mealType y busqueda por nombre funcionando</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#065f46">5 pts</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fw-bold">Routing, detalle y autenticacion</span>
+              <span class="req-pts pts-blue">35 pts</span>
+            </div>
+            <table style="width:100%;font-size:.82rem;border-collapse:collapse">
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Vista de detalle con ingredientes e instrucciones en listas</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#1e40af">10 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Login funcional con <code>[(ngModel)]</code>, error visible y redireccion</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#1e40af">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Interceptor registrado correctamente y agrega header en peticiones</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#1e40af">10 pts</td></tr>
+              <tr><td style="padding:.4rem 0;color:#374151">Guard protege <code>/favoritos</code> y <code>/perfil</code>, redirige al login sin sesion</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#1e40af">10 pts</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fw-bold">Favoritos con BehaviorSubject y localStorage</span>
+              <span class="req-pts pts-amber">30 pts</span>
+            </div>
+            <table style="width:100%;font-size:.82rem;border-collapse:collapse">
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Boton oculto sin sesion, visible al loguearse</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#92400e">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151"><code>toggleFavorito()</code> agrega y quita correctamente</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#92400e">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Boton cambia texto/estilo segun <code>esFavorito()</code></td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#92400e">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Contador en navbar reactivo al BehaviorSubject</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#92400e">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Persistencia separada por usuario (<code>favoritos_userId</code>)</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#92400e">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;color:#374151">Al volver a ingresar se recuperan los favoritos del usuario</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#92400e">5 pts</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fw-bold">Perfil con /auth/me</span>
+              <span class="req-pts pts-purple">10 pts</span>
+            </div>
+            <table style="width:100%;font-size:.82rem;border-collapse:collapse">
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">El componente consume <code>GET /auth/me</code> y muestra los datos</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#4c1d95">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;color:#374151">El interceptor agrega el token sin codigo extra en el componente</td><td style="text-align:right;font-weight:600;white-space:nowrap;color:#4c1d95">5 pts</td></tr>
+            </table>
+            <div class="callout callout-purple mt-3" style="margin:0">
+              Si el interceptor esta correctamente registrado (criterio de 10 pts del nivel medio), estos puntos son facilmente alcanzables con solo crear el componente y hacer un <code>GET</code> sin headers adicionales.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#0f172a;border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <span style="color:#e2e8f0;font-weight:700;font-size:1rem">Total maxima calificacion</span>
+        <span class="req-pts pts-total" style="font-size:1rem;padding:.4rem 1.2rem">100 pts</span>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-x-octagon" style="color:#ef4444"></i> Criterios de descuento automatico</h4>
+        <ul style="font-size:.9rem;color:#374151;line-height:2.2">
+          <li><strong>-10 pts</strong> — El proyecto es una copia o refactor del proyecto de clase en lugar de uno nuevo.</li>
+          <li><strong>-10 pts</strong> — <code>HttpClientModule</code> en lugar de <code>provideHttpClient(withInterceptorsFromDi())</code>.</li>
+          <li><strong>-5 pts</strong> — El boton de favoritos aparece sin sesion activa (no tiene el <code>*ngIf</code> correcto).</li>
+          <li><strong>-5 pts</strong> — Los favoritos de un usuario se mezclan con los de otro (clave incorrecta en localStorage).</li>
+          <li><strong>-5 pts</strong> — El contador del navbar no se actualiza hasta que el usuario recarga la pagina.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ ENTREGA ══════════════════════════════ -->
+    <section id="entrega" class="content-section">
+      <h2 class="fw-bold mb-1">Entrega</h2>
+      <p class="text-muted mb-4">Que se entrega, como se entrega y que se revisa.</p>
+
+      <div class="entrega-card mb-4">
+        <h3><i class="bi bi-send me-2"></i>Formato de entrega</h3>
+        <p>Se entrega un repositorio en GitHub con el proyecto Angular. El evaluador descarga, ejecuta <code>npm install</code> y <code>ng serve</code>, y valida cada requerimiento en el navegador.</p>
+
+        <div class="entrega-item">
+          <div class="ei-label">Repositorio</div>
+          <div class="ei-val">GitHub publico con el nombre <code>recetapp-[tu-nombre]</code></div>
+        </div>
+        <div class="entrega-item">
+          <div class="ei-label">Rama</div>
+          <div class="ei-val">Todo en <code>main</code>. Un solo commit final con el mensaje: <code>entrega: evaluacion final modulo 1</code></div>
+        </div>
+        <div class="entrega-item">
+          <div class="ei-label">README.md obligatorio</div>
+          <div class="ei-val">Incluye: credenciales de prueba que usaste, que requerimientos lograste completar y cuales no, y una nota breve de que fue lo mas dificil.</div>
+        </div>
+        <div class="entrega-item">
+          <div class="ei-label">No incluir</div>
+          <div class="ei-val">La carpeta <code>node_modules/</code> debe estar en <code>.gitignore</code>. El repositorio no debe subir dependencias.</div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-person-check" style="color:var(--accent)"></i> Checklist antes de entregar</h4>
+        <ul class="check-list">
+          <li><span class="cb"></span> <code>ng serve</code> corre sin errores en consola</li>
+          <li><span class="cb"></span> <code>/recipes</code> muestra recetas reales desde DummyJSON API</li>
+          <li><span class="cb"></span> El filtro por mealType y la busqueda por nombre funcionan</li>
+          <li><span class="cb"></span> <code>/recipe/:id</code> muestra ingredientes e instrucciones con <code>*ngFor</code></li>
+          <li><span class="cb"></span> El formulario de login funciona con <code>emilys</code> / <code>emilyspass</code></li>
+          <li><span class="cb"></span> Un error de credenciales muestra el mensaje en pantalla (no solo en consola)</li>
+          <li><span class="cb"></span> Sin sesion: el boton de favoritos no aparece en ninguna parte</li>
+          <li><span class="cb"></span> Con sesion: el boton aparece y funciona en la lista y en el detalle</li>
+          <li><span class="cb"></span> Agregar favorito actualiza el contador del navbar sin recargar</li>
+          <li><span class="cb"></span> Acceder a <code>/favoritos</code> sin login redirige a <code>/login</code></li>
+          <li><span class="cb"></span> Cerrar sesion y volver a ingresar con el mismo usuario recupera los favoritos</li>
+          <li><span class="cb"></span> En DevTools → Application → LocalStorage se ven las claves <code>favoritos_[id]</code> separadas por usuario</li>
+          <li><span class="cb"></span> En DevTools → Network las peticiones tienen el header <code>Authorization: Bearer ...</code></li>
+          <li><span class="cb"></span> <code>node_modules/</code> no esta en el repositorio</li>
+          <li><span class="cb"></span> README.md incluye credenciales y nota sobre dificultades</li>
+        </ul>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-patch-question" style="color:var(--accent)"></i> Preguntas frecuentes de evaluacion</h4>
+
+        <div class="p-3 rounded-3 mb-2" style="background:var(--accent-faint);border:1px solid var(--accent-border)">
+          <p class="fw-semibold mb-1" style="font-size:.85rem;color:#065f46">Puedo usar la misma logica del interceptor y el guard de clase?</p>
+          <p class="small mb-0" style="color:#374151">Si. El interceptor y el guard son patrones estandar — la logica es practicamente identica. Lo que se evalua es que los entiendas y los implementes correctamente en el proyecto nuevo, con los imports y archivos correctos.</p>
+        </div>
+        <div class="p-3 rounded-3 mb-2" style="background:var(--accent-faint);border:1px solid var(--accent-border)">
+          <p class="fw-semibold mb-1" style="font-size:.85rem;color:#065f46">La API de DummyJSON a veces es lenta, afecta la evaluacion?</p>
+          <p class="small mb-0" style="color:#374151">No. Si la API responde lento, agrega un spinner de carga con <code>*ngIf="cargando"</code> — es buena practica y suma. Lo que se evalua es que la peticion HTTP sea correcta y que la vista se actualice cuando lleguen los datos.</p>
+        </div>
+        <div class="p-3 rounded-3 mb-2" style="background:var(--accent-faint);border:1px solid var(--accent-border)">
+          <p class="fw-semibold mb-1" style="font-size:.85rem;color:#065f46">El boton de favoritos debe estar en la tarjeta o en el detalle, o en ambos?</p>
+          <p class="small mb-0" style="color:#374151">En ambos para el puntaje completo. En la lista (<code>recipe-card.html</code>) y en la vista de detalle (<code>recipe-detail.html</code>). Ambos llaman a <code>toggleFavorito()</code> del mismo servicio, asi que el estado es consistente.</p>
+        </div>
+        <div class="p-3 rounded-3" style="background:var(--accent-faint);border:1px solid var(--accent-border)">
+          <p class="fw-semibold mb-1" style="font-size:.85rem;color:#065f46">Que pasa si no llego a completar todos los requerimientos?</p>
+          <p class="small mb-0" style="color:#374151">Se evalua lo que funciona. Un proyecto que completa bien el nivel base y el nivel medio (60 pts) con partes del avanzado (algunos de los 30 pts) es una entrega solida. El README donde explicas que completaste y que no ayuda a entender el alcance de tu trabajo.</p>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /main -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const sections = ['intro','api','estructura','requerimientos','logica','rubrica','entrega'];
+
+    window.showSection = function(id, el) {
+      event.preventDefault();
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      el.classList.add('active');
+      const idx = sections.indexOf(id) + 1;
+      document.getElementById('progress-bar').style.width = (idx / sections.length * 100) + '%';
+      document.getElementById('progress-pct').textContent = idx + '/' + sections.length;
+      window.scrollTo(0, 0);
+    };
+  </script>
+</body>
+</html>
