@@ -541,14 +541,14 @@ ng generate component users
       <div class="theory-block">
         <h4><i class="bi bi-code-slash" style="color:var(--accent)"></i>
           <span class="badge me-2" style="background:var(--accent);color:#fff;font-size:.75rem">Paso 5</span>
-          login.ts y login.html
+          login.ts y login.html — version actual
         </h4>
+        <p style="font-size:.9rem">En este paso <code>CartService</code> todavia no existe. Por eso <code>login.ts</code> solo debe depender de <code>AuthService</code> y <code>Router</code>. La integracion con el carrito se agrega mas adelante, cuando el servicio ya fue creado.</p>
         <div class="code-block">
           <div class="code-header"><span>src/app/login/login.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { Component } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
 <span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
 <span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'../services/auth.service'</span>;
-<span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>;  <span class="cm">// NUEVO — para cargar carrito del usuario</span>
 
 <span class="dec">@Component</span>({
   <span class="prop">selector</span>:    <span class="str">'app-login'</span>,
@@ -566,7 +566,6 @@ ng generate component users
 
   <span class="kw">constructor</span>(
     <span class="kw">private</span> authService: <span class="typ">AuthService</span>,
-    <span class="kw">private</span> cartService: <span class="typ">CartService</span>,  <span class="cm">// NUEVO</span>
     <span class="kw">private</span> router:      <span class="typ">Router</span>
   ) { }
 
@@ -576,9 +575,6 @@ ng generate component users
 
     <span class="kw">this</span>.authService.<span class="fn">login</span>(<span class="kw">this</span>.username, <span class="kw">this</span>.password).<span class="fn">subscribe</span>(
       (response) => {
-        <span class="cm">// El token y currentUser ya estan en localStorage (los guarda AuthService)</span>
-        <span class="cm">// Cargar el carrito del usuario que acaba de entrar</span>
-        <span class="kw">this</span>.cartService.<span class="fn">loadCartForCurrentUser</span>();  <span class="cm">// NUEVO</span>
         <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/products'</span>]);  <span class="cm">// redirige al catalogo</span>
       },
       (error) => {
@@ -620,6 +616,7 @@ ng generate component users
         <div class="callout callout-green">
           <strong><code>[(ngModel)]</code> ya funciona sin configuracion adicional.</strong> <code>FormsModule</code> se importo en <code>app-module.ts</code> desde la Clase 5. No hace falta agregarlo de nuevo.
         </div>
+       
       </div>
     </section>
 
@@ -1016,6 +1013,57 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
         <div class="callout callout-cyan">
           <strong>Formato de <code>localStorage["cart"]</code>:</strong> se guarda un objeto por usuario. Ejemplo: <code>{ "1": [{ productId: 5, quantity: 2, subtotal: 1390 }], "2": [...] }</code>. Asi, cada alumno puede cerrar sesion e iniciar con otro usuario sin mezclar carritos.
         </div>
+
+        <h4 class="mt-4"><i class="bi bi-arrow-repeat" style="color:var(--accent)"></i> Ahora si: actualizar login.ts con CartService</h4>
+        <p style="font-size:.9rem">Como <code>CartService</code> ya existe desde el Paso 10, ahora si podemos volver a <code>login.ts</code> para integrarlo sin romper compilacion. Esta es la <strong>version final</strong> del componente <code>Login</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/login/login.ts — version final despues de crear CartService</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Component } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
+<span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'../services/auth.service'</span>;
+<span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>;  <span class="cm">// NUEVO — para cargar carrito del usuario</span>
+
+<span class="dec">@Component</span>({
+  <span class="prop">selector</span>:    <span class="str">'app-login'</span>,
+  <span class="prop">standalone</span>:  <span class="bool">false</span>,
+  <span class="prop">templateUrl</span>: <span class="str">'./login.html'</span>,
+  <span class="prop">styleUrl</span>:    <span class="str">'./login.css'</span>
+})
+<span class="kw">export class</span> <span class="typ">Login</span> {
+
+  username: <span class="typ">string</span>  = <span class="str">''</span>;
+  password: <span class="typ">string</span>  = <span class="str">''</span>;
+  error:    <span class="typ">string</span>  = <span class="str">''</span>;
+  loading:  <span class="typ">boolean</span> = <span class="bool">false</span>;
+
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> authService: <span class="typ">AuthService</span>,
+    <span class="kw">private</span> cartService: <span class="typ">CartService</span>,
+    <span class="kw">private</span> router:      <span class="typ">Router</span>
+  ) { }
+
+  <span class="fn">login</span>(): <span class="typ">void</span> {
+    <span class="kw">this</span>.loading = <span class="bool">true</span>;
+    <span class="kw">this</span>.error   = <span class="str">''</span>;
+
+    <span class="kw">this</span>.authService.<span class="fn">login</span>(<span class="kw">this</span>.username, <span class="kw">this</span>.password).<span class="fn">subscribe</span>(
+      (response) => {
+        <span class="kw">this</span>.cartService.<span class="fn">loadCartForCurrentUser</span>();  <span class="cm">// NUEVO</span>
+        <span class="kw">this</span>.router.<span class="fn">navigate</span>([<span class="str">'/products'</span>]);
+      },
+      (error) => {
+        <span class="kw">this</span>.error   = <span class="str">'Usuario o contrasena incorrectos.'</span>;
+        <span class="kw">this</span>.loading = <span class="bool">false</span>;
+      }
+    );
+  }
+}</pre>
+        </div>
+        <div class="callout callout-green">
+          <strong>Por que hacemos esta modificacion aqui?</strong> Porque en el momento del login cambia el contexto de sesion de la aplicacion: <code>AuthService</code> ya guardo el usuario autenticado en <code>localStorage</code> y, justo despues, <code>CartService.loadCartForCurrentUser()</code> debe releer ese <code>currentUser</code> para hidratar el <code>BehaviorSubject</code> con el carrito que pertenece al usuario que acaba de ingresar. Sin esta llamada, la vista seguiria mostrando el estado anterior del carrito hasta que la aplicacion se recargue o el servicio se reinicialice.
+        </div>
+
+        
       </div>
 
       <div class="theory-block">
@@ -1322,25 +1370,45 @@ cartService.cartItems$.<span class="fn">subscribe</span>(items => {
           Agregar boton de carrito tambien en <code>/product/:id</code>
         </h4>
         <p style="font-size:.9rem">Para cumplir la logica final del proyecto, el usuario debe poder agregar al carrito tanto desde <code>/products</code> como desde <code>/product/:id</code>.</p>
+        <div class="callout callout-blue">
+          <strong>Que cambiar exactamente:</strong>
+          <ol style="margin:.5rem 0 0 1.1rem;padding:0;">
+            <li><strong><code>product-detail.ts</code>:</strong> agrega imports de <code>CartService</code>, <code>AuthService</code> y <code>Swal</code>; inyecta ambos servicios en el constructor; crea/actualiza <code>agregarAlCarrito()</code> para guardar en carrito y mostrar confirmacion.</li>
+            <li><strong><code>product-detail.html</code>:</strong> agrega el boton de carrito con <code>*ngIf="authService.isLoggedIn()"</code> para que solo aparezca con sesion activa.</li>
+            <li><strong>No tocar:</strong> la carga por <code>:id</code> en <code>ngOnInit()</code> y la llamada a <code>getProductById()</code> se mantienen igual.</li>
+          </ol>
+        </div>
         <div class="code-block">
           <div class="code-header"><span>src/app/product-detail/product-detail.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
           <pre><span class="kw">import</span> { CartService } <span class="kw">from</span> <span class="str">'../services/cart.service'</span>; <span class="cm">// NUEVO</span>
+<span class="kw">import</span> { AuthService } <span class="kw">from</span> <span class="str">'../services/auth.service'</span>; <span class="cm">// NUEVO</span>
+<span class="kw">import</span> Swal <span class="kw">from</span> <span class="str">'sweetalert2'</span>; <span class="cm">// NUEVO</span>
 
 <span class="kw">constructor</span>(
   <span class="kw">private</span> route: <span class="typ">ActivatedRoute</span>,
   <span class="kw">private</span> productService: <span class="typ">ProductService</span>,
-  <span class="kw">private</span> cartService: <span class="typ">CartService</span> <span class="cm">// NUEVO</span>
-) {}
+  <span class="kw">private</span> cartService: <span class="typ">CartService</span>, <span class="cm">// NUEVO</span>
+  <span class="kw">public</span> authService: <span class="typ">AuthService</span> <span class="cm">// NUEVO</span>
+) { }
 
 <span class="fn">agregarAlCarrito</span>(): <span class="typ">void</span> {
   <span class="kw">if</span> (<span class="kw">this</span>.detalle) {
     <span class="kw">this</span>.cartService.<span class="fn">addToCart</span>(<span class="kw">this</span>.detalle);
+    Swal.<span class="fn">fire</span>({
+      <span class="prop">title</span>: <span class="str">'Producto agregado'</span>,
+      <span class="prop">text</span>: <span class="str">`</span>${<span class="kw">this</span>.detalle.title}<span class="str"> fue agregado a tu carrito`</span>,
+      <span class="prop">icon</span>: <span class="str">'success'</span>,
+      <span class="prop">confirmButtonColor</span>: <span class="str">'#28a745'</span>,
+      <span class="prop">confirmButtonText</span>: <span class="str">'OK'</span>
+    });
   }
 }</pre>
         </div>
         <div class="code-block">
           <div class="code-header"><span>src/app/product-detail/product-detail.html</span><span class="lang-badge lang-html">HTML</span></div>
-          <pre><span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary"</span> <span class="bind">(click)</span>=<span class="str">"agregarAlCarrito()"</span><span class="tag">&gt;</span>
+          <pre><span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"btn btn-primary ms-4"</span>
+        <span class="kw">*ngIf</span>=<span class="str">"authService.isLoggedIn()"</span>
+        <span class="bind">(click)</span>=<span class="str">"agregarAlCarrito()"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;i</span> <span class="attr">class</span>=<span class="str">"bi bi-cart-plus"</span><span class="tag">&gt;&lt;/i&gt;</span> Agregar al carrito
 <span class="tag">&lt;/button&gt;</span></pre>
         </div>
