@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ejercicio Practico — Modulo 1 Angular</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #0ea5e9;
+      --accent-dark: #0284c7;
+      --accent-faint: #f0f9ff;
+      --accent-border: #bae6fd;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: #1e293b; }
+
+    /* ── SIDEBAR ── */
+    #sidebar { position: fixed; top: 0; left: 0; width: 270px; height: 100vh; background: #0f172a; color: #e2e8f0; overflow-y: auto; z-index: 1000; padding-bottom: 2rem; border-right: 1px solid #1e293b; }
+    #sidebar .brand { padding: 1.5rem 1.25rem 1rem; border-bottom: 1px solid #1e293b; }
+    #sidebar .brand .badge-mod { background: var(--accent); color: #fff; font-size: .7rem; padding: .25rem .6rem; border-radius: 20px; letter-spacing: .05em; font-weight: 700; }
+    #sidebar .brand h6 { color: #f8fafc; font-weight: 700; margin-top: .5rem; font-size: 1rem; }
+    #sidebar nav a { display: flex; align-items: center; gap: .65rem; padding: .55rem 1.25rem; color: #94a3b8; text-decoration: none; font-size: .83rem; border-left: 3px solid transparent; transition: all .15s; }
+    #sidebar nav a:hover, #sidebar nav a.active { color: #f8fafc; background: #1e293b; border-left-color: var(--accent); }
+    #sidebar .section-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: #475569; padding: 1.1rem 1.25rem .35rem; font-weight: 700; }
+    #sidebar .progress-wrap { padding: .5rem 1.25rem 0; }
+    #sidebar .progress { height: 4px; background: #1e293b; }
+    #sidebar .progress-bar { background: var(--accent); transition: width .4s ease; }
+
+    /* ── MAIN ── */
+    #main { margin-left: 270px; min-height: 100vh; }
+    .topbar { background: #fff; border-bottom: 1px solid #e2e8f0; padding: .75rem 2rem; position: sticky; top: 0; z-index: 900; display: flex; align-items: center; gap: 1rem; }
+    .topbar .breadcrumb { margin: 0; font-size: .8rem; }
+    .content-section { display: none; padding: 2rem; animation: fadeIn .25s ease; }
+    .content-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── HERO ── */
+    .hero-card { background: linear-gradient(135deg, #0f172a 0%, #0a1e2e 100%); color: #fff; border-radius: 16px; padding: 2.5rem 3rem; margin-bottom: 2rem; }
+    .hero-card .clase-badge { background: rgba(14,165,233,.25); border: 1px solid rgba(14,165,233,.5); color: #7dd3fc; font-size: .75rem; padding: .3rem .8rem; border-radius: 20px; display: inline-block; margin-bottom: 1rem; letter-spacing: .06em; text-transform: uppercase; }
+    .hero-card h1 { font-size: 2rem; font-weight: 700; margin-bottom: .5rem; }
+    .hero-card p { color: #94a3b8; font-size: 1rem; }
+    .hero-meta span { background: rgba(255,255,255,.1); border-radius: 8px; padding: .4rem .9rem; font-size: .82rem; margin-right: .5rem; color: #e2e8f0; }
+
+    /* ── BLOCKS ── */
+    .theory-block { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.75rem; margin-bottom: 1.5rem; }
+    .theory-block h4 { font-weight: 700; font-size: 1.05rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
+    .theory-block p, .theory-block li { font-size: .9rem; color: #374151; line-height: 1.75; }
+    .theory-block ul, .theory-block ol { padding-left: 1.4rem; }
+    .info-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.5rem; height: 100%; }
+    .info-card .ic-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1rem; }
+    .info-card h5 { font-weight: 700; font-size: .95rem; margin-bottom: .5rem; }
+    .info-card p { font-size: .85rem; color: #64748b; margin: 0; }
+
+    /* ── CALLOUTS ── */
+    .callout { border-left: 4px solid; border-radius: 0 8px 8px 0; padding: .9rem 1.2rem; margin: 1rem 0; font-size: .88rem; }
+    .callout-blue   { border-color: #3b82f6; background: #eff6ff; color: #1e40af; }
+    .callout-green  { border-color: #10b981; background: #f0fdf4; color: #065f46; }
+    .callout-amber  { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+    .callout-red    { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+    .callout-cyan   { border-color: #0ea5e9; background: #f0f9ff; color: #0369a1; }
+    .callout-orange { border-color: #f97316; background: #fff7ed; color: #9a3412; }
+
+    /* ── CODE ── */
+    .code-block { background: #0f172a; border-radius: 10px; overflow: hidden; margin: 1rem 0; font-family: 'JetBrains Mono', monospace; }
+    .code-block .code-header { background: #1e293b; padding: .5rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+    .code-block .code-header span { font-size: .75rem; color: #64748b; font-family: 'Inter', sans-serif; }
+    .code-block .code-header .lang-badge { font-size: .68rem; padding: .15rem .55rem; border-radius: 20px; font-weight: 700; }
+    .lang-ts   { background: rgba(6,182,212,.2); color: #67e8f9; }
+    .lang-html { background: rgba(239,68,68,.2); color: #fca5a5; }
+    .lang-bash { background: rgba(16,185,129,.2); color: #6ee7b7; }
+    .lang-json { background: rgba(245,158,11,.2); color: #fcd34d; }
+    .code-block pre { margin: 0; padding: 1.25rem; color: #e2e8f0; font-size: .82rem; line-height: 1.75; overflow-x: auto; }
+    .kw { color: #93c5fd; } .fn { color: #86efac; } .str { color: #fca5a5; } .cm { color: #475569; font-style: italic; }
+    .num { color: #fdba74; } .prop { color: #c4b5fd; } .bool { color: #f9a8d4; }
+    .typ { color: #67e8f9; font-weight: 600; } .dec { color: #fbbf24; font-weight: 600; }
+    .tag { color: #86efac; } .attr { color: #c4b5fd; } .bind { color: #fcd34d; font-weight: 600; }
+
+    /* ── STEP PILLS ── */
+    .step-pills { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+    .step-pill  { background: var(--accent-faint); border: 1px solid var(--accent-border); color: #0369a1; border-radius: 30px; padding: .4rem 1rem; font-size: .82rem; font-weight: 600; display: flex; align-items: center; gap: .4rem; }
+    .step-pill .num { background: var(--accent); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; }
+
+    /* ── FILE TREE ── */
+    .file-tree { background: #0f172a; border-radius: 10px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 2.1; color: #94a3b8; }
+    .file-tree .dir  { color: #67e8f9; }
+    .file-tree .ts   { color: #c4b5fd; }
+    .file-tree .html { color: #fca5a5; }
+    .file-tree .note { color: #475569; font-style: italic; }
+    .file-tree .new  { color: #fbbf24; font-weight: 700; }
+
+    /* ── EP TABLE ── */
+    .ep-table { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 1rem 0; }
+    .ep-table th { background: #0f172a; color: #e2e8f0; padding: .6rem 1rem; text-align: left; font-weight: 600; }
+    .ep-table td { padding: .6rem 1rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    .ep-table tr:last-child td { border-bottom: none; }
+    .ep-table tr:nth-child(even) td { background: #f8fafc; }
+    .ep-table code { background: #f1f5f9; border-radius: 4px; padding: .1rem .4rem; font-size: .78rem; color: #0f172a; }
+    .method-get { background: #f0fdf4; color: #065f46; border: 1px solid #bbf7d0; font-size: .7rem; font-weight: 700; padding: .15rem .5rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    /* ── RUBRICA ── */
+    .req-card { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.25rem; margin-bottom: 1rem; }
+    .req-card .req-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .75rem; }
+    .req-card .req-title { font-weight: 700; font-size: .95rem; display: flex; align-items: center; gap: .5rem; }
+    .req-pts { font-size: .78rem; font-weight: 700; padding: .25rem .7rem; border-radius: 20px; }
+    .pts-cyan   { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+    .pts-blue   { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .pts-amber  { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .pts-total  { background: #0f172a; color: #f8fafc; border: 1px solid #1e293b; }
+
+    .sub-req { list-style: none; padding: 0; margin: 0; }
+    .sub-req li { display: flex; align-items: flex-start; gap: .5rem; padding: .3rem 0; font-size: .85rem; color: #374151; border-bottom: 1px solid #f1f5f9; }
+    .sub-req li:last-child { border-bottom: none; }
+    .sub-req li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: .5rem; }
+
+    /* ── NIVEL BADGES ── */
+    .nivel { display: inline-flex; align-items: center; gap: .35rem; font-size: .75rem; font-weight: 700; padding: .25rem .7rem; border-radius: 20px; }
+    .nivel-1 { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+    .nivel-2 { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .nivel-3 { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+
+    /* ── CHECKLIST ── */
+    .check-list { list-style: none; padding: 0; margin: 0; }
+    .check-list li { display: flex; align-items: flex-start; gap: .6rem; padding: .4rem 0; font-size: .88rem; color: #374151; border-bottom: 1px solid #f1f5f9; }
+    .check-list li:last-child { border-bottom: none; }
+    .check-list li .cb { width: 18px; height: 18px; border: 2px solid #d1d5db; border-radius: 4px; flex-shrink: 0; margin-top: .1rem; }
+
+    /* ── ENTREGA ── */
+    .entrega-card { background: linear-gradient(135deg, #0f172a 0%, #0a1e2e 100%); border-radius: 16px; padding: 2rem; color: #fff; }
+    .entrega-item { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: .75rem; }
+    .entrega-item .ei-label { font-size: .7rem; font-weight: 700; color: #7dd3fc; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .25rem; }
+    .entrega-item .ei-val { font-size: .9rem; color: #f1f5f9; }
+
+    @media(max-width:768px) { #sidebar { transform: translateX(-100%); } #main { margin-left: 0; } }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <nav id="sidebar">
+    <div class="brand">
+      <div class="badge-mod">MODULO 1 · EJERCICIO</div>
+      <h6>Frontend con Angular</h6>
+      <small style="color:#475569;font-size:.75rem">FullStack con Arquitectura Moderna</small>
+    </div>
+    <div class="progress-wrap">
+      <div class="d-flex justify-content-between mb-1" style="font-size:.7rem;color:#475569">
+        <span>Seccion actual</span><span id="progress-pct">1/6</span>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progress-bar" style="width:16%"></div></div>
+      <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Ejercicio practico · 100 puntos · 7 secciones</div>
+    </div>
+    <div class="section-label">Secciones</div>
+    <nav id="sidenav">
+      <a href="#" class="active" onclick="window.showSection('intro',this)">      <i class="bi bi-flag"></i> Introduccion</a>
+      <a href="#" onclick="window.showSection('api',this)">                       <i class="bi bi-arrow-left-right"></i> La API: DummyJSON</a>
+      <a href="#" onclick="window.showSection('estructura',this)">                <i class="bi bi-folder2"></i> Estructura del proyecto</a>
+      <a href="#" onclick="window.showSection('requerimientos',this)">            <i class="bi bi-list-check"></i> Requerimientos</a>
+      <a href="#" onclick="window.showSection('logica',this)">                    <i class="bi bi-cpu"></i> Logica del comparador</a>
+      <a href="#" onclick="window.showSection('entrega',this)">                   <i class="bi bi-send"></i> Rubrica y entrega</a>
+      <a href="#" onclick="window.showSection('demo',this)">                       <i class="bi bi-play-circle"></i> Demo interactiva</a>
+    </nav>
+    <div class="section-label">Recursos</div>
+    <nav>
+      <a href="https://dummyjson.com/docs/products" target="_blank"><i class="bi bi-box-arrow-up-right"></i> DummyJSON Docs</a>
+      <a href="clase5.html"><i class="bi bi-file-earmark-code"></i> Clase 5</a>
+      <a href="clase6.html"><i class="bi bi-file-earmark-code"></i> Clase 6</a>
+      <a href="clase7.html"><i class="bi bi-file-earmark-code"></i> Clase 7</a>
+    </nav>
+  </nav>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <div id="main">
+    <div class="topbar">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item text-muted">Modulo 1</li>
+          <li class="breadcrumb-item text-muted">Frontend con Angular</li>
+          <li class="breadcrumb-item active fw-semibold">Ejercicio Practico</li>
+        </ol>
+      </nav>
+      <span class="ms-auto badge" style="background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd">
+        <i class="bi bi-patch-check me-1"></i>100 puntos · Sin login · Entrega individual
+      </span>
+    </div>
+
+    <!-- ══════════════════════════════ INTRO ══════════════════════════════ -->
+    <section id="intro" class="content-section active">
+      <div class="hero-card">
+        <div class="clase-badge"><i class="bi bi-tools me-1"></i>Ejercicio Practico — Modulo 1</div>
+        <h1>Catalogo de Productos con Comparador</h1>
+        <p>Construiras una aplicacion de catalogo de productos usando DummyJSON. Sin login, sin guards, sin interceptores. El foco esta en componentes, servicios, routing y una logica de comparacion que persiste en localStorage.</p>
+        <div class="hero-meta mt-3">
+          <span><i class="bi bi-clock me-1"></i>3 dias</span>
+          <span><i class="bi bi-person me-1"></i>Individual</span>
+          <span><i class="bi bi-star me-1"></i>100 puntos</span>
+          <span><i class="bi bi-arrow-left-right me-1"></i>DummyJSON API</span>
+        </div>
+      </div>
+
+      <div class="callout callout-cyan mb-4">
+        <strong>Este ejercicio consolida Clases 5 y 6.</strong> Aplicas exactamente los mismos conceptos del modulo: componentes con <code>@Input/@Output</code>, un servicio centralizado con <code>HttpClient</code>, routing con parametros de ruta, y <code>localStorage</code> para persistir datos entre navegaciones. No hay nada nuevo — solo debes demostrarlo en un proyecto propio.
+      </div>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f0f9ff"><i class="bi bi-grid" style="color:#0ea5e9;font-size:1.3rem"></i></div>
+            <h5>Catalogo con filtros</h5>
+            <p>Lista de productos consumida desde DummyJSON. Filtro por categoria usando el endpoint correcto. Busqueda por nombre en tiempo real.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f0f9ff"><i class="bi bi-card-text" style="color:#0ea5e9;font-size:1.3rem"></i></div>
+            <h5>Vista de detalle</h5>
+            <p>Ruta <code>/product/:id</code> con <code>ActivatedRoute</code>. Muestra descripcion, precio con descuento aplicado, stock, marca y resenas.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info-card">
+            <div class="ic-icon" style="background:#f0f9ff"><i class="bi bi-bar-chart" style="color:#0ea5e9;font-size:1.3rem"></i></div>
+            <h5>Comparador</h5>
+            <p>El usuario selecciona hasta 3 productos para comparar. La seleccion persiste en <code>localStorage</code>. La ruta <code>/comparar</code> muestra la tabla comparativa.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-lightbulb" style="color:var(--accent)"></i> Contexto de la aplicacion</h4>
+        <p>La aplicacion se llama <strong>ProductCompare</strong>. Es un catalogo de productos donde el usuario puede explorar el inventario de DummyJSON, ver el detalle de cada producto con su descuento calculado, y marcar hasta 3 productos para compararlos lado a lado.</p>
+        <p>La logica del comparador es lo que requiere razonar:</p>
+        <ul>
+          <li>Solo se pueden agregar hasta <strong>3 productos</strong> a la comparacion. Si ya hay 3, el boton se deshabilita en todos los demas.</li>
+          <li>Si un producto ya esta en la comparacion, el boton cambia a "Quitar de comparacion".</li>
+          <li>La lista de comparacion se guarda en <code>localStorage["comparacion"]</code> y sobrevive si el usuario recarga la pagina o navega entre rutas.</li>
+          <li>La ruta <code>/comparar</code> muestra una tabla con los productos seleccionados, donde se pueden ver sus diferencias de precio, rating, stock y descuento de un vistazo.</li>
+        </ul>
+        <div class="callout callout-blue mt-2">
+          <strong>Por que es diferente a un CRUD:</strong> la logica del comparador no es un simple "agregar y quitar". El limite de 3, el estado del boton segun si ya esta en la lista, y la persistencia requieren pensar en como estructurar el servicio y como comunicar el estado al componente hijo via <code>@Input</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ API ══════════════════════════════ -->
+    <section id="api" class="content-section">
+      <h2 class="fw-bold mb-1">La API: DummyJSON</h2>
+      <p class="text-muted mb-4">Los mismos endpoints de productos que vienen en el modulo, sin autenticacion. Acceso libre, sin API key.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-arrow-left-right" style="color:var(--accent)"></i> Endpoints que usaras</h4>
+        <table class="ep-table">
+          <thead>
+            <tr><th>Metodo</th><th>Endpoint</th><th>Descripcion</th><th>Donde se usa</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/products?limit=20</code></td>
+              <td>Lista paginada de productos. Devuelve un objeto con la clave <code>products</code> que contiene el array.</td>
+              <td><code>products.ts</code> — ngOnInit</td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/products/{id}</code></td>
+              <td>Detalle completo de un producto: descripcion, precio, descuento, stock, marca, resenas.</td>
+              <td><code>product-detail.ts</code></td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/products/search?q=phone</code></td>
+              <td>Busqueda por nombre. Devuelve el mismo formato que <code>/products</code>.</td>
+              <td><code>products.ts</code> — busqueda</td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/products/category-list</code></td>
+              <td>Array de strings con los nombres de todas las categorias disponibles.</td>
+              <td><code>products.ts</code> — poblar el select</td>
+            </tr>
+            <tr>
+              <td><span class="method-get">GET</span></td>
+              <td><code>/products/category/{nombre}</code></td>
+              <td>Productos filtrados por categoria. Mismo formato que <code>/products</code>.</td>
+              <td><code>products.ts</code> — filtro</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-amber">
+          <strong>Diferencia importante con FakeStoreAPI:</strong> DummyJSON no devuelve el array directamente. La respuesta de <code>/products</code> es un objeto: <code>{ products: [...], total: 194, skip: 0, limit: 20 }</code>. Tienes que acceder a <code>response.products</code> — no directamente a <code>response</code>.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-braces" style="color:var(--accent)"></i> Estructura de un producto</h4>
+        <p style="font-size:.9rem">Los campos que usaras en los templates. Hay mas campos disponibles en la API pero estos son suficientes:</p>
+        <div class="code-block">
+          <div class="code-header"><span>GET https://dummyjson.com/products/1 — campos relevantes</span><span class="lang-badge lang-json">JSON</span></div>
+          <pre>{
+  "id": 1,
+  "title": "Essence Mascara Lash Princess",
+  "description": "Popular mascara known for its volumizing and lengthening effects.",
+  "category": "beauty",
+  "price": 9.99,
+  "discountPercentage": 7.17,    <span class="cm">// para calcular el precio final</span>
+  "rating": 4.94,
+  "stock": 5,
+  "brand": "Essence",
+  "thumbnail": "https://cdn.dummyjson.com/...",
+  "images": ["https://...", "https://..."],
+  "reviews": [                   <span class="cm">// array de resenas</span>
+    {
+      "rating": 5,
+      "comment": "Very satisfied!",
+      "reviewerName": "Scarlett Wright"
+    }
+  ]
+}</pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>Precio con descuento:</strong> el campo <code>discountPercentage</code> indica el porcentaje de descuento. El precio final se calcula como: <code>price * (1 - discountPercentage / 100)</code>. Muestra ambos en el detalle: el precio original tachado y el precio con descuento resaltado.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ ESTRUCTURA ══════════════════════════════ -->
+    <section id="estructura" class="content-section">
+      <h2 class="fw-bold mb-1">Estructura del proyecto</h2>
+      <p class="text-muted mb-4">Mismo patron de arquitectura que las clases. Sin guards ni interceptores — son conceptos de la Clase 7 que no aplican aqui.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-folder2-open" style="color:var(--accent)"></i> Archivos que debes crear</h4>
+        <div class="file-tree">
+          <div><span class="dir">src/app/</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> raiz: navbar con contador del comparador</span></div>
+          <div>&nbsp;&nbsp;<span class="html">app.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> navbar + &lt;router-outlet&gt;</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> provideHttpClient, FormsModule, rutas</span></div>
+          <div>&nbsp;&nbsp;<span class="ts">app-routing-module.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> 4 rutas sin canActivate</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">products/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">ng g c products</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">products.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lista con filtro por categoria y busqueda</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html new">products.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> select de categorias + input + *ngFor de tarjetas</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">product-card/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">ng g c product-card</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">product-card.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> @Input() product, @Input() enComparacion, @Input() limiteAlcanzado</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="html new">product-card.html</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> boton condicional segun estado del comparador</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">product-detail/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">ng g c product-detail</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">product-detail.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lee :id con ActivatedRoute, muestra resenas</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">comparar/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">ng g c comparar</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">comparar.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note"> lee los productos del ComparadorService y muestra la tabla</span></div>
+          <div></div>
+          <div>&nbsp;&nbsp;<span class="dir new">services/</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">product.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">ng g s services/product</span></div>
+          <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ts new">comparador.service.ts</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new">ng g s services/comparador</span></div>
+        </div>
+        <div class="callout callout-cyan mt-3">
+          <strong>Sin guards ni interceptores en este ejercicio.</strong> Esos son conceptos de la Clase 7. Aqui todas las rutas son publicas y no hay autenticacion. El foco esta en que el componente, el servicio y el routing funcionen correctamente.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-signpost-split" style="color:var(--accent)"></i> Rutas del proyecto</h4>
+        <div class="code-block">
+          <div class="code-header"><span>src/app/app-routing-module.ts — las 4 rutas</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">const</span> routes: <span class="typ">Routes</span> = [
+  { <span class="prop">path</span>: <span class="str">''</span>,              <span class="prop">redirectTo</span>: <span class="str">'/products'</span>, <span class="prop">pathMatch</span>: <span class="str">'full'</span> },
+  { <span class="prop">path</span>: <span class="str">'products'</span>,     <span class="prop">component</span>: Products,     <span class="prop">title</span>: <span class="str">'Catalogo'</span>      },
+  { <span class="prop">path</span>: <span class="str">'product/:id'</span>, <span class="prop">component</span>: ProductDetail, <span class="prop">title</span>: <span class="str">'Detalle'</span>       },
+  { <span class="prop">path</span>: <span class="str">'comparar'</span>,    <span class="prop">component</span>: Comparar,     <span class="prop">title</span>: <span class="str">'Comparar'</span>      },
+];</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ REQUERIMIENTOS ══════════════════════════════ -->
+    <section id="requerimientos" class="content-section">
+      <h2 class="fw-bold mb-1">Requerimientos</h2>
+      <p class="text-muted mb-4">Lo que debe funcionar en la entrega, organizado por nivel.</p>
+
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-title">
+            <span class="nivel nivel-1"><i class="bi bi-1-circle-fill"></i> Nivel 1</span>
+            Proyecto, servicio y listado
+          </div>
+          <span class="req-pts pts-cyan">30 pts</span>
+        </div>
+        <ul class="sub-req">
+          <li>Proyecto Angular 20 nuevo creado con el CLI. Corre con <code>ng serve</code> sin errores de compilacion.</li>
+          <li><code>app-module.ts</code> configurado con <code>provideHttpClient(withInterceptorsFromDi())</code> — sin <code>HttpClientModule</code>.</li>
+          <li><code>product.service.ts</code> con tres metodos: <code>getProducts()</code>, <code>getProductById(id)</code>, y <code>searchProducts(q)</code>. Todos devuelven <code>Observable</code>.</li>
+          <li>La ruta <code>/products</code> muestra el listado de productos usando el servicio: imagen (<code>thumbnail</code>), nombre, precio y rating.</li>
+          <li>El select de categorias se carga desde <code>GET /products/category-list</code> al iniciar el componente. Al seleccionar una, la lista se filtra llamando al endpoint de categoria.</li>
+          <li>El input de busqueda llama a <code>searchProducts()</code>. Al borrar el texto vuelve a mostrar todos los productos.</li>
+          <li><code>ProductCard</code> es un componente hijo que recibe la receta con <code>@Input() product</code>. La lista usa el selector con <code>*ngFor</code>.</li>
+        </ul>
+      </div>
+
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-title">
+            <span class="nivel nivel-2"><i class="bi bi-2-circle-fill"></i> Nivel 2</span>
+            Routing y vista de detalle
+          </div>
+          <span class="req-pts pts-blue">30 pts</span>
+        </div>
+        <ul class="sub-req">
+          <li>El boton "Ver detalle" en cada tarjeta navega a <code>/product/:id</code> usando <code>[routerLink]="['/product', product.id]"</code>.</li>
+          <li>La vista de detalle lee el <code>:id</code> de la URL con <code>ActivatedRoute.snapshot.paramMap.get('id')</code> y lo usa para llamar a <code>product.service.ts</code>.</li>
+          <li>El detalle muestra: imagen grande (<code>images[0]</code> o <code>thumbnail</code>), nombre, categoria, marca, descripcion completa, rating y stock.</li>
+          <li>El precio se muestra de dos formas: el precio original (<code>price</code>) tachado con <code>text-decoration: line-through</code>, y el precio con descuento calculado con la formula <code>price * (1 - discountPercentage / 100)</code>.</li>
+          <li>Las resenas del producto se listan con <code>*ngFor</code>: nombre del autor, comentario y rating de cada una.</li>
+          <li>El boton "Volver al catalogo" navega a <code>/products</code> con <code>routerLink</code>.</li>
+        </ul>
+      </div>
+
+      <div class="req-card">
+        <div class="req-header">
+          <div class="req-title">
+            <span class="nivel nivel-3"><i class="bi bi-3-circle-fill"></i> Nivel 3</span>
+            Comparador con localStorage
+          </div>
+          <span class="req-pts pts-amber">40 pts</span>
+        </div>
+        <ul class="sub-req">
+          <li><code>comparador.service.ts</code> gestiona la lista de comparacion. Expone los metodos: <code>agregar(product)</code>, <code>quitar(productId)</code>, <code>estaEnComparacion(productId)</code>, <code>limiteAlcanzado()</code> y <code>getComparacion()</code>.</li>
+          <li>La lista de comparacion se guarda en <code>localStorage["comparacion"]</code> y se carga en el constructor del servicio. Al recargar la pagina, los productos seleccionados siguen ahi.</li>
+          <li>El maximo de productos en comparacion es <strong>3</strong>. <code>limiteAlcanzado()</code> devuelve <code>true</code> cuando ya hay 3.</li>
+          <li>El componente <code>ProductCard</code> recibe dos inputs adicionales: <code>@Input() enComparacion: boolean</code> y <code>@Input() limiteAlcanzado: boolean</code>. El padre (<code>Products</code>) calcula estos valores usando el servicio y los pasa al hijo.</li>
+          <li>El boton en la tarjeta muestra "Comparar" si el producto no esta en la lista, "Quitar" si ya esta. El boton se deshabilita (<code>[disabled]</code>) cuando el limite es 3 y el producto no esta en la lista.</li>
+          <li>El navbar muestra el contador de productos en comparacion: "Comparar (2/3)". El numero se actualiza cada vez que se agrega o quita un producto sin recargar.</li>
+          <li>La ruta <code>/comparar</code> muestra una tabla con los productos seleccionados. Columnas: imagen, nombre, precio original, precio con descuento, rating y stock. Si no hay productos seleccionados muestra un mensaje y un enlace a <code>/products</code>.</li>
+          <li>Desde la pagina <code>/comparar</code> se puede quitar individualmente cada producto de la comparacion.</li>
+        </ul>
+      </div>
+
+      <div class="callout callout-orange mt-2">
+        <strong>No se evalua la apariencia visual.</strong> Bootstrap por defecto es suficiente. Lo que se evalua es que la logica funcione: el servicio, los inputs al componente hijo, la persistencia y el limite de 3.
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ LOGICA ══════════════════════════════ -->
+    <section id="logica" class="content-section">
+      <h2 class="fw-bold mb-1">Logica del comparador</h2>
+      <p class="text-muted mb-4">Las partes que requieren razonar. Se dan pistas del enfoque, no el codigo completo.</p>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-1-circle" style="color:var(--accent)"></i> product.service.ts — cuidado con la respuesta</h4>
+        <p style="font-size:.9rem">DummyJSON no devuelve el array directamente. La respuesta de <code>/products</code> tiene este formato:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — extraer el array de la respuesta</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="fn">getProducts</span>(): <span class="typ">Observable</span>&lt;<span class="typ">any</span>[]&gt; {
+  <span class="cm">// La respuesta es { products: [...], total: 194, skip: 0, limit: 20 }</span>
+  <span class="cm">// Hay que extraer el array con .pipe(map(...))</span>
+  <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">get</span>&lt;<span class="typ">any</span>&gt;(<span class="str">`</span>${<span class="kw">this</span>.apiUrl}<span class="str">?limit=20`</span>).<span class="fn">pipe</span>(
+    <span class="fn">map</span>((res) => res.products)
+  );
+}
+
+<span class="fn">getCategories</span>(): <span class="typ">Observable</span>&lt;<span class="typ">string</span>[]&gt; {
+  <span class="cm">// Este endpoint SI devuelve directamente un array de strings</span>
+  <span class="kw">return</span> <span class="kw">this</span>.http.<span class="fn">get</span>&lt;<span class="typ">string</span>[]&gt;(<span class="str">`</span>${<span class="kw">this</span>.apiUrl}<span class="str">/category-list`</span>);
+}</pre>
+        </div>
+        <div class="callout callout-amber">
+          <strong>El import de <code>map</code>:</strong> <code>import { map } from 'rxjs/operators'</code>. Este operador transforma el valor que emite el Observable antes de que llegue al <code>.subscribe()</code>.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-2-circle" style="color:var(--accent)"></i> comparador.service.ts — estructura del servicio</h4>
+        <div class="code-block">
+          <div class="code-header"><span>pista — comparador.service.ts — estructura base</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">import</span> { Injectable } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+
+<span class="dec">@Injectable</span>({ <span class="prop">providedIn</span>: <span class="str">'root'</span> })
+<span class="kw">export class</span> <span class="typ">ComparadorService</span> {
+
+  <span class="kw">private</span> MAX = <span class="num">3</span>;
+  <span class="kw">private</span> items: <span class="typ">any</span>[] = [];
+
+  <span class="kw">constructor</span>() {
+    <span class="cm">// Cargar los productos guardados al iniciar</span>
+    <span class="kw">const</span> saved = localStorage.<span class="fn">getItem</span>(<span class="str">'comparacion'</span>);
+    <span class="kw">if</span> (saved) <span class="kw">this</span>.items = <span class="fn">JSON</span>.<span class="fn">parse</span>(saved);
+  }
+
+  <span class="kw">private</span> <span class="fn">persistir</span>(): <span class="typ">void</span> {
+    localStorage.<span class="fn">setItem</span>(<span class="str">'comparacion'</span>, <span class="fn">JSON</span>.<span class="fn">stringify</span>(<span class="kw">this</span>.items));
+  }
+
+  <span class="fn">getComparacion</span>(): <span class="typ">any</span>[] {
+    <span class="kw">return</span> <span class="kw">this</span>.items;
+  }
+
+  <span class="fn">estaEnComparacion</span>(productId: <span class="typ">number</span>): <span class="typ">boolean</span> {
+    <span class="kw">return</span> <span class="kw">this</span>.items.<span class="fn">some</span>(p => p.id === productId);
+  }
+
+  <span class="fn">limiteAlcanzado</span>(): <span class="typ">boolean</span> {
+    <span class="kw">return</span> <span class="kw">this</span>.items.length >= <span class="kw">this</span>.MAX;
+  }
+
+  <span class="fn">agregar</span>(product: <span class="typ">any</span>): <span class="typ">void</span> {
+    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fn">limiteAlcanzado</span>() || <span class="kw">this</span>.<span class="fn">estaEnComparacion</span>(product.id)) <span class="kw">return</span>;
+    <span class="kw">this</span>.items.<span class="fn">push</span>(product);
+    <span class="kw">this</span>.<span class="fn">persistir</span>();
+  }
+
+  <span class="fn">quitar</span>(productId: <span class="typ">number</span>): <span class="typ">void</span> {
+    <span class="kw">this</span>.items = <span class="kw">this</span>.items.<span class="fn">filter</span>(p => p.id !== productId);
+    <span class="kw">this</span>.<span class="fn">persistir</span>();
+  }
+}</pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>Por que no se usa BehaviorSubject aqui:</strong> a diferencia del carrito de la Clase 7, el comparador no necesita reactividad automatica. El navbar actualiza el contador llamando directamente a <code>comparadorService.getComparacion().length</code> despues de cada accion. Es una solucion mas simple y suficiente para este ejercicio.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-3-circle" style="color:var(--accent)"></i> products.ts — pasar los inputs al hijo</h4>
+        <p style="font-size:.9rem">El componente padre (<code>Products</code>) es el que tiene acceso al servicio. El calcula los valores y los pasa al hijo <code>ProductCard</code> via <code>@Input()</code>:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — products.html — pasar estado al componente hijo</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="cm">&lt;!-- El padre pasa 3 inputs al hijo --&gt;</span>
+<span class="tag">&lt;div</span> <span class="kw">*ngFor</span>=<span class="str">"let p of data"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;app-product-card</span>
+    <span class="bind">[product]</span>=<span class="str">"p"</span>
+    <span class="bind">[enComparacion]</span>=<span class="str">"comparadorService.estaEnComparacion(p.id)"</span>
+    <span class="bind">[limiteAlcanzado]</span>=<span class="str">"comparadorService.limiteAlcanzado()"</span>
+    <span class="bind">(toggleComparacion)</span>=<span class="str">"onToggle(p)"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;/app-product-card&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- En products.ts, inyecta el servicio como public --&gt;</span>
+<span class="cm">&lt;!-- public comparadorService para accederlo desde el template --&gt;</span></pre>
+        </div>
+
+        <p class="fw-semibold small mt-3 mb-1">Y en <code>product-card.ts</code>, los tres inputs y el output:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — product-card.ts</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="kw">export class</span> <span class="typ">ProductCard</span> {
+  <span class="dec">@Input</span>() product:         <span class="typ">any</span>     = <span class="kw">null</span>;
+  <span class="dec">@Input</span>() enComparacion:   <span class="typ">boolean</span> = <span class="bool">false</span>;
+  <span class="dec">@Input</span>() limiteAlcanzado: <span class="typ">boolean</span> = <span class="bool">false</span>;
+  <span class="dec">@Output</span>() toggleComparacion = <span class="kw">new</span> <span class="typ">EventEmitter</span>&lt;<span class="typ">void</span>&gt;();
+
+  <span class="fn">toggle</span>(): <span class="typ">void</span> {
+    <span class="kw">this</span>.toggleComparacion.<span class="fn">emit</span>();
+  }
+}</pre>
+        </div>
+
+        <p class="fw-semibold small mt-3 mb-1">El template del hijo decide que mostrar en el boton:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — product-card.html — boton del comparador</span><span class="lang-badge lang-html">HTML</span></div>
+          <pre><span class="cm">&lt;!-- El boton tiene 3 estados posibles --&gt;</span>
+<span class="tag">&lt;button</span>
+  <span class="attr">class</span>=<span class="str">"btn btn-sm"</span>
+  <span class="bind">[class.btn-primary]</span>=<span class="str">"!enComparacion"</span>
+  <span class="bind">[class.btn-warning]</span>=<span class="str">"enComparacion"</span>
+  <span class="bind">[disabled]</span>=<span class="str">"limiteAlcanzado && !enComparacion"</span>
+  <span class="bind">(click)</span>=<span class="str">"toggle()"</span><span class="tag">&gt;</span>
+  <span class="bind">{{enComparacion ? 'Quitar' : (limiteAlcanzado ? 'Lleno' : 'Comparar')}}</span>
+<span class="tag">&lt;/button&gt;</span></pre>
+        </div>
+        <div class="callout callout-blue">
+          <strong>Los tres estados del boton:</strong> si el producto ya esta en la lista muestra "Quitar" en amarillo. Si no esta y el limite es 3 muestra "Lleno" deshabilitado. Si no esta y hay espacio muestra "Comparar" en azul. Este es el tipo de logica condicional en el template que el ejercicio evalua.
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-4-circle" style="color:var(--accent)"></i> app.ts — navbar con contador</h4>
+        <p style="font-size:.9rem">El componente raiz muestra cuantos productos hay en comparacion. A diferencia de la Clase 7 no hay suscripcion — simplemente llama al servicio en el template:</p>
+        <div class="code-block">
+          <div class="code-header"><span>pista — app.ts y app.html — contador en el navbar</span><span class="lang-badge lang-ts">TypeScript</span></div>
+          <pre><span class="cm">// app.ts — el servicio como public para accederlo desde el template</span>
+<span class="kw">export class</span> <span class="typ">App</span> {
+  <span class="kw">constructor</span>(<span class="kw">public</span> comparadorService: <span class="typ">ComparadorService</span>) { }
+}
+
+<span class="cm">// app.html — el contador se calcula directo en el template</span>
+<span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="str">"nav-link"</span> <span class="attr">routerLink</span>=<span class="str">"/comparar"</span><span class="tag">&gt;</span>
+  Comparar (<span class="bind">{{comparadorService.getComparacion().length}}</span>/3)
+<span class="tag">&lt;/a&gt;</span></pre>
+        </div>
+        <div class="callout callout-cyan">
+          <strong>Angular detecta los cambios automaticamente.</strong> Cada vez que el usuario hace clic en "Comparar" o "Quitar" en la tarjeta, Angular re-evalua las expresiones del template — incluyendo <code>comparadorService.getComparacion().length</code> — y actualiza el contador sin que tengas que hacer nada extra.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ RUBRICA Y ENTREGA ══════════════════════════════ -->
+    <section id="entrega" class="content-section">
+      <h2 class="fw-bold mb-1">Rubrica y entrega</h2>
+      <p class="text-muted mb-4">Como se asignan los 100 puntos y que se entrega.</p>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fw-bold">Nivel 1 — Listado</span>
+              <span class="req-pts pts-cyan">30 pts</span>
+            </div>
+            <table style="width:100%;font-size:.82rem;border-collapse:collapse">
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Proyecto nuevo, sin errores de compilacion</td><td style="text-align:right;font-weight:600;color:#0369a1;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151"><code>app-module.ts</code> con <code>provideHttpClient</code> correcto</td><td style="text-align:right;font-weight:600;color:#0369a1;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151"><code>product.service.ts</code> con los 3 metodos funcionando</td><td style="text-align:right;font-weight:600;color:#0369a1;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Listado de productos con imagen, nombre, precio y rating</td><td style="text-align:right;font-weight:600;color:#0369a1;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Select de categorias poblado desde la API</td><td style="text-align:right;font-weight:600;color:#0369a1;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;color:#374151">Busqueda por nombre funcional</td><td style="text-align:right;font-weight:600;color:#0369a1;white-space:nowrap">5 pts</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fw-bold">Nivel 2 — Detalle</span>
+              <span class="req-pts pts-blue">30 pts</span>
+            </div>
+            <table style="width:100%;font-size:.82rem;border-collapse:collapse">
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Navegacion a <code>/product/:id</code> con routerLink</td><td style="text-align:right;font-weight:600;color:#1e40af;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Lectura del <code>:id</code> con ActivatedRoute</td><td style="text-align:right;font-weight:600;color:#1e40af;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Precio original tachado y precio con descuento calculado</td><td style="text-align:right;font-weight:600;color:#1e40af;white-space:nowrap">10 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Resenas listadas con *ngFor</td><td style="text-align:right;font-weight:600;color:#1e40af;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;color:#374151">Boton "Volver" funcional con routerLink</td><td style="text-align:right;font-weight:600;color:#1e40af;white-space:nowrap">5 pts</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:1.5rem">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="fw-bold">Nivel 3 — Comparador</span>
+              <span class="req-pts pts-amber">40 pts</span>
+            </div>
+            <table style="width:100%;font-size:.82rem;border-collapse:collapse">
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Servicio con todos los metodos del comparador</td><td style="text-align:right;font-weight:600;color:#92400e;white-space:nowrap">10 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Persistencia en localStorage al recargar pagina</td><td style="text-align:right;font-weight:600;color:#92400e;white-space:nowrap">10 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Boton condicional: 3 estados correctos en la tarjeta</td><td style="text-align:right;font-weight:600;color:#92400e;white-space:nowrap">10 pts</td></tr>
+              <tr><td style="padding:.4rem 0;border-bottom:1px solid #f1f5f9;color:#374151">Contador en navbar refleja el estado actual</td><td style="text-align:right;font-weight:600;color:#92400e;white-space:nowrap">5 pts</td></tr>
+              <tr><td style="padding:.4rem 0;color:#374151">Pagina <code>/comparar</code> con tabla y boton de quitar</td><td style="text-align:right;font-weight:600;color:#92400e;white-space:nowrap">5 pts</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#0f172a;border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <span style="color:#e2e8f0;font-weight:700;font-size:1rem">Total maxima calificacion</span>
+        <span class="req-pts pts-total" style="font-size:1rem;padding:.4rem 1.2rem">100 pts</span>
+      </div>
+
+      <div class="entrega-card mb-4">
+        <h3 style="font-weight:700;margin-bottom:1rem"><i class="bi bi-send me-2"></i>Formato de entrega</h3>
+        <div class="entrega-item">
+          <div class="ei-label">Repositorio</div>
+          <div class="ei-val">GitHub publico. Nombre del repo: <code>productcompare-[tu-nombre]</code></div>
+        </div>
+        <div class="entrega-item">
+          <div class="ei-label">Commit final</div>
+          <div class="ei-val">Un solo commit con el mensaje: <code>entrega: ejercicio modulo 1</code></div>
+        </div>
+        <div class="entrega-item">
+          <div class="ei-label">No incluir</div>
+          <div class="ei-val">Carpeta <code>node_modules/</code> excluida en <code>.gitignore</code></div>
+        </div>
+      </div>
+
+      <div class="theory-block">
+        <h4><i class="bi bi-person-check" style="color:var(--accent)"></i> Checklist antes de entregar</h4>
+        <ul class="check-list">
+          <li><span class="cb"></span> <code>ng serve</code> corre sin errores en la consola</li>
+          <li><span class="cb"></span> El select de categorias se carga desde la API al entrar a <code>/products</code></li>
+          <li><span class="cb"></span> Cambiar la categoria filtra los productos correctamente</li>
+          <li><span class="cb"></span> La busqueda funciona y al borrar el texto vuelven todos los productos</li>
+          <li><span class="cb"></span> Hacer clic en "Ver detalle" navega a <code>/product/:id</code> con la URL correcta</li>
+          <li><span class="cb"></span> El precio tachado y el precio con descuento se muestran correctamente en el detalle</li>
+          <li><span class="cb"></span> Las resenas del producto aparecen listadas</li>
+          <li><span class="cb"></span> Hacer clic en "Comparar" en una tarjeta cambia el boton a "Quitar"</li>
+          <li><span class="cb"></span> Al llegar a 3 productos, el boton de los demas dice "Lleno" y esta deshabilitado</li>
+          <li><span class="cb"></span> El contador del navbar se actualiza sin recargar la pagina</li>
+          <li><span class="cb"></span> Al recargar la pagina, los productos seleccionados siguen en el comparador</li>
+          <li><span class="cb"></span> En <code>/comparar</code> se ven los productos en una tabla con sus datos</li>
+          <li><span class="cb"></span> En DevTools → Application → LocalStorage aparece la clave <code>comparacion</code></li>
+          <li><span class="cb"></span> <code>node_modules/</code> no esta en el repositorio</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════ DEMO ══════════════════════════════ -->
+    <section id="demo" class="content-section">
+      <h2 class="fw-bold mb-1">Demo interactiva</h2>
+      <p class="text-muted mb-4">Asi debe verse tu proyecto al terminar. Los datos son reales de DummyJSON. Usa esta demo como referencia visual para validar cada requerimiento.</p>
+
+      <div class="callout callout-cyan mb-4">
+        <strong>Esta demo hace peticiones reales a DummyJSON.</strong> Funciona igual que lo que debes construir en Angular: mismos endpoints, misma logica del comparador con localStorage. Lo unico diferente es que aqui esta en JavaScript vanilla en lugar de Angular — la logica de negocio es identica.
+      </div>
+
+      <!-- MINI APP -->
+      <div id="demo-app" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
+
+        <!-- NAVBAR DEMO -->
+        <nav style="background:#0f172a;padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between">
+          <span style="color:#f8fafc;font-weight:700;font-size:.95rem"><i class="bi bi-grid me-2" style="color:#0ea5e9"></i>ProductCompare</span>
+          <div style="display:flex;align-items:center;gap:1.25rem">
+            <a href="#" id="demo-nav-catalogo" onclick="demoVista('catalogo');return false" style="color:#94a3b8;font-size:.83rem;text-decoration:none">Catalogo</a>
+            <a href="#" id="demo-nav-comparar" onclick="demoVista('comparar');return false" style="color:#94a3b8;font-size:.83rem;text-decoration:none">
+              Comparar (<span id="demo-contador">0</span>/3)
+            </a>
+          </div>
+        </nav>
+
+        <!-- VISTA CATALOGO -->
+        <div id="demo-vista-catalogo" style="padding:1.5rem">
+
+          <!-- FILTROS -->
+          <div class="row g-2 mb-4">
+            <div class="col-md-4">
+              <select id="demo-select-cat" class="form-select form-select-sm" onchange="demoFiltrarCat(this.value)">
+                <option value="">Todas las categorias</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <input id="demo-input-busqueda" type="text" class="form-control form-control-sm"
+                placeholder="Buscar por nombre..." oninput="demoBuscar(this.value)">
+            </div>
+            <div class="col-md-3">
+              <span id="demo-total-label" style="font-size:.82rem;color:#64748b;line-height:2">Cargando...</span>
+            </div>
+          </div>
+
+          <!-- GRID DE PRODUCTOS -->
+          <div id="demo-grid" class="row g-3"></div>
+        </div>
+
+        <!-- VISTA DETALLE -->
+        <div id="demo-vista-detalle" style="display:none;padding:1.5rem">
+          <button onclick="demoVista('catalogo')" class="btn btn-sm btn-outline-secondary mb-3">
+            <i class="bi bi-arrow-left me-1"></i>Volver al catalogo
+          </button>
+          <div id="demo-detalle-contenido"></div>
+        </div>
+
+        <!-- VISTA COMPARAR -->
+        <div id="demo-vista-comparar" style="display:none;padding:1.5rem">
+          <button onclick="demoVista('catalogo')" class="btn btn-sm btn-outline-secondary mb-3">
+            <i class="bi bi-arrow-left me-1"></i>Volver al catalogo
+          </button>
+          <div id="demo-comparar-contenido"></div>
+        </div>
+
+      </div><!-- /demo-app -->
+
+      <div class="theory-block mt-4">
+        <h4><i class="bi bi-check2-all" style="color:var(--accent)"></i> Que validar en la demo</h4>
+        <ul style="font-size:.9rem;color:#374151;line-height:2.2">
+          <li>El select se carga con las categorias reales de DummyJSON al entrar.</li>
+          <li>Cambiar la categoria muestra solo productos de esa categoria.</li>
+          <li>Escribir en el buscador filtra los resultados en tiempo real.</li>
+          <li>Hacer clic en "Ver detalle" muestra imagen, precio tachado, precio con descuento y resenas.</li>
+          <li>El boton "Comparar" cambia a "Quitar" cuando el producto ya esta en la lista.</li>
+          <li>Al agregar 3 productos, los demas muestran el boton deshabilitado.</li>
+          <li>El contador del navbar se actualiza sin recargar.</li>
+          <li>La vista "Comparar" muestra la tabla con los productos seleccionados.</li>
+        </ul>
+      </div>
+    </section>
+
+  </div><!-- /main -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const sections = ['intro','api','estructura','requerimientos','logica','entrega','demo'];
+
+    window.showSection = function(id, el) {
+      event.preventDefault();
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('#sidenav a').forEach(a => a.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      el.classList.add('active');
+      const idx = sections.indexOf(id) + 1;
+      document.getElementById('progress-bar').style.width = (idx / sections.length * 100) + '%';
+      document.getElementById('progress-pct').textContent = idx + '/' + sections.length;
+      window.scrollTo(0, 0);
+      if (id === 'demo') demoInit();
+    };
+
+    /* ══════════════════════════════════════════
+       DEMO INTERACTIVA — logica equivalente
+       a lo que el alumno debe implementar en Angular
+    ══════════════════════════════════════════ */
+
+    const API = 'https://dummyjson.com/products';
+    const MAX_COMP = 3;
+    let demoProductos = [];
+    let demoIniciado  = false;
+
+    // ── Persistencia en localStorage (igual que en Angular) ──
+    function compGet()           { return JSON.parse(localStorage.getItem('demo_comparacion') || '[]'); }
+    function compSet(arr)        { localStorage.setItem('demo_comparacion', JSON.stringify(arr)); demoActualizarContador(); }
+    function compEsta(id)        { return compGet().some(p => p.id === id); }
+    function compLimite()        { return compGet().length >= MAX_COMP; }
+    function compAgregar(p)      { if (compLimite() || compEsta(p.id)) return; const a = compGet(); a.push(p); compSet(a); }
+    function compQuitar(id)      { compSet(compGet().filter(p => p.id !== id)); }
+    function demoActualizarContador() {
+      document.getElementById('demo-contador').textContent = compGet().length;
+    }
+
+    // ── Navegacion entre vistas ──
+    function demoVista(v) {
+      ['catalogo','detalle','comparar'].forEach(n => {
+        document.getElementById('demo-vista-' + n).style.display = n === v ? '' : 'none';
+      });
+      ['demo-nav-catalogo','demo-nav-comparar'].forEach(id => {
+        document.getElementById(id).style.color = '#94a3b8';
+      });
+      const navMap = { catalogo: 'demo-nav-catalogo', comparar: 'demo-nav-comparar' };
+      if (navMap[v]) document.getElementById(navMap[v]).style.color = '#0ea5e9';
+      if (v === 'comparar') demoRenderComparar();
+    }
+
+    // ── Tarjeta de producto ──
+    function demoTarjeta(p) {
+      const esta   = compEsta(p.id);
+      const lleno  = compLimite();
+      const precio = (p.price * (1 - p.discountPercentage / 100)).toFixed(2);
+      const btnTxt = esta ? 'Quitar' : (lleno ? 'Lleno' : 'Comparar');
+      const btnCls = esta ? 'btn-warning' : (lleno ? 'btn-secondary' : 'btn-primary');
+      const dis    = (!esta && lleno) ? 'disabled' : '';
+      return `
+        <div class="col-6 col-md-4 col-lg-3">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;height:100%;display:flex;flex-direction:column">
+            <img src="${p.thumbnail}" style="width:100%;height:140px;object-fit:cover">
+            <div style="padding:.75rem;flex:1;display:flex;flex-direction:column">
+              <div style="font-size:.78rem;color:#64748b;margin-bottom:.2rem">${p.category}</div>
+              <div style="font-weight:600;font-size:.83rem;color:#1e293b;flex:1;line-height:1.4;margin-bottom:.5rem">${p.title.substring(0,45)}${p.title.length>45?'…':''}</div>
+              <div style="margin-bottom:.5rem">
+                <span style="text-decoration:line-through;color:#94a3b8;font-size:.78rem">$${p.price}</span>
+                <span style="color:#0ea5e9;font-weight:700;font-size:.88rem;margin-left:.4rem">$${precio}</span>
+                <span style="font-size:.72rem;background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0;border-radius:4px;padding:.05rem .3rem;margin-left:.3rem">-${Math.round(p.discountPercentage)}%</span>
+              </div>
+              <div style="display:flex;gap:.4rem">
+                <button onclick="demoVerDetalle(${p.id})" class="btn btn-success btn-sm" style="font-size:.75rem;flex:1">Ver detalle</button>
+                <button onclick="demoToggle(${p.id})" class="btn btn-sm ${btnCls}" style="font-size:.75rem;flex:1" ${dis}>${btnTxt}</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function demoRenderGrid(arr) {
+      const grid = document.getElementById('demo-grid');
+      document.getElementById('demo-total-label').textContent = arr.length + ' productos';
+      grid.innerHTML = arr.length ? arr.map(demoTarjeta).join('') : '<div class="col-12"><p class="text-muted">Sin resultados.</p></div>';
+    }
+
+    function demoToggle(id) {
+      const p = demoProductos.find(x => x.id === id);
+      if (!p) return;
+      compEsta(id) ? compQuitar(id) : compAgregar(p);
+      demoRenderGrid(demoProductos);
+    }
+
+    // ── Filtros ──
+    function demoFiltrarCat(cat) {
+      document.getElementById('demo-input-busqueda').value = '';
+      const label = document.getElementById('demo-total-label');
+      label.textContent = 'Cargando...';
+      const url = cat ? `${API}/category/${cat}?limit=20` : `${API}?limit=20`;
+      fetch(url).then(r => r.json()).then(d => {
+        demoProductos = d.products || [];
+        demoRenderGrid(demoProductos);
+      });
+    }
+
+    function demoBuscar(q) {
+      if (q.trim() === '') { demoFiltrarCat(''); return; }
+      clearTimeout(window._busqTimer);
+      window._busqTimer = setTimeout(() => {
+        fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=20`).then(r => r.json()).then(d => {
+          demoProductos = d.products || [];
+          demoRenderGrid(demoProductos);
+        });
+      }, 400);
+    }
+
+    // ── Detalle ──
+    async function demoVerDetalle(id) {
+      demoVista('detalle');
+      const div = document.getElementById('demo-detalle-contenido');
+      div.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+      const p = await fetch(`${API}/${id}`).then(r => r.json());
+      const precio = (p.price * (1 - p.discountPercentage / 100)).toFixed(2);
+      const resenas = (p.reviews || []).slice(0,3).map(r =>
+        `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.75rem;margin-bottom:.5rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.25rem">
+            <span style="font-weight:600;font-size:.83rem">${r.reviewerName}</span>
+            <span style="font-size:.78rem;color:#f59e0b">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+          </div>
+          <div style="font-size:.82rem;color:#374151">${r.comment}</div>
+        </div>`
+      ).join('');
+      div.innerHTML = `
+        <div class="row g-4">
+          <div class="col-md-4 text-center">
+            <img src="${p.images?.[0]||p.thumbnail}" style="max-height:260px;object-fit:contain;width:100%;border-radius:10px;border:1px solid #e2e8f0;padding:.5rem">
+          </div>
+          <div class="col-md-8">
+            <div style="font-size:.78rem;color:#64748b;margin-bottom:.25rem">${p.category} · ${p.brand||''}</div>
+            <h4 style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem">${p.title}</h4>
+            <div style="margin-bottom:.75rem">
+              <span style="text-decoration:line-through;color:#94a3b8;font-size:.9rem">$${p.price}</span>
+              <span style="color:#0ea5e9;font-weight:700;font-size:1.15rem;margin-left:.5rem">$${precio}</span>
+              <span style="font-size:.75rem;background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0;border-radius:4px;padding:.1rem .4rem;margin-left:.4rem">-${Math.round(p.discountPercentage)}% descuento</span>
+            </div>
+            <p style="font-size:.88rem;color:#374151;line-height:1.7;margin-bottom:.75rem">${p.description}</p>
+            <div style="display:flex;gap:1.5rem;margin-bottom:1rem;font-size:.83rem;color:#64748b">
+              <span><i class="bi bi-star-fill" style="color:#f59e0b"></i> ${p.rating}</span>
+              <span><i class="bi bi-box-seam"></i> Stock: ${p.stock}</span>
+            </div>
+            ${resenas ? '<div style="font-weight:600;font-size:.85rem;margin-bottom:.5rem">Resenas</div>'+resenas : ''}
+          </div>
+        </div>`;
+    }
+
+    // ── Vista comparar ──
+    function demoRenderComparar() {
+      const arr = compGet();
+      const div = document.getElementById('demo-comparar-contenido');
+      if (!arr.length) {
+        div.innerHTML = '<div class="alert alert-info">No hay productos seleccionados. <a href="#" onclick="demoVista(\'catalogo\');return false">Ir al catalogo</a></div>';
+        return;
+      }
+      const cols = arr.map(p => {
+        const precio = (p.price * (1 - p.discountPercentage / 100)).toFixed(2);
+        return `<td style="text-align:center;padding:.75rem;vertical-align:top">
+          <img src="${p.thumbnail}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;margin-bottom:.5rem"><br>
+          <div style="font-weight:600;font-size:.8rem;margin-bottom:.4rem">${p.title.substring(0,30)}…</div>
+          <div style="font-size:.78rem;color:#94a3b8;text-decoration:line-through">$${p.price}</div>
+          <div style="color:#0ea5e9;font-weight:700">$${precio}</div>
+          <div style="font-size:.78rem;color:#64748b;margin:.25rem 0">Rating: ${p.rating}</div>
+          <div style="font-size:.78rem;color:#64748b">Stock: ${p.stock}</div>
+          <button onclick="compQuitar(${p.id});demoRenderComparar()" class="btn btn-danger btn-sm mt-2" style="font-size:.72rem">Quitar</button>
+        </td>`;
+      });
+      div.innerHTML = `<h5 style="font-weight:700;margin-bottom:1rem">Comparando ${arr.length} producto${arr.length>1?'s':''}</h5>
+        <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+          <thead><tr style="background:#0f172a;color:#e2e8f0">
+            ${arr.map(p=>`<th style="text-align:center;padding:.6rem;font-size:.8rem">${p.category}</th>`).join('')}
+          </tr></thead>
+          <tbody><tr>${cols.join('')}</tr></tbody>
+        </table></div>`;
+    }
+
+    // ── Init demo ──
+    function demoInit() {
+      if (demoIniciado) { demoActualizarContador(); return; }
+      demoIniciado = true;
+      demoActualizarContador();
+      // Cargar categorias
+      fetch(`${API}/category-list`).then(r => r.json()).then(cats => {
+        const sel = document.getElementById('demo-select-cat');
+        cats.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c.charAt(0).toUpperCase() + c.slice(1).replace(/-/g,' ');
+          sel.appendChild(opt);
+        });
+      });
+      // Cargar productos iniciales
+      fetch(`${API}?limit=20`).then(r => r.json()).then(d => {
+        demoProductos = d.products || [];
+        demoRenderGrid(demoProductos);
+      });
+    }
+  </script>
+</body>
+</html>

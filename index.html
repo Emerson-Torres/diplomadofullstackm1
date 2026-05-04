@@ -415,6 +415,7 @@
     <a href="#" class="active" onclick="showSection('inicio', this)"><i class="bi bi-house"></i> Inicio</a>
     <a href="#" onclick="showSection('clases', this)"><i class="bi bi-grid-1x2"></i> Mapa de Clases</a>
     <a href="#" onclick="showSection('plan', this)"><i class="bi bi-calendar3"></i> Plan de Trabajo</a>
+    <a href="#" onclick="showSection('evaluaciones', this)"><i class="bi bi-patch-check"></i> Evaluaciones</a>
   </nav>
 
   <div class="section-label">Accesos directos</div>
@@ -427,6 +428,12 @@
     <a href="clase5.html"><i class="bi bi-arrow-up-right-circle"></i> Clase 5 — Componentes</a>
     <a href="clase6.html"><i class="bi bi-arrow-up-right-circle"></i> Clase 6 — HttpClient</a>
     <a href="clase7.html"><i class="bi bi-arrow-up-right-circle"></i> Clase 7 — Auth &amp; Cierre</a>
+  </nav>
+
+  <div class="section-label">Evaluaciones</div>
+  <nav>
+    <a href="evaluacionclaseideal.html"><i class="bi bi-star"></i> Evaluación Ideal</a>
+    <a href="evaluacionclasedificil.html"><i class="bi bi-fire"></i> Evaluación Difícil</a>
   </nav>
 </nav>
 
@@ -541,6 +548,160 @@
   
   </section>
 
+  <section id="evaluaciones" class="content-section">
+    <div style="background:linear-gradient(135deg,#0a3f52 0%,#0ea5a4 55%,#11c0a1 100%);color:#effcfa;border-radius:18px;padding:2.4rem 2.7rem;margin-bottom:1.7rem;box-shadow:0 14px 38px rgba(14,165,164,.24);">
+      <div style="display:inline-flex;align-items:center;gap:.4rem;border:1px solid rgba(236,254,255,.45);background:rgba(8,56,70,.35);color:#d6fbf7;border-radius:30px;padding:.32rem .8rem;font-size:.73rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;"><i class="bi bi-patch-check"></i> Modulo 1 — Angular</div>
+      <h1 style="margin-bottom:.55rem;font-size:2rem;font-weight:700;">Evaluaciones Finales</h1>
+      <p style="margin:0;font-size:1rem;color:#d7f6f2;max-width:760px;">Hay dos modalidades de evaluación. Elegís una sola para entregar. Ambas construyen una aplicación Angular completa que consume una API real de DummyJSON.</p>
+      <div style="margin-top:1.15rem;display:flex;flex-wrap:wrap;gap:.55rem;">
+        <span style="font-size:.81rem;border-radius:9px;padding:.38rem .75rem;background:rgba(7,52,63,.38);color:#e4fffc;"><i class="bi bi-calendar-event me-1"></i>Plazo: 1 semana</span>
+        <span style="font-size:.81rem;border-radius:9px;padding:.38rem .75rem;background:rgba(7,52,63,.38);color:#e4fffc;"><i class="bi bi-alarm me-1"></i>Fecha límite: martes 12 de mayo 2026</span>
+        <span style="font-size:.81rem;border-radius:9px;padding:.38rem .75rem;background:rgba(7,52,63,.38);color:#e4fffc;"><i class="bi bi-people me-1"></i>Máx. 2 integrantes por equipo</span>
+      </div>
+    </div>
+
+    <!-- ── TARJETAS DE EVALUACION ── -->
+    <div class="row g-4 mb-4">
+
+      <!-- EVALUACION IDEAL -->
+      <div class="col-md-6">
+        <div style="background:#fff;border:2px solid #a5f3ea;border-radius:16px;padding:1.75rem;height:100%;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;">
+            <div style="width:42px;height:42px;border-radius:10px;background:#ccfbf1;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#0f766e;"><i class="bi bi-star-fill"></i></div>
+            <div>
+              <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#0ea5a4;">Nivel Estándar</div>
+              <h5 style="margin:0;font-weight:700;">Evaluación Ideal</h5>
+            </div>
+          </div>
+          <p style="font-size:.88rem;color:#374151;line-height:1.7;margin-bottom:1rem;">Catálogo de productos con Angular y DummyJSON. Navegación, detalle de producto, filtrado por categoría y comparador de hasta 3 ítems persistido en <code>localStorage</code>. <strong>Sin autenticación ni guards.</strong></p>
+
+          <div style="background:#f0fdfa;border-left:3px solid #0ea5a4;border-radius:0 6px 6px 0;padding:.75rem 1rem;font-size:.84rem;color:#155e59;margin-bottom:.9rem;">
+            <strong>API base:</strong> <code>https://dummyjson.com/products</code>
+          </div>
+
+          <ul style="font-size:.85rem;color:#374151;padding-left:1.3rem;line-height:1.8;margin-bottom:1rem;">
+            <li>Rutas: <code>/products</code>, <code>/product/:id</code>, <code>/comparar</code></li>
+            <li>Listado con filtro por categoría (dropdown)</li>
+            <li>Detalle con precio original tachado y precio con descuento (<code>price * (1 - discountPercentage/100)</code>)</li>
+            <li>Reseñas del producto visibles en el detalle</li>
+            <li><code>ComparadorService</code>: máx. 3 productos, persistido en <code>localStorage</code></li>
+            <li>Botón en tarjeta con 3 estados: Comparar / Quitar / Lleno (deshabilitado)</li>
+            <li>Contador en navbar: <code>Comparar (N/3)</code></li>
+            <li>Vista <code>/comparar</code> con tabla comparativa lado a lado</li>
+          </ul>
+
+          <div style="margin-top:auto;">
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:.65rem .9rem;font-size:.82rem;color:#92400e;margin-bottom:1rem;">
+              <i class="bi bi-trophy me-1"></i><strong>Nota:</strong> aprobar esta evaluación otorga la nota de aprobación del Módulo 1.
+            </div>
+            <a href="evaluacionclaseideal.html" style="display:inline-flex;align-items:center;gap:.4rem;background:var(--index);color:#f0fffd;border:0;border-radius:9px;padding:.55rem 1.1rem;font-size:.85rem;font-weight:600;text-decoration:none;">
+              <i class="bi bi-box-arrow-up-right"></i> Ver consigna completa
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVALUACION DIFICIL -->
+      <div class="col-md-6">
+        <div style="background:#fff;border:2px solid #fde68a;border-radius:16px;padding:1.75rem;height:100%;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;">
+            <div style="width:42px;height:42px;border-radius:10px;background:#fef9c3;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#b45309;"><i class="bi bi-fire"></i></div>
+            <div>
+              <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#d97706;">Nivel Avanzado</div>
+              <h5 style="margin:0;font-weight:700;">Evaluación Difícil</h5>
+            </div>
+          </div>
+          <p style="font-size:.88rem;color:#374151;line-height:1.7;margin-bottom:1rem;">Recetario (<code>mi-recetario</code>) con autenticación JWT real, guards de ruta, favoritos por usuario con BehaviorSubject y persistencia por userId en <code>localStorage</code>.</p>
+
+          <div style="background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 6px 6px 0;padding:.75rem 1rem;font-size:.84rem;color:#92400e;margin-bottom:.9rem;">
+            <strong>APIs:</strong> <code>https://dummyjson.com/recipes</code> + <code>/auth/login</code>
+          </div>
+
+          <ul style="font-size:.85rem;color:#374151;padding-left:1.3rem;line-height:1.8;margin-bottom:1rem;">
+            <li>Rutas: <code>/login</code>, <code>/recipes</code>, <code>/recipe/:id</code>, <code>/favoritos</code> (guard), <code>/perfil</code> (guard)</li>
+            <li>Login real con DummyJSON — respuesta incluye token + datos de usuario</li>
+            <li>Guardar <code>currentUser</code> y <code>token</code> en <code>localStorage</code></li>
+            <li><code>AuthGuard</code> que redirige a <code>/login</code> si no hay sesión</li>
+            <li><code>FavoritosService</code> con <code>BehaviorSubject</code>: <code>loadFavoritosForCurrentUser</code>, <code>esFavorito</code>, <code>toggleFavorito</code>, <code>clearInMemory</code></li>
+            <li>Botón de favorito en tarjeta solo visible con sesión activa</li>
+            <li>Logout limpia <code>localStorage</code> y resetea el BehaviorSubject</li>
+          </ul>
+
+          <div style="margin-top:auto;">
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:.65rem .9rem;font-size:.82rem;color:#065f46;margin-bottom:1rem;">
+              <i class="bi bi-trophy-fill me-1"></i><strong>Bonus:</strong> nota del Módulo 1 + <strong>3 puntos para el Módulo 2</strong>, siempre que la nota sea mayor a 8.
+            </div>
+            <a href="evaluacionclasedificil.html" style="display:inline-flex;align-items:center;gap:.4rem;background:#d97706;color:#fff;border:0;border-radius:9px;padding:.55rem 1.1rem;font-size:.85rem;font-weight:600;text-decoration:none;">
+              <i class="bi bi-box-arrow-up-right"></i> Ver consigna completa
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── ACLARACIONES ── -->
+    <h4 class="fw-bold mb-3"><i class="bi bi-info-circle me-2" style="color:var(--index);"></i>Aclaraciones generales</h4>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <div class="card-shell">
+          <h5><i class="bi bi-calendar-check me-1 text-info"></i>Plazo y modalidad</h5>
+          <ul style="font-size:.87rem;color:#374151;padding-left:1.2rem;line-height:1.85;margin:0;">
+            <li>Se dispone de <strong>una semana</strong> para realizar la evaluación.</li>
+            <li>Fecha límite: <strong>martes 12 de mayo de 2026</strong>.</li>
+            <li>Se elige <strong>una sola evaluación</strong> para entregar: la ideal o la difícil.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-shell">
+          <h5><i class="bi bi-people me-1 text-info"></i>Equipos</h5>
+          <ul style="font-size:.87rem;color:#374151;padding-left:1.2rem;line-height:1.85;margin:0;">
+            <li>El desarrollo se realiza en <strong>parejas como máximo</strong>.</li>
+            <li>Si se entrega con más integrantes se descontarán <strong>2 puntos</strong> de la nota final.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-shell">
+          <h5><i class="bi bi-mortarboard me-1 text-info"></i>Calificación</h5>
+          <ul style="font-size:.87rem;color:#374151;padding-left:1.2rem;line-height:1.85;margin:0;">
+            <li><strong>Evaluación ideal:</strong> aprueba el Módulo 1.</li>
+            <li><strong>Evaluación difícil:</strong> aprueba el Módulo 1 y suma <strong>+3 puntos al Módulo 2</strong>, siempre que la nota sea mayor a 8.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-shell">
+          <h5><i class="bi bi-robot me-1 text-info"></i>Uso de IA</h5>
+          <ul style="font-size:.87rem;color:#374151;padding-left:1.2rem;line-height:1.85;margin:0;">
+            <li>No se restringe el uso de IA.</li>
+            <li>Se valorará el <strong>conocimiento técnico aplicado</strong> en cada proyecto.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card-shell">
+          <h5><i class="bi bi-book me-1 text-info"></i>Material de apoyo</h5>
+          <p>Todo lo necesario para realizar la prueba se encuentra en el material visto durante el Módulo 1 (Clases 0 a 7). Usá el índice lateral para repasar cualquier tema.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card-shell">
+          <h5><i class="bi bi-github me-1 text-info"></i>Entrega</h5>
+          <ul style="font-size:.87rem;color:#374151;padding-left:1.2rem;line-height:1.85;margin:0;">
+            <li>El proyecto debe subirse a un <strong>repositorio de GitHub</strong>.</li>
+            <li>El enlace debe enviarse al <strong>Aula Digital</strong> mediante un PDF con <strong>portada y nombres de los integrantes</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="plan" class="content-section">
     <h2 class="fw-bold mb-1">Plan de navegacion sugerido</h2>
     <p class="text-muted mb-4">Secuencia recomendada desde el indice.</p>
@@ -593,7 +754,7 @@
 </div>
 
 <script>
-  const sections = ['inicio', 'clases', 'plan'];
+  const sections = ['inicio', 'clases', 'plan', 'evaluaciones'];
 
   function showSection(id, el) {
     event.preventDefault();

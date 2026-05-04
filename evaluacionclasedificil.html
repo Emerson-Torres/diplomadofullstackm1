@@ -161,7 +161,7 @@
         <span>Seccion actual</span><span id="progress-pct">1/7</span>
       </div>
       <div class="progress"><div class="progress-bar" id="progress-bar" style="width:14%"></div></div>
-      <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Evaluacion final · 100 puntos</div>
+      <div style="font-size:.68rem;color:#475569;margin-top:.4rem;padding-bottom:.75rem;border-bottom:1px solid #1e293b">Evaluacion final · 100 puntos · 8 secciones</div>
     </div>
     <div class="section-label">Secciones</div>
     <nav id="sidenav">
@@ -172,6 +172,7 @@
       <a href="#" onclick="window.showSection('logica',this)">                       <i class="bi bi-cpu"></i> Logica clave a implementar</a>
       <a href="#" onclick="window.showSection('rubrica',this)">                      <i class="bi bi-award"></i> Rubrica de evaluacion</a>
       <a href="#" onclick="window.showSection('entrega',this)">                      <i class="bi bi-send"></i> Entrega</a>
+      <a href="#" onclick="window.showSection('demo',this)">                         <i class="bi bi-play-circle"></i> Demo interactiva</a>
     </nav>
     <div class="section-label">Recursos</div>
     <nav>
@@ -824,11 +825,117 @@ ng serve</pre>
       </div>
     </section>
 
+    <!-- ══════════════════════════════ DEMO ══════════════════════════════ -->
+    <section id="demo" class="content-section">
+      <h2 class="fw-bold mb-1">Demo interactiva</h2>
+      <p class="text-muted mb-4">Asi debe verse tu proyecto RecetApp al terminar. Datos reales de DummyJSON. Usa esto como referencia para validar cada requerimiento antes de entregar.</p>
+
+      <div class="callout callout-green mb-4">
+        <strong>Esta demo hace peticiones reales a DummyJSON.</strong> La logica de favoritos con localStorage, el boton condicional segun sesion, y el contador en el navbar funcionan exactamente como debera funcionar tu proyecto Angular. Las credenciales que se usan son las mismas del enunciado: <code>emilys</code> / <code>emilyspass</code>.
+      </div>
+
+      <!-- MINI APP RECETAS -->
+      <div id="demo-app-r" style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden">
+
+        <!-- NAVBAR -->
+        <nav style="background:#0f172a;padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+          <span style="color:#f8fafc;font-weight:700;font-size:.95rem"><i class="bi bi-egg-fried me-2" style="color:#10b981"></i>RecetApp</span>
+          <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+            <a href="#" onclick="rVista('catalogo');return false" id="r-nav-cat"  style="color:#94a3b8;font-size:.83rem;text-decoration:none">Recetas</a>
+            <a href="#" onclick="rVista('favs');return false"    id="r-nav-favs" style="color:#94a3b8;font-size:.83rem;text-decoration:none;display:none">
+              <i class="bi bi-heart-fill" style="color:#ef4444"></i> Favoritos (<span id="r-fav-cnt">0</span>)
+            </a>
+            <span id="r-btn-login-wrap">
+              <button onclick="rMostrarLogin()" class="btn btn-sm" style="background:#10b981;color:#fff;font-size:.78rem;border:none;border-radius:6px;padding:.25rem .75rem">Login</button>
+            </span>
+            <span id="r-btn-logout-wrap" style="display:none">
+              <span id="r-user-label" style="color:#6ee7b7;font-size:.78rem;margin-right:.5rem"></span>
+              <button onclick="rLogout()" class="btn btn-sm" style="background:transparent;color:#94a3b8;border:1px solid #475569;font-size:.78rem;border-radius:6px;padding:.2rem .65rem">Logout</button>
+            </span>
+          </div>
+        </nav>
+
+        <!-- MODAL LOGIN -->
+        <div id="r-modal-login" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:14px;padding:2rem;width:320px;max-width:90%">
+            <h5 style="font-weight:700;margin-bottom:1.25rem">Iniciar sesion</h5>
+            <div id="r-login-err" style="display:none" class="alert alert-danger py-2 small"></div>
+            <div class="mb-3">
+              <label style="font-size:.82rem;font-weight:600" class="form-label">Usuario</label>
+              <input id="r-user-input" type="text" class="form-control form-control-sm" placeholder="emilys" value="emilys">
+            </div>
+            <div class="mb-3">
+              <label style="font-size:.82rem;font-weight:600" class="form-label">Contrasena</label>
+              <input id="r-pass-input" type="password" class="form-control form-control-sm" placeholder="emilyspass" value="emilyspass">
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button onclick="rLogin()" class="btn btn-sm w-100" style="background:#10b981;color:#fff;border:none" id="r-btn-entrar">Entrar</button>
+              <button onclick="document.getElementById('r-modal-login').style.display='none'" class="btn btn-sm btn-outline-secondary w-100">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VISTA CATALOGO -->
+        <div id="r-vista-catalogo" style="padding:1.5rem">
+          <div class="row g-2 mb-4">
+            <div class="col-md-4">
+              <select id="r-select-tipo" class="form-select form-select-sm" onchange="rFiltrarTipo(this.value)">
+                <option value="">Todos los tipos</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="snack">Snack</option>
+                <option value="dessert">Dessert</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <input id="r-input-busq" type="text" class="form-control form-control-sm" placeholder="Buscar receta..." oninput="rBuscar(this.value)">
+            </div>
+            <div class="col-md-3">
+              <span id="r-total-lbl" style="font-size:.82rem;color:#64748b;line-height:2">Cargando...</span>
+            </div>
+          </div>
+          <div id="r-grid" class="row g-3"></div>
+        </div>
+
+        <!-- VISTA DETALLE RECETA -->
+        <div id="r-vista-detalle" style="display:none;padding:1.5rem">
+          <button onclick="rVista('catalogo')" class="btn btn-sm btn-outline-secondary mb-3">
+            <i class="bi bi-arrow-left me-1"></i>Volver
+          </button>
+          <div id="r-detalle-contenido"></div>
+        </div>
+
+        <!-- VISTA FAVORITOS -->
+        <div id="r-vista-favs" style="display:none;padding:1.5rem">
+          <button onclick="rVista('catalogo')" class="btn btn-sm btn-outline-secondary mb-3">
+            <i class="bi bi-arrow-left me-1"></i>Volver al catalogo
+          </button>
+          <h5 style="font-weight:700;margin-bottom:1rem">Mis favoritos</h5>
+          <div id="r-favs-contenido"></div>
+        </div>
+
+      </div><!-- /demo-app-r -->
+
+      <div class="theory-block mt-4">
+        <h4><i class="bi bi-check2-all" style="color:var(--accent)"></i> Que validar en la demo</h4>
+        <ul style="font-size:.9rem;color:#374151;line-height:2.2">
+          <li>Sin login: el boton de favoritos no aparece en ninguna tarjeta.</li>
+          <li>Con login: el boton aparece. Al hacer clic cambia a "Quitar de favoritos".</li>
+          <li>El contador de favoritos en el navbar se actualiza en tiempo real.</li>
+          <li>El detalle muestra los ingredientes e instrucciones como listas (<code>*ngFor</code>).</li>
+          <li>La ruta protegida "/favoritos" solo es accesible estando logueado.</li>
+          <li>Al hacer logout y volver a ingresar, los favoritos se recuperan (localStorage por usuario).</li>
+          <li>El filtro por tipo de comida y la busqueda consumen los endpoints correctos.</li>
+        </ul>
+      </div>
+    </section>
+
   </div><!-- /main -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const sections = ['intro','api','estructura','requerimientos','logica','rubrica','entrega'];
+    const sections = ['intro','api','estructura','requerimientos','logica','rubrica','entrega','demo'];
 
     window.showSection = function(id, el) {
       event.preventDefault();
@@ -840,7 +947,239 @@ ng serve</pre>
       document.getElementById('progress-bar').style.width = (idx / sections.length * 100) + '%';
       document.getElementById('progress-pct').textContent = idx + '/' + sections.length;
       window.scrollTo(0, 0);
+      if (id === 'demo') rDemoInit();
     };
+
+    /* ══════════════════════════════════════════
+       DEMO INTERACTIVA — RecetApp
+       Logica equivalente a lo que el alumno
+       debe implementar en Angular
+    ══════════════════════════════════════════ */
+
+    const R_API  = 'https://dummyjson.com/recipes';
+    const R_AUTH = 'https://dummyjson.com/auth/login';
+    let rRecetas  = [];
+    let rSesion   = null;   // { id, username, firstName, token }
+    let rDemoOk   = false;
+
+    // ── Sesion ──
+    function rGetSesion()       { const s = localStorage.getItem('rdemo_user'); return s ? JSON.parse(s) : null; }
+    function rSetSesion(s)      { localStorage.setItem('rdemo_user', JSON.stringify(s)); rSesion = s; }
+    function rClearSesion()     { localStorage.removeItem('rdemo_user'); rSesion = null; }
+
+    // ── Favoritos por usuario ──
+    function rFavsKey()          { return rSesion ? `rdemo_favs_${rSesion.id}` : null; }
+    function rFavsGet()          { const k = rFavsKey(); return k ? JSON.parse(localStorage.getItem(k) || '[]') : []; }
+    function rFavsSet(arr)       { const k = rFavsKey(); if (k) localStorage.setItem(k, JSON.stringify(arr)); rActualizarCnt(); }
+    function rEsFav(id)          { return rFavsGet().some(f => f.id === id); }
+    function rToggleFav(receta)  {
+      if (!rSesion) return;
+      const favs = rFavsGet();
+      const idx  = favs.findIndex(f => f.id === receta.id);
+      if (idx >= 0) favs.splice(idx, 1); else favs.push(receta);
+      rFavsSet(favs);
+      rRenderGrid(rRecetas);
+    }
+    function rActualizarCnt()   {
+      const cnt = rFavsGet().length;
+      document.getElementById('r-fav-cnt').textContent = cnt;
+    }
+
+    // ── Navbar segun sesion ──
+    function rActualizarNav() {
+      const logueado = !!rSesion;
+      document.getElementById('r-btn-login-wrap').style.display   = logueado ? 'none' : '';
+      document.getElementById('r-btn-logout-wrap').style.display  = logueado ? '' : 'none';
+      document.getElementById('r-nav-favs').style.display         = logueado ? '' : 'none';
+      if (logueado) document.getElementById('r-user-label').textContent = 'Hola, ' + (rSesion.firstName || rSesion.username);
+      rActualizarCnt();
+    }
+
+    // ── Login / Logout ──
+    function rMostrarLogin() {
+      const m = document.getElementById('r-modal-login');
+      m.style.display = 'flex';
+      document.getElementById('r-login-err').style.display = 'none';
+    }
+
+    async function rLogin() {
+      const u = document.getElementById('r-user-input').value.trim();
+      const p = document.getElementById('r-pass-input').value.trim();
+      const btn = document.getElementById('r-btn-entrar');
+      btn.textContent = 'Entrando...'; btn.disabled = true;
+      document.getElementById('r-login-err').style.display = 'none';
+      try {
+        const res = await fetch(R_AUTH, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p, expiresInMins: 60 })
+        });
+        if (!res.ok) throw new Error('Credenciales incorrectas');
+        const data = await res.json();
+        rSetSesion({ id: data.id, username: data.username, firstName: data.firstName, token: data.token });
+        document.getElementById('r-modal-login').style.display = 'none';
+        rActualizarNav();
+        rRenderGrid(rRecetas);  // re-renderizar para mostrar botones
+      } catch(e) {
+        const err = document.getElementById('r-login-err');
+        err.textContent = 'Usuario o contrasena incorrectos.';
+        err.style.display = '';
+      }
+      btn.textContent = 'Entrar'; btn.disabled = false;
+    }
+
+    function rLogout() {
+      rClearSesion();
+      rActualizarNav();
+      rRenderGrid(rRecetas);
+      rVista('catalogo');
+    }
+
+    // ── Navegacion ──
+    function rVista(v) {
+      ['catalogo','detalle','favs'].forEach(n => {
+        document.getElementById('r-vista-' + n).style.display = n === v ? '' : 'none';
+      });
+      if (v === 'favs') rRenderFavs();
+    }
+
+    // ── Tarjeta receta ──
+    function rTarjeta(rec) {
+      const logueado = !!rSesion;
+      const esFav    = rEsFav(rec.id);
+      const btnFav   = logueado
+        ? `<button onclick="rToggleFav(${JSON.stringify(rec).replace(/"/g,'&quot;')})"
+            class="btn btn-sm ${esFav ? 'btn-danger' : 'btn-outline-danger'}" style="font-size:.75rem;flex:1">
+            <i class="bi bi-heart${esFav?'-fill':''}"></i> ${esFav ? 'Quitar' : 'Favorito'}
+           </button>`
+        : '';
+      return `
+        <div class="col-6 col-md-4 col-lg-3">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;height:100%;display:flex;flex-direction:column">
+            <img src="${rec.image}" style="width:100%;height:130px;object-fit:cover">
+            <div style="padding:.75rem;flex:1;display:flex;flex-direction:column">
+              <div style="font-size:.72rem;color:#64748b;margin-bottom:.2rem">${(rec.mealType||[]).join(', ')} · ${rec.cuisine}</div>
+              <div style="font-weight:600;font-size:.83rem;color:#1e293b;flex:1;line-height:1.4;margin-bottom:.5rem">${rec.name.substring(0,45)}${rec.name.length>45?'…':''}</div>
+              <div style="font-size:.78rem;color:#f59e0b;margin-bottom:.5rem">${'★'.repeat(Math.round(rec.rating))}${'☆'.repeat(5-Math.round(rec.rating))} ${rec.rating}</div>
+              <div style="display:flex;gap:.4rem">
+                <button onclick="rVerDetalle(${rec.id})" class="btn btn-sm btn-success" style="font-size:.75rem;flex:1">Ver detalle</button>
+                ${btnFav}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function rRenderGrid(arr) {
+      document.getElementById('r-total-lbl').textContent = arr.length + ' recetas';
+      document.getElementById('r-grid').innerHTML = arr.length
+        ? arr.map(rTarjeta).join('')
+        : '<div class="col-12"><p class="text-muted">Sin resultados.</p></div>';
+    }
+
+    // ── Filtros ──
+    function rFiltrarTipo(tipo) {
+      document.getElementById('r-input-busq').value = '';
+      document.getElementById('r-total-lbl').textContent = 'Cargando...';
+      const url = tipo ? `${R_API}/meal-type/${tipo}?limit=20` : `${R_API}?limit=20`;
+      fetch(url).then(r => r.json()).then(d => { rRecetas = d.recipes||[]; rRenderGrid(rRecetas); });
+    }
+
+    function rBuscar(q) {
+      if (!q.trim()) { rFiltrarTipo(''); return; }
+      clearTimeout(window._rTimer);
+      window._rTimer = setTimeout(() => {
+        fetch(`${R_API}/search?q=${encodeURIComponent(q)}&limit=20`).then(r => r.json()).then(d => {
+          rRecetas = d.recipes||[]; rRenderGrid(rRecetas);
+        });
+      }, 400);
+    }
+
+    // ── Detalle ──
+    async function rVerDetalle(id) {
+      rVista('detalle');
+      const div = document.getElementById('r-detalle-contenido');
+      div.innerHTML = '<div class="text-center py-4"><div class="spinner-border" style="color:#10b981"></div></div>';
+      const rec = await fetch(`${R_API}/${id}`).then(r => r.json());
+      const esFav    = rEsFav(rec.id);
+      const logueado = !!rSesion;
+      const btnFav   = logueado
+        ? `<button onclick="rToggleFav(${JSON.stringify(rec).replace(/"/g,'&quot;')});document.getElementById('r-detalle-fav-btn').outerHTML='';"
+             id="r-detalle-fav-btn"
+             class="btn btn-sm ${esFav ? 'btn-danger' : 'btn-outline-danger'} me-2">
+             <i class="bi bi-heart${esFav?'-fill':''}"></i> ${esFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+           </button>` : '';
+      const ingredientes = (rec.ingredients||[]).map(i => `<li>${i}</li>`).join('');
+      const instrucciones = (rec.instructions||[]).map((s,i) => `<li style="margin-bottom:.4rem"><strong>${i+1}.</strong> ${s}</li>`).join('');
+      div.innerHTML = `
+        <div class="row g-4">
+          <div class="col-md-4">
+            <img src="${rec.image}" style="width:100%;border-radius:12px;object-fit:cover;max-height:260px">
+            <div style="margin-top:.75rem;font-size:.82rem;color:#64748b">
+              <div><i class="bi bi-clock me-1"></i>Prep: ${rec.prepTimeMinutes} min · Coccion: ${rec.cookTimeMinutes} min</div>
+              <div style="margin-top:.25rem"><i class="bi bi-people me-1"></i>${rec.servings} porciones · ${rec.difficulty}</div>
+              <div style="margin-top:.25rem"><i class="bi bi-fire me-1"></i>${rec.caloriesPerServing} cal/porcion</div>
+              <div style="margin-top:.25rem"><i class="bi bi-star-fill me-1" style="color:#f59e0b"></i>${rec.rating} (${rec.reviewCount} resenas)</div>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div style="font-size:.78rem;color:#64748b;margin-bottom:.25rem">${rec.cuisine} · ${(rec.mealType||[]).join(', ')}</div>
+            <h4 style="font-weight:700;margin-bottom:.75rem">${rec.name}</h4>
+            <div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
+              ${btnFav}
+              <button onclick="rVista('catalogo')" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Volver</button>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-5">
+                <div style="font-weight:700;font-size:.88rem;margin-bottom:.4rem">Ingredientes</div>
+                <ul style="font-size:.83rem;color:#374151;padding-left:1.2rem;line-height:1.9">${ingredientes}</ul>
+              </div>
+              <div class="col-md-7">
+                <div style="font-weight:700;font-size:.88rem;margin-bottom:.4rem">Instrucciones</div>
+                <ol style="font-size:.82rem;color:#374151;padding-left:1rem;line-height:1.8;list-style:none">${instrucciones}</ol>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // ── Vista favoritos ──
+    function rRenderFavs() {
+      if (!rSesion) { rVista('catalogo'); return; }
+      const favs = rFavsGet();
+      const div  = document.getElementById('r-favs-contenido');
+      if (!favs.length) {
+        div.innerHTML = '<div class="alert alert-info">Aun no tienes recetas favoritas. <a href="#" onclick="rVista(\'catalogo\');return false">Ver catalogo</a></div>';
+        return;
+      }
+      div.innerHTML = '<div class="row g-3">' + favs.map(rec => {
+        const esFav = true;
+        return `<div class="col-6 col-md-4 col-lg-3">
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">
+            <img src="${rec.image}" style="width:100%;height:120px;object-fit:cover">
+            <div style="padding:.75rem">
+              <div style="font-weight:600;font-size:.83rem;margin-bottom:.4rem">${rec.name.substring(0,38)}…</div>
+              <div style="font-size:.75rem;color:#64748b;margin-bottom:.5rem">${rec.cuisine}</div>
+              <button onclick="rToggleFav(${JSON.stringify(rec).replace(/"/g,'&quot;')});rRenderFavs()" class="btn btn-danger btn-sm w-100" style="font-size:.75rem">
+                <i class="bi bi-heart-fill me-1"></i>Quitar
+              </button>
+            </div>
+          </div>
+        </div>`;
+      }).join('') + '</div>';
+    }
+
+    // ── Init ──
+    function rDemoInit() {
+      rSesion = rGetSesion();
+      rActualizarNav();
+      if (rDemoOk) { rRenderGrid(rRecetas); return; }
+      rDemoOk = true;
+      fetch(`${R_API}?limit=20`).then(r => r.json()).then(d => {
+        rRecetas = d.recipes||[];
+        rRenderGrid(rRecetas);
+      });
+    }
   </script>
 </body>
 </html>
